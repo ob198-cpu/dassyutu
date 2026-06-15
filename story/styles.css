@@ -658,7 +658,6 @@ button.is-guided {
 .scene-street .beat-grid,
 .scene-street .capsule-rig,
 .scene-street .exit-door,
-.scene-street .figure,
 .scene-or .capsule-rig,
 .scene-records .capsule-rig {
   display: none;
@@ -796,28 +795,39 @@ button.is-guided {
   pointer-events: none;
 }
 
+.scene-street .figure {
+  width: 154px;
+  height: 231px;
+  background-size: 616px 1386px;
+  filter:
+    drop-shadow(0 20px 14px rgba(0, 0, 0, .62))
+    drop-shadow(0 0 16px rgba(72, 234, 255, .44))
+    saturate(1.03)
+    brightness(.92);
+}
+
 .scene-or .figure,
 .scene-records .figure {
-  width: 112px;
-  height: 168px;
-  background-size: 448px 1008px;
+  width: 140px;
+  height: 210px;
+  background-size: 560px 1260px;
   filter:
-    drop-shadow(0 14px 10px rgba(0, 0, 0, .58))
-    drop-shadow(0 0 12px rgba(72, 234, 255, .42))
+    drop-shadow(0 18px 12px rgba(0, 0, 0, .6))
+    drop-shadow(0 0 14px rgba(72, 234, 255, .44))
     saturate(.98)
-    brightness(.82);
+    brightness(.86);
 }
 
 .scene-capsule .figure,
 .scene-exit .figure {
-  width: 104px;
-  height: 156px;
-  background-size: 416px 936px;
+  width: 132px;
+  height: 198px;
+  background-size: 528px 1188px;
   filter:
-    drop-shadow(0 14px 10px rgba(0, 0, 0, .58))
-    drop-shadow(0 0 12px rgba(72, 234, 255, .38))
+    drop-shadow(0 18px 12px rgba(0, 0, 0, .6))
+    drop-shadow(0 0 14px rgba(72, 234, 255, .4))
     saturate(.95)
-    brightness(.78);
+    brightness(.82);
 }
 
 .figure-dir-front {
@@ -844,44 +854,64 @@ button.is-guided {
   --sprite-row: -720px;
 }
 
+.scene-street.figure-dir-side {
+  --sprite-row: -231px;
+}
+
+.scene-street.figure-dir-back {
+  --sprite-row: -462px;
+}
+
+.scene-street.figure-action-reach-side {
+  --sprite-row: -693px;
+}
+
+.scene-street.figure-action-reach-back {
+  --sprite-row: -924px;
+}
+
+.scene-street.figure-action-crouch {
+  --sprite-row: -1155px;
+}
+
 .scene-or.figure-dir-side,
 .scene-records.figure-dir-side {
-  --sprite-row: -168px;
+  --sprite-row: -210px;
 }
 
 .scene-or.figure-dir-back,
 .scene-records.figure-dir-back {
-  --sprite-row: -336px;
+  --sprite-row: -420px;
 }
 
 .scene-or.figure-action-reach-side,
 .scene-records.figure-action-reach-side {
-  --sprite-row: -504px;
+  --sprite-row: -630px;
 }
 
 .scene-or.figure-action-reach-back,
 .scene-records.figure-action-reach-back {
-  --sprite-row: -672px;
+  --sprite-row: -840px;
 }
 
 .scene-or.figure-action-crouch,
 .scene-records.figure-action-crouch {
-  --sprite-row: -840px;
+  --sprite-row: -1050px;
 }
 
 .scene-capsule.figure-dir-side,
 .scene-exit.figure-dir-side {
-  --sprite-row: -156px;
+  --sprite-row: -198px;
 }
 
 .scene-capsule.figure-dir-back,
 .scene-exit.figure-dir-back {
-  --sprite-row: -312px;
+  --sprite-row: -396px;
 }
 
 .scene-capsule.figure-action-reach-back,
 .scene-exit.figure-action-reach-back {
-  --sprite-row: -624px;
+  --sprite-row: -792px;
 }
 
 .screen.is-walking .figure {
@@ -1047,6 +1077,10 @@ button.is-guided {
   backdrop-filter: blur(2px);
 }
 
+.evidence-panel.is-updated {
+  animation: evidencePanelPulse .72s steps(5);
+}
+
 .back-button,
 .audio-toggle {
   min-height: 34px;
@@ -1131,6 +1165,17 @@ button.is-guided {
   box-shadow: none;
 }
 
+.evidence-slot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent, rgba(72, 234, 255, .32), transparent);
+  opacity: 0;
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+
 .evidence-slot span {
   position: absolute;
   left: 50%;
@@ -1156,11 +1201,19 @@ button.is-guided {
 .evidence-slot.is-found {
   opacity: 1;
   border-color: rgba(72, 234, 255, .72);
-  box-shadow: 0 0 16px rgba(72, 234, 255, .22);
+  background:
+    linear-gradient(180deg, rgba(11, 28, 54, .68), rgba(3, 7, 21, .78));
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .05) inset,
+    0 0 16px rgba(72, 234, 255, .22);
 }
 
 .evidence-slot.is-new {
-  animation: evidencePop .56s steps(4);
+  animation: evidencePop .72s steps(5);
+}
+
+.evidence-slot.is-new::before {
+  animation: evidenceAcquireSweep .72s steps(5);
 }
 
 .evidence-slot:focus-visible {
@@ -1438,7 +1491,7 @@ button.is-guided {
   left: 13px;
   right: 13px;
   bottom: max(11px, env(safe-area-inset-bottom));
-  padding: 10px;
+  padding: 8px;
   border: 1px solid rgba(101, 214, 255, .28);
   border-radius: 4px;
   background:
@@ -1476,7 +1529,7 @@ button.is-guided {
 }
 
 .chapter {
-  margin: 0 0 7px;
+  margin: 0 0 5px;
   color: var(--gold);
   font-size: 11px;
   font-weight: 900;
@@ -1484,10 +1537,10 @@ button.is-guided {
 }
 
 .line {
-  min-height: 50px;
-  margin: 0 0 10px;
+  min-height: 36px;
+  margin: 0 0 8px;
   color: rgba(242, 246, 255, .9);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 650;
   line-height: 1.5;
 }
@@ -1504,14 +1557,14 @@ button.is-guided {
 
 .actions button {
   position: relative;
-  min-height: 44px;
+  min-height: 38px;
   border-color: rgba(234, 223, 155, .48);
   border-radius: 3px;
   background:
     linear-gradient(90deg, rgba(101, 214, 255, .1), transparent 36%),
     linear-gradient(180deg, rgba(11, 16, 47, .66), rgba(4, 7, 23, .7));
   color: rgba(246, 250, 255, .94);
-  font-size: 14px;
+  font-size: 13px;
   letter-spacing: 0;
   text-shadow: 0 0 9px rgba(101, 214, 255, .24);
   box-shadow:
@@ -1833,8 +1886,29 @@ button.is-guided {
 }
 
 @keyframes evidencePop {
-  0% { transform: scale(.72); filter: brightness(1.8); }
+  0% { transform: scale(.86); filter: brightness(1.45); }
+  42% { transform: scale(1.04); filter: brightness(1.22); }
   100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes evidenceAcquireSweep {
+  0% { opacity: 0; transform: translateX(-110%); }
+  20% { opacity: .8; }
+  100% { opacity: 0; transform: translateX(110%); }
+}
+
+@keyframes evidencePanelPulse {
+  0%, 100% {
+    border-color: rgba(101, 214, 255, .18);
+    box-shadow: 0 0 14px rgba(101, 214, 255, .06);
+  }
+  45% {
+    border-color: rgba(234, 223, 155, .64);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .06) inset,
+      0 0 22px rgba(72, 234, 255, .18),
+      0 0 28px rgba(234, 223, 155, .12);
+  }
 }
 
 @keyframes objectivePulse {

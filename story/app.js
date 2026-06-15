@@ -7,6 +7,7 @@ const toast = document.getElementById("toast");
 const progressWrap = document.getElementById("progressWrap");
 const progressBar = document.getElementById("progressBar");
 const evidenceSlots = document.getElementById("evidenceSlots");
+const evidencePanel = document.querySelector(".evidence-panel");
 const objectiveChip = document.getElementById("objectiveChip");
 const backButton = document.getElementById("backButton");
 const audioToggle = document.getElementById("audioToggle");
@@ -59,11 +60,11 @@ const evidenceDefs = [
 ];
 
 const sceneDefaults = {
-  street: { x: "55%", y: "62%", dir: "front" },
-  or: { x: "50%", y: "57%", dir: "back" },
-  records: { x: "48%", y: "58%", dir: "back" },
-  capsule: { x: "24%", y: "70%", dir: "side" },
-  exit: { x: "50%", y: "66%", dir: "back" }
+  street: { x: "50%", y: "66%", dir: "front" },
+  or: { x: "52%", y: "65%", dir: "back" },
+  records: { x: "50%", y: "66%", dir: "back" },
+  capsule: { x: "30%", y: "70%", dir: "side" },
+  exit: { x: "50%", y: "68%", dir: "back" }
 };
 
 const sceneData = {
@@ -81,14 +82,14 @@ const sceneData = {
     objective: "3つの証拠を集める",
     line: "手術室には、診療記録、動き続ける心電図、空のベッドが残っている。光る場所を順番に調べる。",
     actions: [
-      { label: "記録を見る", action: "inspectRecord", x: "24%", y: "45%", dir: "back", pose: "reach-back" },
-      { label: "心電図を見る", action: "inspectMonitor", x: "76%", y: "47%", dir: "side", pose: "reach-side" },
-      { label: "ベッドを見る", action: "inspectBed", x: "50%", y: "54%", dir: "back", pose: "crouch" }
+      { label: "記録を見る", action: "inspectRecord", x: "27%", y: "58%", dir: "back", pose: "reach-back" },
+      { label: "心電図を見る", action: "inspectMonitor", x: "73%", y: "58%", dir: "side", pose: "reach-side" },
+      { label: "ベッドを見る", action: "inspectBed", x: "50%", y: "63%", dir: "back", pose: "crouch" }
     ],
     hotspots: [
-      { id: "chart", label: "記録", action: "inspectRecord", x: "24%", y: "45%", dir: "back", pose: "reach-back" },
-      { id: "monitor", label: "心電図", action: "inspectMonitor", x: "76%", y: "47%", dir: "side", pose: "reach-side" },
-      { id: "bed", label: "ベッド", action: "inspectBed", x: "50%", y: "54%", dir: "back", pose: "crouch" }
+      { id: "chart", label: "記録", action: "inspectRecord", x: "27%", y: "58%", dir: "back", pose: "reach-back" },
+      { id: "monitor", label: "心電図", action: "inspectMonitor", x: "73%", y: "58%", dir: "side", pose: "reach-side" },
+      { id: "bed", label: "ベッド", action: "inspectBed", x: "50%", y: "63%", dir: "back", pose: "crouch" }
     ]
   },
   records: {
@@ -97,7 +98,7 @@ const sceneData = {
     line: "三つの証拠がつながった。記録の患者番号314を確認し、証拠カプセルへ進む。",
     actions: [{ label: "カプセルへ", next: "capsule" }],
     hotspots: [
-      { id: "recordSheet", label: "番号 314", action: "recordCode", x: "35%", y: "36%", dir: "back", pose: "reach-back" }
+      { id: "recordSheet", label: "番号 314", action: "recordCode", x: "35%", y: "56%", dir: "back", pose: "reach-back" }
     ]
   },
   capsule: {
@@ -106,7 +107,7 @@ const sceneData = {
     line: "証拠カプセルの中で心臓だけが動いている。記録と心拍を合わせ、長押しで同期する。",
     actions: [{ label: "聴いて支える", hold: true, requires: ["record", "pulse", "code"] }],
     hotspots: [
-      { id: "capsuleCore", label: "同期", action: "pulseHint", x: "50%", y: "42%", dir: "back", pose: "reach-back" }
+      { id: "capsuleCore", label: "同期", action: "pulseHint", x: "50%", y: "58%", dir: "back", pose: "reach-back" }
     ]
   },
   exit: {
@@ -115,7 +116,7 @@ const sceneData = {
     line: "カプセルが開き、患者314の証拠が外へ送信された。出口へ進む。",
     actions: [{ label: "最初から", next: "street" }],
     hotspots: [
-      { id: "exitDoor", label: "出口", action: "exitHint", x: "50%", y: "45%", dir: "back" }
+      { id: "exitDoor", label: "出口", action: "exitHint", x: "50%", y: "60%", dir: "back" }
     ]
   }
 };
@@ -137,6 +138,7 @@ let moveTimer = null;
 let cutTimer = null;
 let storyBeatTimer = null;
 let activeTargetTimer = null;
+let evidencePanelTimer = null;
 let isMoving = false;
 let recordSeen = false;
 let monitorSeen = false;
@@ -562,6 +564,7 @@ function addEvidence(id) {
   if (evidence.has(id)) return;
   evidence.add(id);
   updateEvidence(id);
+  pulseEvidencePanel();
   playEvidenceSound();
 }
 
@@ -584,11 +587,24 @@ function updateEvidence(newId = "") {
     slot.className = `evidence-slot evidence-${item.icon}`;
     if (evidence.has(item.id)) slot.classList.add("is-found");
     if (newId === item.id) slot.classList.add("is-new");
+    slot.dataset.evidenceId = item.id;
     slot.setAttribute("aria-label", item.label);
     slot.innerHTML = `<span></span><b>${item.label}</b>`;
     slot.addEventListener("click", () => openEvidence(item));
     evidenceSlots.appendChild(slot);
   });
+}
+
+function pulseEvidencePanel() {
+  if (!evidencePanel) return;
+
+  evidencePanel.classList.remove("is-updated");
+  void evidencePanel.offsetWidth;
+  evidencePanel.classList.add("is-updated");
+  window.clearTimeout(evidencePanelTimer);
+  evidencePanelTimer = window.setTimeout(() => {
+    evidencePanel.classList.remove("is-updated");
+  }, 720);
 }
 
 function openEvidenceById(id) {
