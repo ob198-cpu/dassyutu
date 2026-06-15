@@ -136,6 +136,7 @@ let toastTimer = null;
 let moveTimer = null;
 let cutTimer = null;
 let storyBeatTimer = null;
+let activeTargetTimer = null;
 let isMoving = false;
 let recordSeen = false;
 let monitorSeen = false;
@@ -278,6 +279,7 @@ function renderHotspots(items) {
     button.className = `hotspot hotspot-${item.id}`;
     if (doneId) button.classList.add("is-done");
     if (isGuidedItem(item)) button.classList.add("is-guided");
+    button.dataset.hotspotId = item.id;
     button.textContent = doneId ? "済" : item.label;
     button.addEventListener("click", () => {
       if (doneId) {
@@ -375,6 +377,7 @@ function setFigure(target, walking = true) {
 function moveThenRun(item) {
   if (isMoving) return;
   isMoving = true;
+  markActiveTarget(item);
   setFigure(item, true);
   window.clearTimeout(moveTimer);
   moveTimer = window.setTimeout(() => {
@@ -382,6 +385,23 @@ function moveThenRun(item) {
     isMoving = false;
     playActionPose(item);
   }, 540);
+}
+
+function markActiveTarget(item) {
+  hotspots.querySelectorAll(".hotspot.is-active").forEach((button) => {
+    button.classList.remove("is-active");
+  });
+
+  if (!item.id) return;
+
+  const target = hotspots.querySelector(`[data-hotspot-id="${item.id}"]`);
+  if (!target) return;
+
+  target.classList.add("is-active");
+  window.clearTimeout(activeTargetTimer);
+  activeTargetTimer = window.setTimeout(() => {
+    target.classList.remove("is-active");
+  }, 760);
 }
 
 function clearFigurePose() {

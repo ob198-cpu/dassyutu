@@ -772,14 +772,28 @@ button.is-guided {
   background-size: 384px 864px;
   background-position: 0 var(--sprite-row, 0px);
   image-rendering: pixelated;
+  pointer-events: none;
   filter:
     drop-shadow(0 10px 8px rgba(0, 0, 0, .46))
     drop-shadow(0 0 14px rgba(72, 234, 255, .36))
     brightness(1.08);
   transition:
-    left .48s steps(6),
-    top .48s steps(6);
+    left .58s steps(7),
+    top .58s steps(7);
   animation: tinyIdle 1.2s steps(2) infinite;
+}
+
+.figure::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 44%;
+  height: 9px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(0, 0, 0, .48), rgba(0, 0, 0, .18) 48%, transparent 72%);
+  opacity: .72;
+  pointer-events: none;
 }
 
 .scene-or .figure,
@@ -872,6 +886,15 @@ button.is-guided {
 
 .screen.is-walking .figure {
   animation: tinyIdle 1.2s steps(2) infinite;
+  filter:
+    drop-shadow(0 15px 12px rgba(0, 0, 0, .56))
+    drop-shadow(0 0 18px rgba(72, 234, 255, .46))
+    brightness(1.06);
+}
+
+.screen.is-walking .figure::after {
+  width: 58%;
+  opacity: .58;
 }
 
 .screen.is-acting .figure {
@@ -915,6 +938,19 @@ button.is-guided {
     linear-gradient(180deg, rgba(37, 31, 16, .58), rgba(5, 6, 20, .68));
   color: #fff7dc;
   animation: guidePulse 1.4s steps(4) infinite;
+}
+
+.hotspot.is-active {
+  border-color: rgba(255, 244, 189, .96);
+  color: #fffbea;
+  background:
+    linear-gradient(90deg, rgba(255, 224, 139, .24), transparent 44%),
+    linear-gradient(180deg, rgba(22, 28, 58, .72), rgba(3, 5, 18, .78));
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .1) inset,
+    0 0 18px rgba(255, 224, 139, .38),
+    0 0 28px rgba(72, 234, 255, .18);
+  animation: targetLock .62s steps(4) infinite;
 }
 
 .hotspot.is-done {
@@ -1774,6 +1810,15 @@ button.is-guided {
       0 0 28px rgba(255, 224, 139, .68),
       0 0 42px rgba(72, 234, 255, .24);
     filter: brightness(1.2);
+  }
+}
+
+@keyframes targetLock {
+  0%, 100% {
+    filter: brightness(1.04);
+  }
+  50% {
+    filter: brightness(1.22);
   }
 }
 
