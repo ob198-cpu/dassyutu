@@ -15,8 +15,6 @@ const storyBeat = document.getElementById("storyBeat");
 const storyBeatKicker = document.getElementById("storyBeatKicker");
 const storyBeatTitle = document.getElementById("storyBeatTitle");
 const storyBeatText = document.getElementById("storyBeatText");
-const actionCinema = document.getElementById("actionCinema");
-const actionCinemaLabel = document.getElementById("actionCinemaLabel");
 const evidenceDialog = document.getElementById("evidenceDialog");
 const evidenceDialogTitle = document.getElementById("evidenceDialogTitle");
 const evidenceDialogText = document.getElementById("evidenceDialogText");
@@ -129,28 +127,6 @@ const actionEvidenceMap = {
   recordCode: "code"
 };
 
-const cinemaLabels = {
-  ENTER: "潜入",
-  RECORD: "記録取得",
-  PULSE: "心拍確認",
-  CABLE: "配線発見",
-  LINK: "証拠接続",
-  "314": "314確認",
-  SYNC: "同期",
-  OPEN: "開放"
-};
-
-const cinemaModes = {
-  ENTER: "enter",
-  RECORD: "record",
-  PULSE: "pulse",
-  CABLE: "cable",
-  LINK: "link",
-  "314": "code",
-  SYNC: "sync",
-  OPEN: "open"
-};
-
 let currentScene = "";
 let sceneHistory = [];
 let holdProgress = 0;
@@ -160,7 +136,6 @@ let toastTimer = null;
 let moveTimer = null;
 let cutTimer = null;
 let storyBeatTimer = null;
-let cinemaTimer = null;
 let isMoving = false;
 let recordSeen = false;
 let monitorSeen = false;
@@ -447,33 +422,13 @@ function showToast(message) {
 }
 
 function playCut(label) {
-  playCinema(label);
-  motionCut.querySelector("b").textContent = label;
-  screen.classList.remove("is-cutting", "is-flashing");
-  void motionCut.offsetWidth;
-  screen.classList.add("is-cutting", "is-flashing");
+  screen.classList.remove("is-flashing");
+  void screen.offsetWidth;
+  screen.classList.add("is-flashing");
   window.clearTimeout(cutTimer);
   cutTimer = window.setTimeout(() => {
-    screen.classList.remove("is-cutting", "is-flashing");
-  }, 1480);
-}
-
-function playCinema(label) {
-  if (!actionCinema || !actionCinemaLabel) return;
-
-  const key = String(label || "TRACE").toUpperCase();
-  actionCinema.dataset.mode = cinemaModes[key] || "trace";
-  actionCinemaLabel.textContent = cinemaLabels[key] || key;
-  actionCinema.dataset.label = actionCinemaLabel.textContent;
-
-  screen.classList.remove("is-cinema");
-  void actionCinema.offsetWidth;
-  screen.classList.add("is-cinema");
-
-  window.clearTimeout(cinemaTimer);
-  cinemaTimer = window.setTimeout(() => {
-    screen.classList.remove("is-cinema");
-  }, 3050);
+    screen.classList.remove("is-flashing");
+  }, 520);
 }
 
 function showStoryBeat(kicker, title, text) {
@@ -866,21 +821,6 @@ if (debugPose) {
 const debugCut = params.get("cut");
 if (debugCut) {
   window.setTimeout(() => playCut(debugCut), 80);
-}
-
-const debugCinema = params.get("cinema");
-if (debugCinema) {
-  window.setTimeout(() => playCinema(debugCinema), 120);
-}
-
-const debugCinemaHold = params.get("cinemaHold");
-if (debugCinemaHold) {
-  window.setTimeout(() => {
-    playCinema(debugCinemaHold);
-    window.clearTimeout(cinemaTimer);
-    screen.classList.remove("is-cinema");
-    screen.classList.add("is-cinema-hold");
-  }, 120);
 }
 
 if (params.get("beat") === "1") {
