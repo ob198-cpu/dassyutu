@@ -428,7 +428,7 @@ button.is-guided {
   bottom: 26px;
   width: 64px;
   height: 96px;
-  background-image: url("./assets/investigator_sprite_refstyle.png?v=20260616-refchar1");
+  background-image: url("./assets/investigator_sprite_refstyle_v2.png?v=20260616-fixwalk1");
   background-repeat: no-repeat;
   background-size: 256px 576px;
   background-position: 0 var(--cine-row);
@@ -759,7 +759,7 @@ button.is-guided {
   width: 96px;
   height: 144px;
   transform: translate(-50%, -50%);
-  background-image: url("./assets/investigator_sprite_refstyle.png?v=20260616-refchar1");
+  background-image: url("./assets/investigator_sprite_refstyle_v2.png?v=20260616-fixwalk1");
   background-repeat: no-repeat;
   background-size: 384px 864px;
   background-position: 0 var(--sprite-row, 0px);
@@ -863,11 +863,11 @@ button.is-guided {
 }
 
 .screen.is-walking .figure {
-  animation: spriteFrames .54s steps(1) infinite, tinyIdle 1.2s steps(2) infinite;
+  animation: tinyIdle 1.2s steps(2) infinite;
 }
 
 .screen.is-acting .figure {
-  animation: spriteFrames .48s steps(1) infinite, actionPulse .48s steps(2) infinite;
+  animation: actionPulse .48s steps(2) infinite;
 }
 
 .hotspots {
