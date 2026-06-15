@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>聴診 Auscultation - Mobile Prototype</title>
+  <link rel="stylesheet" href="./styles.css?v=20260615-anim1">
+</head>
+<body>
+  <main class="phone" id="app">
+    <section class="screen scene-street" id="screen" aria-live="polite">
+      <div class="scene-layer scene-bg" id="sceneBg"></div>
+      <div class="scene-layer parallax skyline"></div>
+      <div class="scene-layer parallax foreground"></div>
+      <div class="scene-layer rain"></div>
+      <div class="scene-layer mist"></div>
+      <div class="scene-layer light-sweep"></div>
+      <div class="scene-layer beat-grid"></div>
+      <div class="scene-layer capsule-rig">
+        <span class="core"></span>
+        <span class="ring r1"></span>
+        <span class="ring r2"></span>
+      </div>
+      <div class="scene-layer exit-door">
+        <span class="door-line"></span>
+        <span class="door-glow"></span>
+      </div>
+      <div class="scene-layer figure" id="figure"></div>
+      <div class="scene-layer motion-cut" id="motionCut" aria-hidden="true">
+        <span></span>
+        <b></b>
+      </div>
+      <div class="scene-layer action-cinema" id="actionCinema" aria-hidden="true">
+        <div class="cine-window">
+          <span class="cine-panel cine-panel-a"></span>
+          <span class="cine-panel cine-panel-b"></span>
+          <span class="cine-runner"></span>
+          <span class="cine-scan"></span>
+          <span class="cine-pulse"></span>
+          <b id="actionCinemaLabel">TRACE</b>
+        </div>
+      </div>
+      <div class="story-beat" id="storyBeat" aria-live="polite" hidden>
+        <p id="storyBeatKicker">LOG</p>
+        <h2 id="storyBeatTitle">証拠更新</h2>
+        <span id="storyBeatText">新しい手掛かりがつながった。</span>
+      </div>
+      <div class="hotspots" id="hotspots"></div>
+      <div class="toast" id="toast"></div>
+      <div class="scene-layer vignette"></div>
+      <div class="scene-layer scanlines"></div>
+      <div class="scene-layer grain"></div>
+
+      <section class="evidence-panel" aria-label="証拠">
+        <button type="button" class="back-button" id="backButton" disabled>戻る</button>
+        <div class="evidence-title">証拠</div>
+        <div class="evidence-slots" id="evidenceSlots"></div>
+        <button type="button" class="audio-toggle" id="audioToggle" aria-pressed="false">音OFF</button>
+      </section>
+
+      <div class="objective-chip" id="objectiveChip">目的: 中へ入る</div>
+
+      <section class="evidence-dialog" id="evidenceDialog" aria-live="polite" hidden>
+        <div class="evidence-card">
+          <p class="evidence-card-kicker">証拠メモ</p>
+          <h2 id="evidenceDialogTitle">記録</h2>
+          <p id="evidenceDialogText">調査内容</p>
+          <button type="button" class="evidence-close" id="evidenceClose">閉じる</button>
+        </div>
+      </section>
+
+      <section class="clear-dialog" id="clearDialog" aria-live="polite" hidden>
+        <div class="clear-card">
+          <p class="clear-kicker">Auscultation</p>
+          <h2>CLEAR</h2>
+          <p class="clear-text">消えた患者の記録、心拍、番号314がそろった。証拠カプセルのロックは解除され、外部へ送信された。</p>
+          <div class="clear-evidence" id="clearEvidence"></div>
+          <button type="button" class="clear-restart" id="clearRestart">最初から</button>
+        </div>
+      </section>
+
+      <section class="sync-meter" id="syncMeter" hidden>
+        <div class="sync-label">
+          <span>心拍同期</span>
+          <b id="syncStatus">待機</b>
+        </div>
+        <div class="sync-rail"><span id="syncFill"></span></div>
+        <div class="sync-beats" id="syncBeats">
+          <span></span><span></span><span></span>
+        </div>
+      </section>
+
+      <section class="hud">
+        <div>
+          <p class="chapter" id="chapter">01 / 夜の病院</p>
+          <p class="line" id="line">廃病院で患者が消えた。残された心拍データを回収し、証拠カプセルを開く。</p>
+        </div>
+        <div class="actions" id="actions"></div>
+        <div class="progress-wrap" id="progressWrap" hidden>
+          <span id="progressBar"></span>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="./app.js?v=20260615-anim1"></script>
+</body>
+</html>
