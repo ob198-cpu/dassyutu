@@ -473,7 +473,7 @@ function playCinema(label) {
   window.clearTimeout(cinemaTimer);
   cinemaTimer = window.setTimeout(() => {
     screen.classList.remove("is-cinema");
-  }, 2320);
+  }, 3050);
 }
 
 function showStoryBeat(kicker, title, text) {
