@@ -580,6 +580,7 @@ button.is-guided {
 .scene-street .beat-grid,
 .scene-street .capsule-rig,
 .scene-street .exit-door,
+.scene-street .figure,
 .scene-or .capsule-rig,
 .scene-records .capsule-rig {
   display: none;
