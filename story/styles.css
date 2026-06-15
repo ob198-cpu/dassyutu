@@ -113,6 +113,7 @@ button.is-guided {
   background-image: url("./assets/bg_or.png");
   background-position: center 43%;
   filter: saturate(1.04) contrast(1.12) brightness(.78);
+  animation: roomCameraDrift 12s ease-in-out infinite;
 }
 
 .scene-or .scene-bg::before,
@@ -152,6 +153,7 @@ button.is-guided {
   background-image: url("./assets/bg_capsule.png");
   background-position: center 44%;
   filter: saturate(1.08) contrast(1.13) brightness(.76);
+  animation: capsuleCameraDrift 14s ease-in-out infinite;
 }
 
 .scene-capsule .scene-bg::before,
@@ -1374,6 +1376,7 @@ button.is-guided {
   opacity: .18;
   background: repeating-linear-gradient(180deg, rgba(255,255,255,.11) 0 1px, transparent 1px 5px);
   mix-blend-mode: screen;
+  animation: scanlineDrift 8s steps(12) infinite;
 }
 
 .grain {
@@ -1542,6 +1545,42 @@ button.is-guided {
 @keyframes breathe {
   0%, 100% { transform: scale(1.03) translate3d(0, 0, 0); }
   50% { transform: scale(1.055) translate3d(0, -4px, 0); }
+}
+
+@keyframes roomCameraDrift {
+  0%, 100% {
+    transform: scale(1.032) translate3d(0, 0, 0);
+    filter: saturate(1.04) contrast(1.12) brightness(.78);
+  }
+  36% {
+    transform: scale(1.04) translate3d(-2px, -2px, 0);
+    filter: saturate(1.05) contrast(1.13) brightness(.8);
+  }
+  68% {
+    transform: scale(1.037) translate3d(2px, -1px, 0);
+    filter: saturate(1.04) contrast(1.12) brightness(.77);
+  }
+}
+
+@keyframes capsuleCameraDrift {
+  0%, 100% {
+    transform: scale(1.032) translate3d(0, 0, 0);
+    filter: saturate(1.08) contrast(1.13) brightness(.76);
+  }
+  40% {
+    transform: scale(1.042) translate3d(1px, -2px, 0);
+    filter: saturate(1.1) contrast(1.15) brightness(.78);
+  }
+  72% {
+    transform: scale(1.036) translate3d(-2px, -1px, 0);
+    filter: saturate(1.08) contrast(1.14) brightness(.75);
+  }
+}
+
+@keyframes scanlineDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: .15; }
+  45% { transform: translate3d(0, 3px, 0); opacity: .2; }
+  70% { transform: translate3d(0, 1px, 0); opacity: .17; }
 }
 
 @keyframes streetDimPulse {
