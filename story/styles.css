@@ -92,6 +92,13 @@ button.is-guided {
   animation: breathe 7s ease-in-out infinite;
 }
 
+.scene-street .scene-bg {
+  background-image: url("./assets/bg_ref_alley.png?v=20260615-ref1");
+  background-position: center;
+  filter: saturate(1.02) contrast(1.04) brightness(.9);
+  animation: breathe 11s ease-in-out infinite;
+}
+
 .scene-or .scene-bg,
 .scene-records .scene-bg {
   background-image: url("./assets/bg_or.png");
@@ -119,6 +126,10 @@ button.is-guided {
   animation: driftLeft 18s linear infinite;
 }
 
+.scene-street .skyline {
+  display: none;
+}
+
 .foreground {
   z-index: 2;
   opacity: .3;
@@ -128,6 +139,11 @@ button.is-guided {
     linear-gradient(0deg, rgba(0, 0, 0, .74), transparent 25%);
   animation: driftRight 12s ease-in-out infinite alternate;
   transform: translate3d(calc(var(--tilt-x, 0) * 8px), calc(var(--tilt-y, 0) * 5px), 0);
+}
+
+.scene-street .foreground {
+  opacity: .12;
+  background: linear-gradient(0deg, rgba(0, 0, 0, .68), transparent 32%);
 }
 
 .rain {
@@ -140,6 +156,11 @@ button.is-guided {
   background-position: 0 0, 12px 28px;
   mix-blend-mode: screen;
   animation: rainFall .72s linear infinite;
+}
+
+.scene-street .rain {
+  opacity: .2;
+  animation-duration: 1.8s;
 }
 
 .scene-or .rain,
@@ -160,12 +181,22 @@ button.is-guided {
   animation: mistFlow 9s ease-in-out infinite alternate;
 }
 
+.scene-street .mist {
+  opacity: .16;
+  filter: blur(3px);
+}
+
 .light-sweep {
   z-index: 5;
   opacity: .32;
   background: linear-gradient(112deg, transparent 0 38%, rgba(226, 249, 255, .34) 42%, transparent 48% 100%);
   mix-blend-mode: screen;
   animation: sweep 5.6s ease-in-out infinite;
+}
+
+.scene-street .light-sweep {
+  opacity: .08;
+  animation-duration: 9s;
 }
 
 .motion-cut {
