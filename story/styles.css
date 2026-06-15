@@ -428,7 +428,7 @@ button.is-guided {
   bottom: 26px;
   width: 64px;
   height: 96px;
-  background-image: url("./assets/investigator_sprite_v3.png?v=20260615");
+  background-image: url("./assets/investigator_sprite_refstyle.png?v=20260616-refchar1");
   background-repeat: no-repeat;
   background-size: 256px 576px;
   background-position: 0 var(--cine-row);
@@ -759,7 +759,7 @@ button.is-guided {
   width: 96px;
   height: 144px;
   transform: translate(-50%, -50%);
-  background-image: url("./assets/investigator_sprite_v3.png?v=20260615");
+  background-image: url("./assets/investigator_sprite_refstyle.png?v=20260616-refchar1");
   background-repeat: no-repeat;
   background-size: 384px 864px;
   background-position: 0 var(--sprite-row, 0px);
