@@ -99,6 +99,15 @@ button.is-guided {
   animation: breathe 11s ease-in-out infinite;
 }
 
+.scene-street .scene-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("./assets/bg_ref_alley_dim.png?v=20260615-ref1") center / cover no-repeat;
+  opacity: 0;
+  animation: streetDimPulse 7.4s ease-in-out infinite;
+}
+
 .scene-or .scene-bg,
 .scene-records .scene-bg {
   background-image: url("./assets/bg_or.png");
@@ -1342,6 +1351,13 @@ button.is-guided {
 @keyframes breathe {
   0%, 100% { transform: scale(1.03) translate3d(0, 0, 0); }
   50% { transform: scale(1.055) translate3d(0, -4px, 0); }
+}
+
+@keyframes streetDimPulse {
+  0%, 28%, 100% { opacity: 0; }
+  46% { opacity: .22; }
+  58% { opacity: .1; }
+  70% { opacity: .17; }
 }
 
 @keyframes driftLeft {
