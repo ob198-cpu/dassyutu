@@ -933,7 +933,7 @@ button.is-guided {
 
 .hotspots {
   position: absolute;
-  inset: 0 0 176px;
+  inset: 0 0 130px;
   z-index: 24;
   pointer-events: none;
 }
@@ -1062,18 +1062,18 @@ button.is-guided {
 .evidence-panel {
   position: absolute;
   z-index: 31;
-  left: 10px;
-  right: 10px;
-  top: max(10px, env(safe-area-inset-top));
+  left: 11px;
+  right: 11px;
+  top: max(9px, env(safe-area-inset-top));
   display: grid;
-  grid-template-columns: 42px 20px minmax(0, 1fr) 42px;
-  gap: 4px;
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  gap: 3px;
   align-items: center;
-  padding: 4px;
-  border: 1px solid rgba(101, 214, 255, .18);
+  padding: 3px;
+  border: 1px solid rgba(101, 214, 255, .14);
   border-radius: 3px;
-  background: rgba(3, 6, 19, .42);
-  box-shadow: 0 0 14px rgba(101, 214, 255, .06);
+  background: rgba(3, 6, 19, .24);
+  box-shadow: 0 0 12px rgba(101, 214, 255, .04);
   backdrop-filter: blur(2px);
 }
 
@@ -1083,11 +1083,11 @@ button.is-guided {
 
 .back-button,
 .audio-toggle {
-  min-height: 34px;
+  min-height: 30px;
   padding: 0 4px;
   border-color: rgba(120, 143, 190, .42);
   border-radius: 3px;
-  background: rgba(3, 7, 21, .48);
+  background: rgba(3, 7, 21, .34);
   color: rgba(242, 246, 255, .72);
   font-size: 9px;
   font-weight: 900;
@@ -1110,13 +1110,13 @@ button.is-guided {
   z-index: 31;
   left: 14px;
   right: 14px;
-  top: max(59px, calc(env(safe-area-inset-top) + 59px));
-  padding: 5px 9px;
-  border: 1px solid rgba(101, 214, 255, .22);
+  top: max(49px, calc(env(safe-area-inset-top) + 49px));
+  padding: 4px 8px;
+  border: 1px solid rgba(101, 214, 255, .18);
   border-radius: 3px;
-  background: rgba(3, 6, 19, .42);
+  background: rgba(3, 6, 19, .28);
   color: rgba(242, 246, 255, .9);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   line-height: 1.2;
   text-align: center;
@@ -1130,6 +1130,7 @@ button.is-guided {
 }
 
 .evidence-title {
+  display: none;
   color: var(--gold);
   font-size: 10px;
   font-weight: 900;
@@ -1140,7 +1141,7 @@ button.is-guided {
 .evidence-slots {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
+  gap: 3px;
 }
 
 .audio-toggle.is-on {
@@ -1153,11 +1154,11 @@ button.is-guided {
   position: relative;
   min-width: 0;
   min-height: 0;
-  height: 34px;
+  height: 30px;
   padding: 0;
   border: 1px solid rgba(120, 143, 190, .42);
   border-radius: 3px;
-  background: rgba(3, 7, 21, .48);
+  background: rgba(3, 7, 21, .34);
   color: var(--ink);
   opacity: .44;
   overflow: hidden;
@@ -1179,9 +1180,9 @@ button.is-guided {
 .evidence-slot span {
   position: absolute;
   left: 50%;
-  top: 5px;
-  width: 16px;
-  height: 16px;
+  top: 4px;
+  width: 15px;
+  height: 15px;
   transform: translateX(-50%);
   image-rendering: pixelated;
 }
@@ -1190,9 +1191,9 @@ button.is-guided {
   position: absolute;
   left: 2px;
   right: 2px;
-  bottom: 3px;
+  bottom: 2px;
   color: rgba(242, 246, 255, .84);
-  font-size: 8px;
+  font-size: 7px;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
@@ -1488,20 +1489,20 @@ button.is-guided {
 .hud {
   position: absolute;
   z-index: 30;
-  left: 13px;
-  right: 13px;
-  bottom: max(11px, env(safe-area-inset-bottom));
-  padding: 8px;
-  border: 1px solid rgba(101, 214, 255, .28);
-  border-radius: 4px;
+  left: 12px;
+  right: 12px;
+  bottom: max(9px, env(safe-area-inset-bottom));
+  padding: 7px;
+  border: 1px solid rgba(101, 214, 255, .22);
+  border-radius: 3px;
   background:
-    linear-gradient(90deg, rgba(101, 214, 255, .07), transparent 34%),
-    linear-gradient(180deg, rgba(9, 14, 42, .68), rgba(4, 6, 22, .7)),
-    rgba(4, 8, 26, .58);
+    linear-gradient(90deg, rgba(101, 214, 255, .06), transparent 32%),
+    linear-gradient(180deg, rgba(9, 14, 42, .52), rgba(4, 6, 22, .58)),
+    rgba(4, 8, 26, .42);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, .04) inset,
     0 0 22px rgba(101, 214, 255, .1);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(2px);
   overflow: hidden;
 }
 
@@ -1529,42 +1530,46 @@ button.is-guided {
 }
 
 .chapter {
-  margin: 0 0 5px;
+  margin: 0 0 4px;
   color: var(--gold);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   text-shadow: 0 0 9px rgba(234, 223, 155, .32);
 }
 
 .line {
-  min-height: 36px;
-  margin: 0 0 8px;
+  min-height: 0;
+  margin: 0 0 7px;
   color: rgba(242, 246, 255, .9);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 650;
-  line-height: 1.5;
+  line-height: 1.45;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .actions {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 6px;
+  gap: 5px;
 }
 
 .actions:has(button + button) {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .actions button {
   position: relative;
-  min-height: 38px;
+  min-height: 34px;
   border-color: rgba(234, 223, 155, .48);
   border-radius: 3px;
   background:
     linear-gradient(90deg, rgba(101, 214, 255, .1), transparent 36%),
     linear-gradient(180deg, rgba(11, 16, 47, .66), rgba(4, 7, 23, .7));
   color: rgba(246, 250, 255, .94);
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0;
   text-shadow: 0 0 9px rgba(101, 214, 255, .24);
   box-shadow:
@@ -1576,9 +1581,9 @@ button.is-guided {
 .actions button::before {
   content: "";
   position: absolute;
-  left: 8px;
-  top: 9px;
-  bottom: 9px;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
   width: 2px;
   background: rgba(101, 214, 255, .58);
   box-shadow: 0 0 10px rgba(101, 214, 255, .42);
