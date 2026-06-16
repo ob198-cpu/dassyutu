@@ -1088,17 +1088,17 @@ button.is-guided {
 .evidence-panel {
   position: absolute;
   z-index: 31;
-  left: 11px;
-  right: 11px;
+  left: 12px;
+  right: 12px;
   top: max(9px, env(safe-area-inset-top));
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) 38px;
-  gap: 3px;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  gap: 4px;
   align-items: center;
-  padding: 3px;
+  padding: 3px 4px;
   border: 1px solid rgba(101, 214, 255, .14);
   border-radius: 3px;
-  background: rgba(3, 6, 19, .24);
+  background: rgba(3, 6, 19, .18);
   box-shadow: 0 0 12px rgba(101, 214, 255, .04);
   backdrop-filter: blur(2px);
 }
@@ -1109,12 +1109,12 @@ button.is-guided {
 
 .back-button,
 .audio-toggle {
-  min-height: 30px;
+  min-height: 28px;
   padding: 0 4px;
-  border-color: rgba(120, 143, 190, .42);
+  border-color: rgba(120, 143, 190, .32);
   border-radius: 3px;
-  background: rgba(3, 7, 21, .34);
-  color: rgba(242, 246, 255, .72);
+  background: rgba(3, 7, 21, .22);
+  color: rgba(242, 246, 255, .66);
   font-size: 9px;
   font-weight: 900;
   text-shadow: none;
@@ -1167,7 +1167,7 @@ button.is-guided {
 .evidence-slots {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 3px;
+  gap: 5px;
 }
 
 .audio-toggle.is-on {
@@ -1180,16 +1180,30 @@ button.is-guided {
   position: relative;
   min-width: 0;
   min-height: 0;
-  height: 30px;
+  height: 28px;
   padding: 0;
-  border: 1px solid rgba(120, 143, 190, .42);
+  border: 1px solid rgba(120, 143, 190, .24);
   border-radius: 3px;
-  background: rgba(3, 7, 21, .34);
+  background: rgba(3, 7, 21, .16);
   color: var(--ink);
-  opacity: .44;
+  opacity: .36;
   overflow: hidden;
   text-shadow: none;
   box-shadow: none;
+}
+
+.evidence-slot::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(120, 143, 190, .62);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(72, 234, 255, .12);
+  pointer-events: none;
 }
 
 .evidence-slot::before {
@@ -1213,6 +1227,11 @@ button.is-guided {
   image-rendering: pixelated;
 }
 
+.evidence-slot:not(.is-found) span,
+.evidence-slot:not(.is-found) b {
+  display: none;
+}
+
 .evidence-slot b {
   position: absolute;
   left: 2px;
@@ -1233,6 +1252,10 @@ button.is-guided {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, .05) inset,
     0 0 16px rgba(72, 234, 255, .22);
+}
+
+.evidence-slot.is-found::after {
+  display: none;
 }
 
 .evidence-slot.is-new {
