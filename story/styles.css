@@ -777,9 +777,14 @@ button.is-guided {
   image-rendering: pixelated;
   pointer-events: none;
   filter:
-    drop-shadow(0 10px 8px rgba(0, 0, 0, .46))
-    drop-shadow(0 0 14px rgba(72, 234, 255, .36))
-    brightness(1.08);
+    drop-shadow(1px 0 0 rgba(83, 225, 255, .34))
+    drop-shadow(-1px 0 0 rgba(255, 94, 168, .18))
+    drop-shadow(0 2px 0 rgba(0, 0, 0, .62))
+    drop-shadow(0 12px 8px rgba(0, 0, 0, .48))
+    drop-shadow(0 0 12px rgba(72, 234, 255, .28))
+    saturate(1.08)
+    contrast(1.08)
+    brightness(1.04);
   transition:
     left .58s steps(7),
     top .58s steps(7);
@@ -790,12 +795,12 @@ button.is-guided {
   content: "";
   position: absolute;
   left: 50%;
-  bottom: 8px;
-  width: 44%;
-  height: 9px;
+  bottom: 7px;
+  width: 52%;
+  height: 10px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(0, 0, 0, .48), rgba(0, 0, 0, .18) 48%, transparent 72%);
-  opacity: .72;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, .58), rgba(0, 0, 0, .22) 46%, transparent 74%);
+  opacity: .76;
   pointer-events: none;
 }
 
@@ -804,10 +809,14 @@ button.is-guided {
   height: 285px;
   background-size: 760px 1710px;
   filter:
-    drop-shadow(0 20px 14px rgba(0, 0, 0, .62))
-    drop-shadow(0 0 16px rgba(72, 234, 255, .44))
-    saturate(1.03)
-    brightness(.92);
+    drop-shadow(1px 0 0 rgba(83, 225, 255, .42))
+    drop-shadow(-1px 0 0 rgba(255, 94, 168, .22))
+    drop-shadow(0 3px 0 rgba(0, 0, 0, .66))
+    drop-shadow(0 22px 15px rgba(0, 0, 0, .62))
+    drop-shadow(0 0 16px rgba(72, 234, 255, .36))
+    saturate(1.08)
+    contrast(1.12)
+    brightness(.95);
 }
 
 .scene-or .figure,
@@ -816,10 +825,14 @@ button.is-guided {
   height: 249px;
   background-size: 664px 1494px;
   filter:
-    drop-shadow(0 18px 12px rgba(0, 0, 0, .6))
-    drop-shadow(0 0 14px rgba(72, 234, 255, .44))
-    saturate(.98)
-    brightness(.86);
+    drop-shadow(1px 0 0 rgba(83, 225, 255, .4))
+    drop-shadow(-1px 0 0 rgba(255, 94, 168, .2))
+    drop-shadow(0 3px 0 rgba(0, 0, 0, .64))
+    drop-shadow(0 19px 13px rgba(0, 0, 0, .6))
+    drop-shadow(0 0 15px rgba(72, 234, 255, .34))
+    saturate(1.04)
+    contrast(1.12)
+    brightness(.9);
 }
 
 .scene-capsule .figure,
@@ -828,10 +841,14 @@ button.is-guided {
   height: 231px;
   background-size: 616px 1386px;
   filter:
-    drop-shadow(0 18px 12px rgba(0, 0, 0, .6))
-    drop-shadow(0 0 14px rgba(72, 234, 255, .4))
-    saturate(.95)
-    brightness(.82);
+    drop-shadow(1px 0 0 rgba(83, 225, 255, .38))
+    drop-shadow(-1px 0 0 rgba(255, 94, 168, .2))
+    drop-shadow(0 3px 0 rgba(0, 0, 0, .64))
+    drop-shadow(0 18px 13px rgba(0, 0, 0, .6))
+    drop-shadow(0 0 14px rgba(72, 234, 255, .32))
+    saturate(1.02)
+    contrast(1.1)
+    brightness(.88);
 }
 
 .figure-dir-front {
@@ -921,9 +938,14 @@ button.is-guided {
 .screen.is-walking .figure {
   animation: tinyIdle 1.2s steps(2) infinite;
   filter:
+    drop-shadow(1px 0 0 rgba(83, 225, 255, .42))
+    drop-shadow(-1px 0 0 rgba(255, 94, 168, .22))
+    drop-shadow(0 3px 0 rgba(0, 0, 0, .62))
     drop-shadow(0 15px 12px rgba(0, 0, 0, .56))
-    drop-shadow(0 0 18px rgba(72, 234, 255, .46))
-    brightness(1.06);
+    drop-shadow(0 0 17px rgba(72, 234, 255, .36))
+    saturate(1.08)
+    contrast(1.1)
+    brightness(.98);
 }
 
 .screen.is-walking .figure::after {
