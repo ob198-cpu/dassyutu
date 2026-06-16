@@ -800,9 +800,9 @@ button.is-guided {
 }
 
 .scene-street .figure {
-  width: 154px;
-  height: 231px;
-  background-size: 616px 1386px;
+  width: 190px;
+  height: 285px;
+  background-size: 760px 1710px;
   filter:
     drop-shadow(0 20px 14px rgba(0, 0, 0, .62))
     drop-shadow(0 0 16px rgba(72, 234, 255, .44))
@@ -812,9 +812,9 @@ button.is-guided {
 
 .scene-or .figure,
 .scene-records .figure {
-  width: 140px;
-  height: 210px;
-  background-size: 560px 1260px;
+  width: 166px;
+  height: 249px;
+  background-size: 664px 1494px;
   filter:
     drop-shadow(0 18px 12px rgba(0, 0, 0, .6))
     drop-shadow(0 0 14px rgba(72, 234, 255, .44))
@@ -824,9 +824,9 @@ button.is-guided {
 
 .scene-capsule .figure,
 .scene-exit .figure {
-  width: 132px;
-  height: 198px;
-  background-size: 528px 1188px;
+  width: 154px;
+  height: 231px;
+  background-size: 616px 1386px;
   filter:
     drop-shadow(0 18px 12px rgba(0, 0, 0, .6))
     drop-shadow(0 0 14px rgba(72, 234, 255, .4))
@@ -859,63 +859,63 @@ button.is-guided {
 }
 
 .scene-street.figure-dir-side {
-  --sprite-row: -231px;
+  --sprite-row: -285px;
 }
 
 .scene-street.figure-dir-back {
-  --sprite-row: -462px;
+  --sprite-row: -570px;
 }
 
 .scene-street.figure-action-reach-side {
-  --sprite-row: -693px;
+  --sprite-row: -855px;
 }
 
 .scene-street.figure-action-reach-back {
-  --sprite-row: -924px;
+  --sprite-row: -1140px;
 }
 
 .scene-street.figure-action-crouch {
-  --sprite-row: -1155px;
+  --sprite-row: -1425px;
 }
 
 .scene-or.figure-dir-side,
 .scene-records.figure-dir-side {
-  --sprite-row: -210px;
+  --sprite-row: -249px;
 }
 
 .scene-or.figure-dir-back,
 .scene-records.figure-dir-back {
-  --sprite-row: -420px;
+  --sprite-row: -498px;
 }
 
 .scene-or.figure-action-reach-side,
 .scene-records.figure-action-reach-side {
-  --sprite-row: -630px;
+  --sprite-row: -747px;
 }
 
 .scene-or.figure-action-reach-back,
 .scene-records.figure-action-reach-back {
-  --sprite-row: -840px;
+  --sprite-row: -996px;
 }
 
 .scene-or.figure-action-crouch,
 .scene-records.figure-action-crouch {
-  --sprite-row: -1050px;
+  --sprite-row: -1245px;
 }
 
 .scene-capsule.figure-dir-side,
 .scene-exit.figure-dir-side {
-  --sprite-row: -198px;
+  --sprite-row: -231px;
 }
 
 .scene-capsule.figure-dir-back,
 .scene-exit.figure-dir-back {
-  --sprite-row: -396px;
+  --sprite-row: -462px;
 }
 
 .scene-capsule.figure-action-reach-back,
 .scene-exit.figure-action-reach-back {
-  --sprite-row: -792px;
+  --sprite-row: -924px;
 }
 
 .screen.is-walking .figure {
