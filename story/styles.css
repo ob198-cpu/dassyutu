@@ -110,9 +110,9 @@ button.is-guided {
 
 .scene-or .scene-bg,
 .scene-records .scene-bg {
-  background-image: url("./assets/bg_or.png");
-  background-position: center 43%;
-  filter: saturate(1.04) contrast(1.12) brightness(.78);
+  background-image: url("./assets/bg_ref_alley.png?v=20260615-ref1");
+  background-position: center 49%;
+  filter: saturate(1.08) contrast(1.12) brightness(.7);
   animation: roomCameraDrift 12s ease-in-out infinite;
 }
 
@@ -122,11 +122,12 @@ button.is-guided {
   position: absolute;
   inset: 0;
   background:
+    url("./assets/bg_or.png") center 43% / cover no-repeat,
     radial-gradient(ellipse at 50% 20%, rgba(205, 246, 255, .24), transparent 18%),
     radial-gradient(ellipse at 50% 48%, rgba(61, 182, 255, .18), transparent 30%),
     linear-gradient(180deg, rgba(0, 0, 0, .18), transparent 38%, rgba(0, 0, 0, .32));
   mix-blend-mode: screen;
-  opacity: .72;
+  opacity: .46;
   animation: surgicalLampFlicker 5.6s steps(5) infinite;
 }
 
@@ -136,23 +137,24 @@ button.is-guided {
   position: absolute;
   inset: 0;
   background:
+    linear-gradient(132deg, rgba(2, 3, 14, .48) 0 14%, transparent 15% 54%, rgba(2, 3, 14, .38) 55% 100%),
     linear-gradient(90deg, transparent 0 73%, rgba(72, 234, 255, .14) 74% 76%, transparent 77%),
     repeating-linear-gradient(180deg, transparent 0 33px, rgba(72, 234, 255, .1) 34px 35px, transparent 36px 70px);
   mix-blend-mode: screen;
-  opacity: .28;
+  opacity: .36;
   animation: monitorRoomBlink 3.2s steps(4) infinite;
 }
 
 .scene-records .scene-bg {
-  background-size: auto 110%;
-  background-position: 43% 38%;
+  background-size: cover;
+  background-position: 50% 45%;
 }
 
 .scene-capsule .scene-bg,
 .scene-exit .scene-bg {
-  background-image: url("./assets/bg_capsule.png");
-  background-position: center 44%;
-  filter: saturate(1.08) contrast(1.13) brightness(.76);
+  background-image: url("./assets/bg_ref_alley_dim.png?v=20260615-ref1");
+  background-position: center 48%;
+  filter: saturate(1.12) contrast(1.14) brightness(.7);
   animation: capsuleCameraDrift 14s ease-in-out infinite;
 }
 
@@ -162,11 +164,12 @@ button.is-guided {
   position: absolute;
   inset: 0;
   background:
+    url("./assets/bg_capsule.png") center 44% / cover no-repeat,
     radial-gradient(ellipse at 50% 39%, rgba(255, 70, 116, .3), transparent 24%),
     radial-gradient(ellipse at 51% 46%, rgba(72, 234, 255, .18), transparent 38%),
     linear-gradient(180deg, rgba(0, 0, 0, .12), transparent 44%, rgba(0, 0, 0, .36));
   mix-blend-mode: screen;
-  opacity: .7;
+  opacity: .48;
   animation: capsuleCoreFlicker 3.8s steps(5) infinite;
 }
 
@@ -176,16 +179,17 @@ button.is-guided {
   position: absolute;
   inset: 0;
   background:
+    linear-gradient(128deg, rgba(2, 3, 14, .42) 0 16%, transparent 17% 56%, rgba(2, 3, 14, .42) 57% 100%),
     repeating-linear-gradient(90deg, transparent 0 28px, rgba(72, 234, 255, .08) 29px 30px, transparent 31px 72px),
     repeating-linear-gradient(180deg, transparent 0 41px, rgba(255, 94, 168, .06) 42px 43px, transparent 44px 86px);
   mix-blend-mode: screen;
-  opacity: .24;
+  opacity: .34;
   animation: monitorRoomBlink 4.4s steps(4) infinite reverse;
 }
 
 .scene-records .scene-bg,
 .scene-exit .scene-bg {
-  filter: saturate(1.08) contrast(1.16) brightness(.74);
+  filter: saturate(1.12) contrast(1.16) brightness(.68);
 }
 
 .skyline {
