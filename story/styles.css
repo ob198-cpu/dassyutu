@@ -966,56 +966,75 @@ button.is-guided {
 
 .hotspot {
   position: absolute;
-  min-width: 54px;
-  min-height: 30px;
-  padding: 0 7px;
-  border: 1px solid rgba(101, 214, 255, .5);
-  border-left-color: rgba(234, 223, 155, .68);
+  min-width: 42px;
+  min-height: 24px;
+  padding: 0 6px 0 14px;
+  border: 1px solid rgba(101, 214, 255, .28);
+  border-left-color: rgba(101, 214, 255, .46);
   border-radius: 3px;
   background:
-    linear-gradient(90deg, rgba(101, 214, 255, .08), transparent 38%),
-    linear-gradient(180deg, rgba(8, 13, 36, .38), rgba(3, 5, 18, .58));
-  color: rgba(248, 251, 255, .92);
-  font-size: 11px;
+    linear-gradient(90deg, rgba(101, 214, 255, .08), transparent 36%),
+    linear-gradient(180deg, rgba(8, 13, 36, .24), rgba(3, 5, 18, .38));
+  color: rgba(248, 251, 255, .8);
+  font-size: 10px;
   font-weight: 900;
-  text-shadow: 0 0 8px rgba(101, 214, 255, .34);
+  text-shadow: 0 0 7px rgba(101, 214, 255, .22);
   pointer-events: auto;
-  animation: hotspotPulse 1.9s steps(4) infinite;
+  animation: hotspotPulse 2.8s steps(4) infinite;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, .06) inset,
-    0 0 14px rgba(101, 214, 255, .12);
+    0 0 0 1px rgba(255, 255, 255, .03) inset,
+    0 0 10px rgba(101, 214, 255, .08);
+}
+
+.hotspot::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(101, 214, 255, .78);
+  transform: translateY(-50%);
+  box-shadow: 0 0 8px rgba(101, 214, 255, .42);
+  pointer-events: none;
 }
 
 .hotspot.is-guided {
-  border-color: rgba(234, 223, 155, .76);
-  border-left-color: rgba(101, 214, 255, .76);
+  border-color: rgba(234, 223, 155, .5);
+  border-left-color: rgba(234, 223, 155, .62);
   background:
-    linear-gradient(90deg, rgba(234, 223, 155, .18), transparent 42%),
-    linear-gradient(180deg, rgba(37, 31, 16, .58), rgba(5, 6, 20, .68));
-  color: #fff7dc;
-  animation: guidePulse 1.4s steps(4) infinite;
+    linear-gradient(90deg, rgba(234, 223, 155, .12), transparent 42%),
+    linear-gradient(180deg, rgba(37, 31, 16, .34), rgba(5, 6, 20, .48));
+  color: rgba(255, 247, 220, .9);
+  animation: guidePulse 2.1s steps(4) infinite;
+}
+
+.hotspot.is-guided::before {
+  background: rgba(234, 223, 155, .9);
+  box-shadow: 0 0 9px rgba(234, 223, 155, .5);
 }
 
 .hotspot.is-active {
-  border-color: rgba(255, 244, 189, .96);
-  color: #fffbea;
+  border-color: rgba(255, 244, 189, .72);
+  color: rgba(255, 251, 234, .96);
   background:
-    linear-gradient(90deg, rgba(255, 224, 139, .24), transparent 44%),
-    linear-gradient(180deg, rgba(22, 28, 58, .72), rgba(3, 5, 18, .78));
+    linear-gradient(90deg, rgba(255, 224, 139, .18), transparent 44%),
+    linear-gradient(180deg, rgba(22, 28, 58, .5), rgba(3, 5, 18, .62));
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, .1) inset,
-    0 0 18px rgba(255, 224, 139, .38),
-    0 0 28px rgba(72, 234, 255, .18);
+    0 0 0 1px rgba(255, 255, 255, .06) inset,
+    0 0 14px rgba(255, 224, 139, .24),
+    0 0 20px rgba(72, 234, 255, .12);
   animation: targetLock .62s steps(4) infinite;
 }
 
 .hotspot.is-done {
-  min-width: 48px;
-  border-color: rgba(72, 234, 255, .46);
-  background: rgba(6, 30, 34, .7);
-  color: rgba(151, 244, 255, .96);
+  min-width: 36px;
+  border-color: rgba(72, 234, 255, .34);
+  background: rgba(6, 30, 34, .44);
+  color: rgba(151, 244, 255, .78);
   animation: none;
-  box-shadow: 0 0 16px rgba(72, 234, 255, .18);
+  box-shadow: 0 0 10px rgba(72, 234, 255, .12);
 }
 
 .hotspot-door {
