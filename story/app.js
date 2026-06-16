@@ -444,13 +444,8 @@ function showToast(message) {
 }
 
 function playCut(label) {
-  screen.classList.remove("is-flashing");
-  void screen.offsetWidth;
-  screen.classList.add("is-flashing");
   window.clearTimeout(cutTimer);
-  cutTimer = window.setTimeout(() => {
-    screen.classList.remove("is-flashing");
-  }, 520);
+  screen.classList.remove("is-flashing", "is-cutting", "is-cinema", "is-cinema-hold");
 }
 
 function showStoryBeat(kicker, title, text) {

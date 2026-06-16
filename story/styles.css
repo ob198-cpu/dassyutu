@@ -277,7 +277,7 @@ button.is-guided {
 
 .motion-cut {
   z-index: 29;
-  display: grid;
+  display: none;
   place-items: center;
   opacity: 0;
   transform: translateX(-110%);
