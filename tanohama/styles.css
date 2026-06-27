@@ -2088,6 +2088,14 @@ h1 {
   line-height: 1.12;
 }
 
+.console-subcopy {
+  margin: 8px 0 0;
+  color: #d7e3ef;
+  font-size: 14px;
+  font-weight: 780;
+  line-height: 1.5;
+}
+
 .spell-input-head {
   display: flex;
   align-items: center;

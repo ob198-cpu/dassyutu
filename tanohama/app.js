@@ -4,8 +4,12 @@ const stages = [
     number: "01",
     title: "割れた足場",
     tag: "呪文組み立て",
-    mission: "足場が裂けていて先へ進めない。床に散らばった音片から、穴をふさぐ呪文を組み立てる。",
-    shortMission: "足場が崩れ、先へ進めない。床に残された音片から、穴を越える呪文を組み立てよう。",
+    mission: "床が割れて先へ進めない。",
+    shortMission: "床が割れて先へ進めない。穴を越える呪文を作る。",
+    situation: "床が割れて先へ進めない",
+    goal: "穴を越える呪文を作る",
+    operation: "候補文字を選び、呪文欄に入れる",
+    correctEffect: "光の橋が現れる",
     trialName: "穴を越える呪文",
     reward: "ツケモノ",
     type: "tiles",
@@ -17,8 +21,8 @@ const stages = [
       "呪文は4文字。床に散らばる音片の中から、赤枠の野菜名につながる音だけを選ぶ。",
       "「ツ」「ケ」「モ」「ノ」を順番に並べると、四角い石の呪文になる。",
     ],
-    successMessage: "呪文が響き、割れた足場に光の橋がかかった。",
-    failMessage: "何も起こらない。音の並びが少し違うようだ。",
+    successMessage: "光の橋が現れた。",
+    failMessage: "何も起こらない。",
     scene: "gate",
     sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
@@ -483,24 +487,25 @@ function renderGateStage(stage) {
         <div>
           <span class="stage-kicker">STAGE ${stage.number}</span>
           <h2>${stage.title}</h2>
-          <p>足場が崩れ、先へ進めない。音片を選び、4文字の呪文を作る。</p>
+          <p>${stage.situation}</p>
         </div>
-        <div class="stage-progress-pill">${done ? "道が開いた" : "未解決"}</div>
+        <div class="stage-progress-pill">${done ? stage.correctEffect : "未解決"}</div>
       </div>
 
       <section class="stage-visual-card premium-visual-card" aria-label="割れた足場の状況">
         <div class="visual-topline">
-          <span>現在地</span>
-          <strong>${done ? "光の橋がかかり、出口へ進める" : "割れた床の向こうに出口が見える"}</strong>
+          <span>状況</span>
+          <strong>${done ? stage.correctEffect : stage.situation}</strong>
         </div>
-        ${gatePlayableVisual(done, feedback)}
+        ${gatePlayableVisual(stage, done, feedback)}
       </section>
 
       <section class="spell-workbench puzzle-console" aria-label="呪文入力">
         <div class="console-head">
           <div>
-            <span class="panel-label">現在の試練</span>
-            <h3>試練：${stage.trialName}</h3>
+            <span class="panel-label">目的</span>
+            <h3>${stage.goal}</h3>
+            <p class="console-subcopy">${stage.operation}</p>
           </div>
           <div class="trial-state">
             <span>石板</span>
@@ -553,7 +558,7 @@ function renderGateStage(stage) {
   wireGateStage(stage, done);
 }
 
-function gatePlayableVisual(done, feedback) {
+function gatePlayableVisual(stage, done, feedback) {
   return `
     <div class="gate-play-visual ${done ? "is-open" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/stage01-broken-floor.png" alt="" loading="eager" />
@@ -570,7 +575,7 @@ function gatePlayableVisual(done, feedback) {
           .map(([tile, className]) => `<button class="word-button visual-word-button ${className}" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`)
           .join("")}
       </div>
-      <div class="visual-caption">${done ? "呪文の光が足場をつないだ" : "裂け目を越えるための呪文が必要だ"}</div>
+      <div class="visual-caption">${done ? stage.correctEffect : stage.goal}</div>
     </div>
   `;
 }
@@ -582,7 +587,7 @@ function renderGateResult(stage, done, feedback) {
   if (feedback?.type === "fail") {
     return `<p class="result-message is-fail">${stage.failMessage}</p>`;
   }
-  return `<p class="result-message">音片を選び、石板に4文字の呪文を刻む。</p>`;
+  return `<p class="result-message">${stage.operation}</p>`;
 }
 
 function renderGateHints(stage, hintLevel) {
