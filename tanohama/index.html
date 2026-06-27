@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>田野浜謎解き - 異空間からの脱出</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="phone-shell">
+      <header class="topbar">
+        <a class="ghost-button" href="../">戻る</a>
+        <div>
+          <p class="eyebrow">田野浜謎解き</p>
+          <h1>異空間からの脱出</h1>
+        </div>
+        <button id="resetButton" class="ghost-button" type="button">リセット</button>
+      </header>
+
+      <section class="status-strip" aria-live="polite">
+        <div>
+          <span class="label">進行</span>
+          <strong id="stageCount">1 / 5</strong>
+        </div>
+        <div>
+          <span class="label">呪文</span>
+          <strong id="spellCount">0</strong>
+        </div>
+      </section>
+
+      <nav id="stageNav" class="stage-nav" aria-label="ステージ"></nav>
+
+      <section id="game" class="game-card"></section>
+    </main>
+
+    <dialog id="docDialog" class="doc-dialog">
+      <div class="dialog-head">
+        <strong id="docTitle">資料</strong>
+        <button id="closeDoc" class="ghost-button" type="button">閉じる</button>
+      </div>
+      <img id="docImage" alt="謎解き資料の拡大画像" />
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
