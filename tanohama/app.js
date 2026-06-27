@@ -335,42 +335,62 @@ function gateScene(done) {
   const spell = done ? "ツケモノ" : "□□□□";
   const slots = done ? ["ツ", "ケ", "モ", "ノ"] : ["", "", "", ""];
   return `
-    <div class="source-sheet">
-      <div class="source-title">【現在異空間　からの脱出】</div>
-      <p class="source-lead">マッシュ室で楽しく焼肉をしていた一行は、突然、異空間へ飛ばされてしまった。その時、一枚の紙がヒラリと落ちた。</p>
-      <p class="source-message">「ここは異空間。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。」</p>
-      <p class="source-rule">呪文のルール：呪文は石板にカタカナで記入し、どこに、どの様に使うかを示す。石板の数に合った文字数の呪文しか唱える事が出来ない。習得した呪文には☆マークが付き、以後使用可能となる。</p>
-      <div class="original-flow">
-        <section class="original-stage is-active">
-          <h4>ステージ1</h4>
-          <div class="trial-art hole-trial">
-            <div class="stickman"></div>
-            <div class="black-platform platform-a"></div>
-            <div class="black-platform platform-b"></div>
-            <div class="pit-outline"></div>
+    <div class="case-sheet">
+      <section class="case-prologue">
+        <div class="case-title">【現在異空間　からの脱出】</div>
+        <p>マッシュ室で楽しく焼肉をしていた一行は突然、異空間へ飛ばされてしまった。その時、一枚の紙がヒラリと落ちた。</p>
+        <blockquote>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほしいゃあ、バーイ」</blockquote>
+      </section>
+      <section class="spell-rule-card">
+        <strong>呪文のルール</strong>
+        <ul>
+          <li>呪文は石板にカタカナで記入する。</li>
+          <li>どこに、どの様に使うかを示す。</li>
+          <li>石板の数に合った文字数の呪文しか唱えられない。</li>
+          <li>習得した呪文には☆マークが付き、以後使用可能になる。</li>
+        </ul>
+      </section>
+      <div class="case-stage-grid">
+        <section class="case-stage current-case">
+          <div class="case-stage-head">
+            <span>ステージ1</span>
+            <strong>穴が開いていて通ることが出来ない</strong>
           </div>
-          <p class="trial-text">試練：穴が開いていて通ることが出来ない</p>
-          <div class="stone-slots" aria-hidden="true">${slots.map((char) => `<span>${char}</span>`).join("")}</div>
-          <div class="spell-frame">
+          <div class="readable-diagram hole-diagram">
+            <span class="diagram-label left-label">現在地</span>
+            <span class="diagram-label center-label">穴</span>
+            <span class="diagram-label right-label">進みたい場所</span>
+            <div class="diagram-person"></div>
+            <div class="diagram-platform left"></div>
+            <div class="diagram-platform right"></div>
+            <div class="diagram-gap"></div>
+          </div>
+          <p class="trial-copy">試練：穴が開いていて通ることが出来ない</p>
+          <div class="stone-panel">
+            <span class="stone-label">石板 4文字</span>
+            <div class="stone-slots" aria-hidden="true">${slots.map((char) => `<span>${char}</span>`).join("")}</div>
+          </div>
+          <div class="spell-card">
+            <span class="spell-status">${done ? "習得済み" : "未習得"}</span>
             <strong>☆${spell}</strong>
-            <em>漬物石だろうか？ 謎の四角を1個生成できる。</em>
-            <small>この土台の上にのみ生成可能</small>
+            <p>効果：謎の四角を1個生成できる。この土台の上にのみ生成可能。</p>
           </div>
         </section>
-        <div class="flow-arrow">→</div>
-        <section class="original-stage is-preview">
-          <h4>ステージ2</h4>
-          <div class="stage-caption-red">『扉のあかない通路』</div>
-          <div class="trial-art door-trial">
-            <div class="runman"></div>
-            <div class="door-shape"></div>
+        <section class="case-stage next-case">
+          <div class="case-stage-head">
+            <span>次の試練</span>
+            <strong>ステージ2『扉のあかない通路』</strong>
           </div>
-          <p class="trial-text">試練：扉があり通ることが出来ない</p>
-          <div class="stone-slots six" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-          <div class="spell-frame">
+          <div class="readable-diagram door-diagram">
+            <span class="diagram-label left-label">通路</span>
+            <span class="diagram-label right-label">閉じた扉</span>
+            <div class="diagram-runner"></div>
+            <div class="diagram-door"></div>
+          </div>
+          <p class="trial-copy">試練：扉があり通ることが出来ない</p>
+          <div class="spell-card muted-spell">
             <strong>☆□□□□□□</strong>
-            <em>「　」内の色を消す事が出来る。</em>
-            <small>「　」内の内容の意味が通れば、それは現実となる</small>
+            <p>効果：「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。</p>
           </div>
         </section>
       </div>
@@ -382,20 +402,27 @@ function corridorScene(done) {
   const spell = done ? "ゴクロウサマ" : "□□□□□□";
   const slots = done ? ["ゴ", "ク", "ロ", "ウ", "サ", "マ"] : ["", "", "", "", "", ""];
   return `
-    <div class="source-sheet source-sheet-single">
-      <div class="source-title">ステージ2　『扉のあかない通路』</div>
-      <p class="source-rule">通路には扉がある。原案では、色の指定と「　」内の意味を使って、通れる状態に変える呪文を作る。</p>
-      <section class="original-stage is-active">
-        <div class="trial-art door-trial large">
-          <div class="runman"></div>
-          <div class="door-shape"></div>
+    <div class="case-sheet single-stage-sheet">
+      <section class="case-stage current-case">
+        <div class="case-stage-head">
+          <span>ステージ2</span>
+          <strong>『扉のあかない通路』</strong>
         </div>
-        <p class="trial-text">試練：扉があり通ることが出来ない</p>
-        <div class="stone-slots six" aria-hidden="true">${slots.map((char) => `<span>${char}</span>`).join("")}</div>
-        <div class="spell-frame">
+        <div class="readable-diagram door-diagram large-door">
+          <span class="diagram-label left-label">通路</span>
+          <span class="diagram-label right-label">閉じた扉</span>
+          <div class="diagram-runner"></div>
+          <div class="diagram-door"></div>
+        </div>
+        <p class="trial-copy">試練：扉があり通ることが出来ない</p>
+        <div class="stone-panel">
+          <span class="stone-label">石板 6文字</span>
+          <div class="stone-slots six" aria-hidden="true">${slots.map((char) => `<span>${char}</span>`).join("")}</div>
+        </div>
+        <div class="spell-card">
+          <span class="spell-status">${done ? "習得済み" : "未習得"}</span>
           <strong>☆${spell}</strong>
-          <em>「　」内の色を消す事が出来る。</em>
-          <small>「　」内の内容の意味が通れば、それは現実となる</small>
+          <p>効果：「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。</p>
         </div>
       </section>
     </div>
