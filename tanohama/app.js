@@ -5,11 +5,20 @@ const stages = [
     title: "割れた足場",
     tag: "呪文組み立て",
     mission: "足場が裂けていて先へ進めない。床に散らばった音片から、穴をふさぐ呪文を組み立てる。",
+    shortMission: "足場が崩れ、先へ進めない。床に残された音片から、穴を越える呪文を組み立てよう。",
+    trialName: "穴を越える呪文",
     reward: "ツケモノ",
     type: "tiles",
     slots: 4,
     tiles: ["モ", "シ", "ケ", "ガ", "ノ", "テ", "ツ", "オ", "ミ", "マ"],
     correct: "ツケモノ",
+    hints: [
+      "赤い木札には「漬物石」。穴を越えるために、足場の代わりになるものを考えよう。",
+      "呪文は4文字。床に散らばる音片の中から、赤枠の野菜名につながる音だけを選ぶ。",
+      "「ツ」「ケ」「モ」「ノ」を順番に並べると、四角い石の呪文になる。",
+    ],
+    successMessage: "呪文が響き、割れた足場に光の橋がかかった。",
+    failMessage: "何も起こらない。音の並びが少し違うようだ。",
     scene: "gate",
     sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
@@ -197,13 +206,15 @@ function loadState() {
         spells: Array.isArray(saved.spells) ? saved.spells : [],
         bossInput: Array.isArray(saved.bossInput) ? saved.bossInput : [],
         slotInput: Array.isArray(saved.slotInput) ? saved.slotInput : [],
+        hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
+        feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], hintLevels: {}, feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -240,6 +251,8 @@ function render() {
     renderClear();
   } else if (stage.type === "boss") {
     renderBoss(stage);
+  } else if (stage.id === "gate") {
+    renderGateStage(stage);
   } else {
     renderStage(stage);
   }
@@ -259,6 +272,7 @@ function renderNav() {
       const maxOpen = Math.min(stages.length - 1, state.cleared.length);
       if (index <= maxOpen || isStageCleared(stage.id)) {
         state.stageIndex = index;
+        state.feedback = null;
         resetStageInput();
         render();
       }
@@ -339,7 +353,7 @@ function gateScene(done) {
       <section class="case-prologue">
         <div class="case-title">【現在異空間　からの脱出】</div>
         <p>マッシュ室で楽しく焼肉をしていた一行は突然、異空間へ飛ばされてしまった。その時、一枚の紙がヒラリと落ちた。</p>
-        <blockquote>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほしいゃあ、バーイ」</blockquote>
+        <blockquote>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほいじゃあ、バーイ」</blockquote>
       </section>
       <section class="spell-rule-card">
         <strong>呪文のルール</strong>
@@ -456,6 +470,178 @@ function bossScene() {
     <div class="spell-lane"></div>
     <div class="avatar boss-avatar"></div>
   `;
+}
+
+function renderGateStage(stage) {
+  const done = isStageCleared(stage.id);
+  const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const hintLevel = Math.min(Number(state.hintLevels[stage.id] || 0), stage.hints.length);
+  const selected = done ? [...stage.correct].slice(0, stage.slots) : state.slotInput.slice(0, stage.slots);
+  elements.game.innerHTML = `
+    <section class="stage-panel premium-stage ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
+      <div class="stage-hero">
+        <div>
+          <span class="stage-kicker">STAGE ${stage.number}</span>
+          <h2>${stage.title}</h2>
+          <p>${stage.shortMission}</p>
+        </div>
+        <div class="stage-progress-pill">${done ? "道が開いた" : "未解決"}</div>
+      </div>
+
+      <div class="gameplay-layout">
+        <section class="stage-visual-card" aria-label="割れた足場の状況">
+          <div class="visual-topline">
+            <span>現在地</span>
+            <strong>割れた床の向こうに出口が見える</strong>
+          </div>
+          ${gatePlayableVisual(done)}
+        </section>
+
+        <aside class="trial-panel">
+          <span class="panel-label">現在の試練</span>
+          <h3>試練：${stage.trialName}</h3>
+          <p>床の音片を選んで、4文字の呪文を完成させる。</p>
+          <div class="trial-state">
+            <span>石板</span>
+            <strong>${selected.length} / ${stage.slots}</strong>
+          </div>
+          <button class="secondary-button" id="showHint" type="button">${hintLevel ? "次のヒント" : "ヒントを見る"}</button>
+        </aside>
+      </div>
+
+      <section class="spell-workbench" aria-label="呪文入力">
+        <div class="spell-input-head">
+          <span>呪文入力</span>
+          <button class="text-button" id="clearSlots" type="button" ${done ? "disabled" : ""}>消す</button>
+        </div>
+        <div class="premium-slot-row">
+          ${Array.from({ length: stage.slots })
+            .map((_, i) => `<button class="premium-slot" type="button" data-slot="${i}">${selected[i] || ""}</button>`)
+            .join("")}
+        </div>
+        <div class="premium-tile-grid">
+          ${stage.tiles.map((tile) => `<button class="word-button" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`).join("")}
+        </div>
+        <div class="premium-actions">
+          <button class="secondary-button" id="archiveToggle" type="button">記録</button>
+          <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "解決済み" : "呪文を唱える"}</button>
+        </div>
+        ${renderGateResult(stage, done, feedback)}
+        ${renderGateHints(stage, hintLevel)}
+      </section>
+
+      <details class="archive-drawer" id="sourceArchive">
+        <summary>原案の設定とルール</summary>
+        <div class="archive-body">
+          <p>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。」</p>
+          <ul>
+            <li>呪文は石板にカタカナで記入する。</li>
+            <li>どこに、どの様に使うかを示す。</li>
+            <li>石板の数に合った文字数の呪文しか唱えられない。</li>
+            <li>習得した呪文には☆マークが付き、以後使用可能になる。</li>
+            <li>ステージ1の試練は「穴が開いていて通ることが出来ない」。赤い木札には「漬物石」と残されている。</li>
+          </ul>
+        </div>
+      </details>
+
+      <div class="stage-actions">
+        ${done ? `<button class="primary-button" id="nextButton" type="button">次へ進む</button>` : ""}
+      </div>
+    </section>
+  `;
+  wireGateStage(stage, done);
+}
+
+function gatePlayableVisual(done) {
+  return `
+    <div class="gate-play-visual ${done ? "is-open" : ""}">
+      <div class="stone-depth"></div>
+      <div class="far-door"></div>
+      <div class="left-floor"></div>
+      <div class="right-floor"></div>
+      <div class="rift"></div>
+      <div class="glow-bridge"></div>
+      <div class="sound-fragments">
+        <span>モ</span><span>ツ</span><span>ノ</span><span>ケ</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderGateResult(stage, done, feedback) {
+  if (done) {
+    return `<p class="result-message is-success">${stage.successMessage}</p>`;
+  }
+  if (feedback?.type === "fail") {
+    return `<p class="result-message is-fail">${stage.failMessage}</p>`;
+  }
+  return `<p class="result-message">音片を選び、石板に4文字の呪文を刻む。</p>`;
+}
+
+function renderGateHints(stage, hintLevel) {
+  if (!hintLevel) return "";
+  return `
+    <section class="hint-panel">
+      <span>ヒント ${hintLevel}</span>
+      <p>${stage.hints[hintLevel - 1]}</p>
+    </section>
+  `;
+}
+
+function wireGateStage(stage, done) {
+  document.querySelectorAll(".word-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (done || state.slotInput.length >= stage.slots) return;
+      state.slotInput.push(button.dataset.tile);
+      state.feedback = null;
+      render();
+    });
+  });
+
+  document.querySelectorAll(".premium-slot").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (done) return;
+      state.slotInput.splice(Number(button.dataset.slot), 1);
+      state.feedback = null;
+      render();
+    });
+  });
+
+  document.querySelector("#clearSlots")?.addEventListener("click", () => {
+    resetStageInput();
+    state.feedback = null;
+    render();
+  });
+
+  document.querySelector("#showHint")?.addEventListener("click", () => {
+    state.hintLevels[stage.id] = Math.min((Number(state.hintLevels[stage.id] || 0) + 1), stage.hints.length);
+    render();
+  });
+
+  document.querySelector("#archiveToggle")?.addEventListener("click", () => {
+    const archive = document.querySelector("#sourceArchive");
+    if (archive) archive.open = !archive.open;
+  });
+
+  document.querySelector("#activateStage")?.addEventListener("click", () => {
+    if (normalizeAnswer(state.slotInput.join("")) !== normalizeAnswer(stage.correct)) {
+      state.feedback = { stageId: stage.id, type: "fail" };
+      render();
+      return;
+    }
+    addUnique(state.cleared, stage.id);
+    addUnique(state.spells, stage.reward);
+    state.feedback = { stageId: stage.id, type: "success" };
+    resetStageInput();
+    render();
+  });
+
+  document.querySelector("#nextButton")?.addEventListener("click", () => {
+    state.stageIndex = Math.min(state.stageIndex + 1, stages.length - 1);
+    state.feedback = null;
+    resetStageInput();
+    render();
+  });
 }
 
 function renderStage(stage) {
@@ -707,6 +893,8 @@ function resetGame() {
   state.spells = [];
   state.bossInput = [];
   state.slotInput = [];
+  state.hintLevels = {};
+  state.feedback = null;
   state.isClear = false;
   saveState();
   render();
