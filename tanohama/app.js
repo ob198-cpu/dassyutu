@@ -1,5 +1,24 @@
 const stages = [
   {
+    id: "intro",
+    number: "00",
+    title: "導入",
+    tag: "物語",
+    isIntro: true,
+    type: "intro",
+    mission: "現在異空間からの脱出",
+    story:
+      "マッシュ室で楽しく焼肉をしていた一行は突然、異空間へ飛ばされてしまった。その時、一枚の紙がヒラリと落ちた。",
+    letter:
+      "え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほいじゃあ、バーイ",
+    rules: [
+      "呪文は石板にカタカナで記入する。",
+      "どこに、どの様に使うかを示す。",
+      "石板の数に合った文字数の呪文しか唱えられない。",
+      "習得した呪文には☆マークが付き、以後使用可能になる。",
+    ],
+  },
+  {
     id: "gate",
     number: "01",
     title: "割れた足場",
@@ -155,6 +174,8 @@ const stages = [
   },
 ];
 
+const puzzleTotal = stages.filter((stage) => !stage.isIntro).length;
+
 const bossSequence = [
   "バリ",
   "フユウ",
@@ -183,7 +204,7 @@ const spellBank = [
   "バタフライエフェクト",
 ];
 
-const storeKey = "tanohamaEscapeStateV3";
+const storeKey = "tanohamaEscapeStateV4";
 
 const elements = {
   game: document.querySelector("#game"),
@@ -249,11 +270,14 @@ function resetStageInput() {
 function render() {
   const stage = stages[state.stageIndex] || stages[0];
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
-  elements.stageCount.textContent = `${Math.min(state.stageIndex + 1, stages.length)} / ${stages.length}`;
+  document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
+  elements.stageCount.textContent = stage.isIntro ? `00 / ${String(puzzleTotal).padStart(2, "0")}` : `${stage.number} / ${String(puzzleTotal).padStart(2, "0")}`;
   elements.spellCount.textContent = String(state.spells.length);
   renderNav();
   if (state.isClear) {
     renderClear();
+  } else if (stage.type === "intro") {
+    renderIntro(stage);
   } else if (stage.type === "boss") {
     renderBoss(stage);
   } else if (stage.id === "gate") {
@@ -262,6 +286,32 @@ function render() {
     renderStage(stage);
   }
   saveState();
+}
+
+function renderIntro(stage) {
+  elements.game.innerHTML = `
+    <section class="intro-stage" aria-label="導入">
+      <div class="intro-bg"></div>
+      <div class="intro-vignette"></div>
+      <article class="intro-scroll">
+        <span>00 / 導入</span>
+        <h2>現在異空間からの脱出</h2>
+        <p>${stage.story}</p>
+        <blockquote>${stage.letter}</blockquote>
+        <ul>
+          ${stage.rules.map((rule) => `<li>${rule}</li>`).join("")}
+        </ul>
+        <button class="primary-button intro-start-button" id="introStartButton" type="button">01へ進む</button>
+      </article>
+    </section>
+  `;
+  document.querySelector("#introStartButton")?.addEventListener("click", () => {
+    addUnique(state.cleared, stage.id);
+    state.stageIndex = 1;
+    state.feedback = null;
+    resetStageInput();
+    render();
+  });
 }
 
 function renderNav() {
@@ -516,24 +566,11 @@ function renderGateStage(stage) {
 
         <div class="device-actions">
           <button class="secondary-button" id="showHint" type="button">${hintLevel ? "次のヒント" : "ヒント"}</button>
-          <button class="secondary-button" id="archiveToggle" type="button">記録</button>
           <button class="text-button" id="clearSlots" type="button" ${done ? "disabled" : ""}>消す</button>
         </div>
 
         ${renderGateResult(stage, done, feedback)}
         ${renderGateHints(stage, hintLevel)}
-
-        <details class="archive-drawer" id="sourceArchive">
-          <summary>原案の記録</summary>
-          <div class="archive-body">
-            <p>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。」</p>
-            <ul>
-              <li>呪文は石板にカタカナで記入する。</li>
-              <li>石板の数に合った文字数の呪文しか唱えられない。</li>
-              <li>ステージ1の試練は「穴が開いていて通ることが出来ない」。赤い木札には「漬物石」と残されている。</li>
-            </ul>
-          </div>
-        </details>
 
         <div class="stage-actions">
           ${done ? `<button class="primary-button" id="nextButton" type="button">次へ進む</button>` : ""}
@@ -556,7 +593,7 @@ function gatePlayableVisual(stage, done, feedback) {
           <span>異空間からの脱出</span>
           <strong>${stage.number} / ${stage.title}</strong>
         </div>
-        <em>${state.stageIndex + 1} / ${stages.length}</em>
+        <em>${stage.number} / ${puzzleTotal}</em>
       </div>
       <div class="stage-objective">
         <p>${stage.situation}</p>
@@ -584,18 +621,16 @@ function gateProblemTablet(stage, done) {
     <section class="problem-tablet ${done ? "is-solved" : ""}" aria-label="問題文">
       <div class="problem-tablet-head">
         <span>問題文</span>
-        <strong>${problem.subtitle}</strong>
+        <strong>試練</strong>
       </div>
-      <p class="problem-rule">${problem.rule.replace("呪文のルール: ", "")}</p>
+      <p class="problem-trial">${problem.subtitle}</p>
       <div class="kanji-device" aria-label="原案の変換条件">
         <div class="kanji-row">
           <span>上</span>
           <b>納豆</b>
         </div>
         <div class="flow-rune">
-          <i></i>
           <strong>粘り強さを下へ移す</strong>
-          <i></i>
         </div>
         <div class="kanji-row">
           <span>下</span>
@@ -603,12 +638,6 @@ function gateProblemTablet(stage, done) {
         </div>
       </div>
       <p class="problem-prompt">${problem.prompt}</p>
-      <div class="answer-preview" aria-label="4文字の答え">
-        ${Array.from({ length: problem.answerBoxes || stage.slots })
-          .map(() => `<span></span>`)
-          .join("")}
-      </div>
-      <small>${done ? stage.correctEffect : "答えは下の音片から選んで入力する。"}</small>
     </section>
   `;
 }
@@ -661,11 +690,6 @@ function wireGateStage(stage, done) {
   document.querySelector("#showHint")?.addEventListener("click", () => {
     state.hintLevels[stage.id] = Math.min((Number(state.hintLevels[stage.id] || 0) + 1), stage.hints.length);
     render();
-  });
-
-  document.querySelector("#archiveToggle")?.addEventListener("click", () => {
-    const archive = document.querySelector("#sourceArchive");
-    if (archive) archive.open = !archive.open;
   });
 
   document.querySelector("#activateStage")?.addEventListener("click", () => {
