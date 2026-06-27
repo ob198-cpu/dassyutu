@@ -11,8 +11,17 @@ const stages = [
     tiles: ["ツ", "ケ", "モ", "ノ", "マ", "テ", "オ", "シ", "ミ", "ガ"],
     correct: "ツケモノ",
     scene: "gate",
-    briefing: "赤い木札には「漬物石」。床の音片は、意味のある5音だけが反応する。",
+    briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
     problems: [{ file: "page_02.jpg", title: "ステージ1 原問題" }],
+    textProblem: {
+      title: "ステージ1",
+      subtitle: "穴が開いていて通ることが出来ない",
+      rule: "呪文のルール: 呪文は石板にカタカナで記入し、石板の数に合った文字数の呪文しか唱えられない。",
+      prompt: "赤枠内の漢字を変えて、上から下へ粘り強さを移動させて下さい。赤枠内に現れる野菜は？",
+      answerHint: "①と②が解けたら「つかった①、②の答え」の下のカタカナを読む。",
+      blanks: ["ツ", "ケ", "モ", "ノ"],
+      spellNote: "ツケモノ: 漬物石だろうか？ 謎の四角を1個生成できる。この土台の上にのみ生成可能。",
+    },
   },
   {
     id: "path",
@@ -28,6 +37,15 @@ const stages = [
     scene: "corridor",
     briefing: "青い矢印の順に読む。最後に残るのは、通り抜けた者へ向けた六音の言葉。",
     problems: [{ file: "page_03.jpg", title: "ステージ2 原問題" }],
+    textProblem: {
+      title: "ステージ2",
+      subtitle: "扉のあかない通路",
+      rule: "壁の色が違う紙に、答えを順番に重ねていく。①②③④の矢印順に解く。",
+      prompt: "色のついたマスと白丸の文字をたどり、最後に残る言葉を読む。",
+      answerHint: "通路を抜けた相手へ向ける言葉。6文字。",
+      blanks: ["ゴ", "ク", "ロ", "ウ", "サ", "マ"],
+      spellNote: "ゴクロウサマ: 「　」内の色を消すことが出来る。「　」内の内容の意味が通れば、それは現実となる。",
+    },
   },
   {
     id: "shop",
@@ -44,6 +62,20 @@ const stages = [
       { file: "page_04.jpg", title: "アイテム屋 原問題" },
       { file: "page_05.jpg", title: "ステージ3 原問題" },
     ],
+    textProblem: {
+      title: "ステージ3",
+      subtitle: "凍った足場",
+      rule: "下のカッコの数字からひらがなを取り出す。最も関係するものをアイテム680の中から選ぶ。",
+      prompt: "鉄の足場が凍っていて渡るのは危険だ。アイテム屋で氷を溶かせるものを探す。",
+      shop: [
+        "1. メラソード: 切ったものが燃える",
+        "2. ソラブーツ: 装備すると素早くなる",
+        "3. ドラブレス: 口から火が出せる",
+        "4. マジホウキ: 飛べる、掃除もできる",
+      ],
+      blanks: ["ド", "ラ", "ブ", "レ", "ス"],
+      spellNote: "ドラブレス: 炎でどんな氷も溶かす事ができる。ただし炎は発射方向に注意。",
+    },
     items: [
       { name: "メラソード", detail: "切ったものが燃える", icon: "sword" },
       { name: "ソラブーツ", detail: "装備すると素早くなる", icon: "boots" },
@@ -63,6 +95,15 @@ const stages = [
     scene: "time",
     briefing: "青、緑、黄の順に読んで得た六音。時を移動する装置の名前を入力する。",
     problems: [{ file: "page_06.jpg", title: "ステージ4 原問題" }],
+    textProblem: {
+      title: "ステージ4",
+      subtitle: "時空が歪んで、時差が発生した",
+      rule: "①〜④の謎を解いて、時差を無くすための手段を見つける。",
+      prompt: "おじさんの間にあるもの、曜日の箱、THIS WEEK、投げられた球の軌跡を使って答えを出す。",
+      answerHint: "答えは、差し示す先にある。青→緑→黄の順に読む。",
+      blanks: ["タ", "イ", "ム", "マ", "シ", "ン"],
+      spellNote: "FINAL ANSWER: タイムマシン。",
+    },
   },
   {
     id: "boss",
@@ -74,6 +115,23 @@ const stages = [
     scene: "boss",
     briefing: "上から順に呪文を放つ。間違えると獣が態勢を立て直す。",
     problems: [{ file: "page_07.jpg", title: "ラスボス 原問題" }],
+    textProblem: {
+      title: "ラスボス戦",
+      subtitle: "出口を発見したが、ラスボスが立ちはだかった",
+      rule: "ここで使える呪文は1呪文につき1回まで。状況に合う呪文を順番に放つ。",
+      prompt: "ラスボスの攻撃や動きを読み、習得した呪文を正しい順で使う。",
+      sequence: [
+        "バリ: 瞬間的なバリアで弱攻撃を無効化する",
+        "フユウ: ちょっとだけ空中に浮くことができる",
+        "ヘンガオ: 仲間一人を白目にさせる",
+        "ツケモノ: 謎の四角を1個生成できる",
+        "ゴクロウサマ: 指定した色を消すことができる",
+        "カタメ: 身体を硬化させ、弱攻撃を無効化する",
+        "タイムマシン: 時間の流れに干渉する",
+        "バタフライエフェクト: 過去の小さな変化で現在を変える",
+      ],
+      spellNote: "最後は、今こそ共に歩んだ仲間の事を思い出す時。",
+    },
   },
 ];
 
@@ -217,6 +275,28 @@ function renderScene(stage) {
 }
 
 function renderProblems(stage) {
+  if (stage.textProblem) {
+    const problem = stage.textProblem;
+    return `
+      <section class="problem-section text-problem">
+        <div class="section-head">
+          <strong>原問題を再構成</strong>
+          <span>PDF画像ではなく文章化</span>
+        </div>
+        <article class="problem-paper">
+          <h3>${problem.title}</h3>
+          <p class="problem-subtitle">${problem.subtitle}</p>
+          <p class="problem-rule">${problem.rule}</p>
+          <p class="problem-prompt">${problem.prompt}</p>
+          ${problem.answerHint ? `<p class="problem-hint">${problem.answerHint}</p>` : ""}
+          ${problem.shop ? `<ul class="problem-shop">${problem.shop.map((line) => `<li>${line}</li>`).join("")}</ul>` : ""}
+          ${problem.sequence ? `<ol class="problem-sequence">${problem.sequence.map((line) => `<li>${line}</li>`).join("")}</ol>` : ""}
+          ${problem.blanks ? `<div class="problem-blanks">${problem.blanks.map((char) => `<span>${char}</span>`).join("")}</div>` : ""}
+          <p class="spell-note">${problem.spellNote}</p>
+        </article>
+      </section>
+    `;
+  }
   if (!stage.problems?.length) return "";
   return `
     <section class="problem-section">

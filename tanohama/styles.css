@@ -291,6 +291,108 @@ h1 {
   font-weight: 950;
 }
 
+.text-problem {
+  background:
+    linear-gradient(180deg, rgba(255, 232, 121, 0.1), rgba(5, 12, 23, 0.58)),
+    rgba(5, 12, 23, 0.82);
+}
+
+.problem-paper {
+  border: 1px solid rgba(22, 32, 51, 0.22);
+  border-radius: 8px;
+  background: #fff7dd;
+  color: #172033;
+  padding: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
+}
+
+.problem-paper h3 {
+  margin: 0 0 6px;
+  color: #101827;
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.problem-subtitle {
+  margin: 0 0 10px;
+  border-left: 5px solid #cf3b47;
+  padding-left: 10px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.problem-rule,
+.problem-prompt,
+.problem-hint,
+.spell-note {
+  margin: 9px 0;
+  line-height: 1.65;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.problem-rule {
+  border: 1px dashed rgba(17, 24, 39, 0.38);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 10px;
+}
+
+.problem-prompt {
+  color: #1f2937;
+}
+
+.problem-hint {
+  color: #8b1f2b;
+}
+
+.problem-shop,
+.problem-sequence {
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.problem-shop li,
+.problem-sequence li {
+  border: 1px solid rgba(17, 24, 39, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 9px 10px;
+  color: #172033;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.problem-blanks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.problem-blanks span {
+  display: grid;
+  place-items: center;
+  min-width: 38px;
+  min-height: 38px;
+  border: 2px solid #1f2937;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.spell-note {
+  border-top: 2px solid rgba(207, 59, 71, 0.7);
+  padding-top: 9px;
+  color: #a21f2d;
+}
+
 .scene {
   position: relative;
   height: 248px;
