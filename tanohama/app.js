@@ -537,17 +537,17 @@ function renderGateStage(stage) {
       ${gatePlayableVisual(stage, done, feedback)}
 
       <section class="spell-device" aria-label="呪文入力">
-        <div class="device-head">
-          <div>
-            <span>呪文装置</span>
-            <strong>${stage.goal}</strong>
-            <p>${stage.operation}</p>
+        <div class="device-strip">
+          <div class="device-stage-name">
+            <span>${stage.number} / ${stage.title}</span>
+            <strong>${stage.situation}</strong>
           </div>
           <div class="trial-state">
             <span>石板</span>
             <strong>${selected.length} / ${stage.slots}</strong>
           </div>
         </div>
+        ${gateProblemInscription(stage, done)}
 
         <div class="device-main-row">
           <div class="premium-slot-row magic-slots">
@@ -595,11 +595,6 @@ function gatePlayableVisual(stage, done, feedback) {
         </div>
         <em>${stage.number} / ${puzzleTotal}</em>
       </div>
-      <div class="stage-objective">
-        <p>${stage.situation}</p>
-        <strong>${done ? stage.correctEffect : "音片を組み合わせ、穴を越える呪文を作れ。"}</strong>
-      </div>
-      ${gateProblemTablet(stage, done)}
       <div class="floor-glyphs" aria-hidden="true">
         ${[
           ["モ", "fragment-a"],
@@ -614,28 +609,19 @@ function gatePlayableVisual(stage, done, feedback) {
   `;
 }
 
-function gateProblemTablet(stage, done) {
+function gateProblemInscription(stage, done) {
   const problem = stage.textProblem;
   if (!problem) return "";
   return `
-    <section class="problem-tablet ${done ? "is-solved" : ""}" aria-label="問題文">
-      <div class="problem-tablet-head">
+    <section class="device-problem ${done ? "is-solved" : ""}" aria-label="問題文">
+      <div class="device-problem-head">
         <span>問題文</span>
-        <strong>試練</strong>
+        <strong>${done ? stage.correctEffect : problem.subtitle}</strong>
       </div>
-      <p class="problem-trial">${problem.subtitle}</p>
-      <div class="kanji-device" aria-label="原案の変換条件">
-        <div class="kanji-row">
-          <span>上</span>
-          <b>納豆</b>
-        </div>
-        <div class="flow-rune">
-          <strong>粘り強さを下へ移す</strong>
-        </div>
-        <div class="kanji-row">
-          <span>下</span>
-          <b>短気</b>
-        </div>
+      <div class="word-transfer" aria-label="原案の変換条件">
+        <b>納豆</b>
+        <span>粘り強さを下へ移す</span>
+        <b>短気</b>
       </div>
       <p class="problem-prompt">${problem.prompt}</p>
     </section>
