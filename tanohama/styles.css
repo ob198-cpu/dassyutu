@@ -280,6 +280,29 @@ h1 {
   background: #f5efd9;
 }
 
+.source-image-problem {
+  background: rgba(5, 12, 23, 0.78);
+}
+
+.source-problem-image-wrap {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  border: 1px solid rgba(255, 232, 121, 0.42);
+  border-radius: 8px;
+  padding: 0;
+  background: #fff;
+  cursor: zoom-in;
+}
+
+.source-problem-image-wrap img {
+  display: block;
+  width: 100%;
+  min-width: min(760px, 100%);
+  height: auto;
+  background: #fff;
+}
+
 .problem-card span {
   display: flex;
   align-items: center;

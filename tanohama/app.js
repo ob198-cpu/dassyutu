@@ -70,7 +70,8 @@ const stages = [
     scene: "corridor",
     sceneCaption: "壁の色マスが見えない扉の位置を示している。光の順路を読み取る。",
     briefing: "青い矢印の順に読む。最後に残るのは、通り抜けた者へ向けた六音の言葉。",
-    problems: [{ file: "page_03.jpg", title: "ステージ2 原問題" }],
+    problems: [{ file: "stage02-problem-clean.png", title: "ステージ2 原問題" }],
+    sourceProblemImage: "stage02-problem-clean.png",
     textProblem: {
       title: "ステージ2",
       subtitle: "扉のあかない通路",
@@ -354,6 +355,19 @@ function renderScene(stage) {
 }
 
 function renderProblems(stage, done = false) {
+  if (stage.sourceProblemImage) {
+    return `
+      <section class="problem-section source-image-problem">
+        <div class="section-head">
+          <strong>原問題</strong>
+          <span>タップで拡大</span>
+        </div>
+        <button class="source-problem-image-wrap" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原問題">
+          <img src="./assets/${stage.sourceProblemImage}" alt="${stage.number} ${stage.title} 原問題" loading="eager" />
+        </button>
+      </section>
+    `;
+  }
   if (stage.textProblem) {
     const problem = stage.textProblem;
     return `
@@ -467,29 +481,18 @@ function gateScene(done) {
   `;
 }
 
-function corridorScene(done) {
-  const spell = done ? "ゴクロウサマ" : "□□□□□□";
-  const slots = done ? ["ゴ", "ク", "ロ", "ウ", "サ", "マ"] : ["", "", "", "", "", ""];
+function corridorScene() {
   return `
-    <div class="case-sheet single-stage-sheet">
+    <div class="case-sheet single-stage-sheet stage02-source-visual">
       <section class="case-stage current-case">
         <div class="case-stage-head">
           <span>ステージ2</span>
           <strong>『扉のあかない通路』</strong>
         </div>
-        <div class="source-crop-frame">
+        <div class="source-crop-frame source-stage2-overview">
           <img src="./assets/stage02-overview-crop.png" alt="ステージ2 原案図">
         </div>
         <p class="trial-copy">試練：扉があり通ることが出来ない</p>
-        <div class="stone-panel">
-          <span class="stone-label">石板 6文字</span>
-          <div class="stone-slots six" aria-hidden="true">${slots.map((char) => `<span>${char}</span>`).join("")}</div>
-        </div>
-        <div class="spell-card">
-          <span class="spell-status">${done ? "習得済み" : "未習得"}</span>
-          <strong>☆${spell}</strong>
-          <p>効果：「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。</p>
-        </div>
       </section>
     </div>
   `;
