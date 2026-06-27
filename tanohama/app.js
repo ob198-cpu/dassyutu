@@ -153,7 +153,8 @@ const stages = [
     scene: "boss",
     sceneCaption: "出口前にラスボスがいる。呪文は一度ずつしか使えない。",
     briefing: "上から順に呪文を放つ。間違えると獣が態勢を立て直す。",
-    problems: [{ file: "page_07.jpg", title: "ラスボス 原問題" }],
+    problems: [{ file: "stage05-problem-clean.png", title: "ラスボス 原問題" }],
+    sourceProblemImage: "stage05-problem-clean.png",
     textProblem: {
       title: "ラスボス戦",
       subtitle: "出口を発見したが、ラスボスが立ちはだかった",
