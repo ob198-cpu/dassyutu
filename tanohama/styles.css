@@ -356,6 +356,13 @@ h1 {
   gap: 7px;
 }
 
+.problem-list-title {
+  margin: 10px 0 6px;
+  color: #8b1f2b;
+  font-size: 14px;
+  font-weight: 950;
+}
+
 .problem-shop li,
 .problem-sequence li {
   border: 1px solid rgba(17, 24, 39, 0.18);
@@ -387,6 +394,11 @@ h1 {
   font-weight: 950;
 }
 
+.problem-blanks span:empty::after {
+  content: "?";
+  color: rgba(17, 24, 39, 0.25);
+}
+
 .spell-note {
   border-top: 2px solid rgba(207, 59, 71, 0.7);
   padding-top: 9px;
@@ -403,6 +415,22 @@ h1 {
   background:
     radial-gradient(circle at 50% 32%, rgba(41, 199, 255, 0.22), transparent 10rem),
     linear-gradient(180deg, #172a42 0%, #091525 56%, #04080e 100%);
+}
+
+.scene-caption {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  z-index: 2;
+  border: 1px solid rgba(255, 232, 121, 0.36);
+  border-radius: 8px;
+  background: rgba(4, 9, 18, 0.74);
+  color: #f8f1ba;
+  padding: 7px 9px;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.45;
 }
 
 .void-grid {
@@ -447,7 +475,7 @@ h1 {
 .stone-card {
   position: absolute;
   left: 50%;
-  top: 24px;
+  top: 58px;
   transform: translateX(-50%) rotate(-2deg);
   width: 132px;
   height: 62px;

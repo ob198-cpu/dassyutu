@@ -8,9 +8,10 @@ const stages = [
     reward: "ツケモノ",
     type: "tiles",
     slots: 4,
-    tiles: ["ツ", "ケ", "モ", "ノ", "マ", "テ", "オ", "シ", "ミ", "ガ"],
+    tiles: ["モ", "シ", "ケ", "ガ", "ノ", "テ", "ツ", "オ", "ミ", "マ"],
     correct: "ツケモノ",
     scene: "gate",
+    sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
     problems: [{ file: "page_02.jpg", title: "ステージ1 原問題" }],
     textProblem: {
@@ -19,8 +20,8 @@ const stages = [
       rule: "呪文のルール: 呪文は石板にカタカナで記入し、石板の数に合った文字数の呪文しか唱えられない。",
       prompt: "赤枠内の漢字を変えて、上から下へ粘り強さを移動させて下さい。赤枠内に現れる野菜は？",
       answerHint: "①と②が解けたら「つかった①、②の答え」の下のカタカナを読む。",
-      blanks: ["ツ", "ケ", "モ", "ノ"],
-      spellNote: "ツケモノ: 漬物石だろうか？ 謎の四角を1個生成できる。この土台の上にのみ生成可能。",
+      answerBoxes: 4,
+      solvedNote: "ツケモノ: 漬物石だろうか？ 謎の四角を1個生成できる。この土台の上にのみ生成可能。",
     },
   },
   {
@@ -32,9 +33,10 @@ const stages = [
     reward: "ゴクロウサマ",
     type: "tiles",
     slots: 6,
-    tiles: ["ゴ", "ク", "ロ", "ウ", "サ", "マ", "ア", "イ", "オ", "ン", "キ", "リ"],
+    tiles: ["サ", "ゴ", "キ", "ロ", "ア", "マ", "ウ", "ン", "ク", "イ", "オ", "リ"],
     correct: "ゴクロウサマ",
     scene: "corridor",
+    sceneCaption: "壁の色マスが見えない扉の位置を示している。光の順路を読み取る。",
     briefing: "青い矢印の順に読む。最後に残るのは、通り抜けた者へ向けた六音の言葉。",
     problems: [{ file: "page_03.jpg", title: "ステージ2 原問題" }],
     textProblem: {
@@ -43,8 +45,8 @@ const stages = [
       rule: "壁の色が違う紙に、答えを順番に重ねていく。①②③④の矢印順に解く。",
       prompt: "色のついたマスと白丸の文字をたどり、最後に残る言葉を読む。",
       answerHint: "通路を抜けた相手へ向ける言葉。6文字。",
-      blanks: ["ゴ", "ク", "ロ", "ウ", "サ", "マ"],
-      spellNote: "ゴクロウサマ: 「　」内の色を消すことが出来る。「　」内の内容の意味が通れば、それは現実となる。",
+      answerBoxes: 6,
+      solvedNote: "ゴクロウサマ: 「　」内の色を消すことが出来る。「　」内の内容の意味が通れば、それは現実となる。",
     },
   },
   {
@@ -57,6 +59,7 @@ const stages = [
     type: "shop",
     correct: "ドラブレス",
     scene: "ice",
+    sceneCaption: "凍った足場を渡るには、氷に効くアイテムを選ぶ必要がある。",
     briefing: "式が指す番号は3。3番の棚には、口から火を出す道具が置かれている。",
     problems: [
       { file: "page_04.jpg", title: "アイテム屋 原問題" },
@@ -73,8 +76,8 @@ const stages = [
         "3. ドラブレス: 口から火が出せる",
         "4. マジホウキ: 飛べる、掃除もできる",
       ],
-      blanks: ["ド", "ラ", "ブ", "レ", "ス"],
-      spellNote: "ドラブレス: 炎でどんな氷も溶かす事ができる。ただし炎は発射方向に注意。",
+      answerBoxes: 5,
+      solvedNote: "ドラブレス: 炎でどんな氷も溶かす事ができる。ただし炎は発射方向に注意。",
     },
     items: [
       { name: "メラソード", detail: "切ったものが燃える", icon: "sword" },
@@ -93,6 +96,7 @@ const stages = [
     type: "console",
     correct: "タイムマシン",
     scene: "time",
+    sceneCaption: "三つの色ランプと計器がずれている。時差を消す装置名を探す。",
     briefing: "青、緑、黄の順に読んで得た六音。時を移動する装置の名前を入力する。",
     problems: [{ file: "page_06.jpg", title: "ステージ4 原問題" }],
     textProblem: {
@@ -101,8 +105,8 @@ const stages = [
       rule: "①〜④の謎を解いて、時差を無くすための手段を見つける。",
       prompt: "おじさんの間にあるもの、曜日の箱、THIS WEEK、投げられた球の軌跡を使って答えを出す。",
       answerHint: "答えは、差し示す先にある。青→緑→黄の順に読む。",
-      blanks: ["タ", "イ", "ム", "マ", "シ", "ン"],
-      spellNote: "FINAL ANSWER: タイムマシン。",
+      answerBoxes: 6,
+      solvedNote: "FINAL ANSWER: タイムマシン。",
     },
   },
   {
@@ -113,6 +117,7 @@ const stages = [
     mission: "出口の前に白い獣が現れた。集めた呪文と追加呪文を、正しい順番で放って突破する。",
     type: "boss",
     scene: "boss",
+    sceneCaption: "出口前にラスボスがいる。呪文は一度ずつしか使えない。",
     briefing: "上から順に呪文を放つ。間違えると獣が態勢を立て直す。",
     problems: [{ file: "page_07.jpg", title: "ラスボス 原問題" }],
     textProblem: {
@@ -120,17 +125,19 @@ const stages = [
       subtitle: "出口を発見したが、ラスボスが立ちはだかった",
       rule: "ここで使える呪文は1呪文につき1回まで。状況に合う呪文を順番に放つ。",
       prompt: "ラスボスの攻撃や動きを読み、習得した呪文を正しい順で使う。",
+      sequenceTitle: "使える呪文一覧",
       sequence: [
         "バリ: 瞬間的なバリアで弱攻撃を無効化する",
         "フユウ: ちょっとだけ空中に浮くことができる",
-        "ヘンガオ: 仲間一人を白目にさせる",
-        "ツケモノ: 謎の四角を1個生成できる",
-        "ゴクロウサマ: 指定した色を消すことができる",
+        "オバタンス: 次の呪文効果時間を2倍にする",
         "カタメ: 身体を硬化させ、弱攻撃を無効化する",
-        "タイムマシン: 時間の流れに干渉する",
-        "バタフライエフェクト: 過去の小さな変化で現在を変える",
+        "アイス: つるつるの氷を生成する",
+        "ヘンガオ: 仲間一人を白目にさせる",
+        "タメニタメル: 次の攻撃威力が2倍になる",
+        "ガンリキ: 相手に恐怖感を与え隙を作る",
+        "イノリ: 命中率を下げる",
       ],
-      spellNote: "最後は、今こそ共に歩んだ仲間の事を思い出す時。",
+      solvedNote: "最後は、今こそ共に歩んだ仲間の事を思い出す時。",
     },
   },
 ];
@@ -265,6 +272,7 @@ function renderScene(stage) {
   return `
     <div class="scene ${sceneClass}" aria-hidden="true">
       <div class="void-grid"></div>
+      ${stage.sceneCaption ? `<div class="scene-caption">${stage.sceneCaption}</div>` : ""}
       ${stage.scene === "gate" ? gateScene() : ""}
       ${stage.scene === "corridor" ? corridorScene() : ""}
       ${stage.scene === "ice" ? iceScene() : ""}
@@ -274,7 +282,7 @@ function renderScene(stage) {
   `;
 }
 
-function renderProblems(stage) {
+function renderProblems(stage, done = false) {
   if (stage.textProblem) {
     const problem = stage.textProblem;
     return `
@@ -290,9 +298,10 @@ function renderProblems(stage) {
           <p class="problem-prompt">${problem.prompt}</p>
           ${problem.answerHint ? `<p class="problem-hint">${problem.answerHint}</p>` : ""}
           ${problem.shop ? `<ul class="problem-shop">${problem.shop.map((line) => `<li>${line}</li>`).join("")}</ul>` : ""}
-          ${problem.sequence ? `<ol class="problem-sequence">${problem.sequence.map((line) => `<li>${line}</li>`).join("")}</ol>` : ""}
-          ${problem.blanks ? `<div class="problem-blanks">${problem.blanks.map((char) => `<span>${char}</span>`).join("")}</div>` : ""}
-          <p class="spell-note">${problem.spellNote}</p>
+          ${problem.sequenceTitle ? `<p class="problem-list-title">${problem.sequenceTitle}</p>` : ""}
+          ${problem.sequence ? `<ul class="problem-sequence">${problem.sequence.map((line) => `<li>${line}</li>`).join("")}</ul>` : ""}
+          ${problem.answerBoxes ? `<div class="problem-blanks">${Array.from({ length: problem.answerBoxes }).map(() => `<span></span>`).join("")}</div>` : ""}
+          ${done && problem.solvedNote ? `<p class="spell-note">${problem.solvedNote}</p>` : ""}
         </article>
       </section>
     `;
@@ -379,7 +388,7 @@ function renderStage(stage) {
       </div>
       ${renderScene(stage)}
       <p class="mission">${stage.mission}</p>
-      ${renderProblems(stage)}
+      ${renderProblems(stage, done)}
       <section class="brief-card">
         <strong>手がかり</strong>
         <p>${stage.briefing}</p>
@@ -536,7 +545,7 @@ function renderBoss(stage) {
       </div>
       ${renderScene(stage)}
       <p class="mission">${stage.mission}</p>
-      ${renderProblems(stage)}
+      ${renderProblems(stage, false)}
       <section class="brief-card">
         <strong>戦闘方針</strong>
         <p>${stage.briefing}</p>
