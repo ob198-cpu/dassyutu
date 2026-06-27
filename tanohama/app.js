@@ -615,16 +615,6 @@ function gatePlayableVisual(stage, done, feedback) {
         </div>
         <em>${stage.number} / ${puzzleTotal}</em>
       </div>
-      <div class="floor-glyphs" aria-hidden="true">
-        ${[
-          ["モ", "fragment-a"],
-          ["ツ", "fragment-b"],
-          ["ノ", "fragment-c"],
-          ["ケ", "fragment-d"],
-        ]
-          .map(([tile, className]) => `<span class="floor-glyph ${className}">${tile}</span>`)
-          .join("")}
-      </div>
     </div>
   `;
 }

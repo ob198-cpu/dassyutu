@@ -4079,6 +4079,10 @@ h1 {
     inset 0 0 18px rgba(0, 0, 0, 0.44);
 }
 
+.floor-glyphs {
+  display: none !important;
+}
+
 .spell-device {
   border-radius: 13px;
   border-color: rgba(242, 213, 107, 0.48);
