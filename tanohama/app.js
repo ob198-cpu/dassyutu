@@ -640,10 +640,8 @@ function gateProblemInscription(stage, done) {
             <p class="source-question-two">給料日の曜日が無くなると現れる<br><strong>野菜は？</strong></p>
           </section>
         </div>
-        <p class="source-read-rule">①、②が解けたら次は「つかった①、②の答え」の下のカタカナを読むのじゃ↓</p>
-        <div class="source-katakana-lines" aria-label="下のカタカナ列">
-          <p>⇒ ただいならこくあかんきゅうぴっとくるまります</p>
-          <p>マケオシミノイモノメガ,マチガ「ツ」ウックシイヒト　何になる？</p>
+        <div class="source-katakana-image" aria-label="①、②が解けた後に読む下のカタカナ列">
+          <img src="./assets/stage01-katakana-read-crop.png" alt="①、②が解けたら次は、つかった①、②の答えの下のカタカナを読む">
         </div>
         <div class="source-answer-row" aria-label="答え欄">
           <span>こたえ</span>
