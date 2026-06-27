@@ -4115,6 +4115,10 @@ h1 {
   color: #111;
 }
 
+.source-spell-frame {
+  display: none;
+}
+
 .premium-slot,
 .slot {
   border-radius: 9px;

@@ -46,6 +46,7 @@ const stages = [
     sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
     problems: [{ file: "page_02.jpg", title: "ステージ1 原問題" }],
+    solutionImage: "stage01-02-solution.png",
     textProblem: {
       title: "ステージ1",
       subtitle: "穴が開いていて通ることが出来ない",
@@ -72,6 +73,7 @@ const stages = [
     briefing: "青い矢印の順に読む。最後に残るのは、通り抜けた者へ向けた六音の言葉。",
     problems: [{ file: "stage02-problem-clean.png", title: "ステージ2 原問題" }],
     sourceProblemImage: "stage02-problem-clean.png",
+    solutionImage: "stage01-02-solution.png",
     textProblem: {
       title: "ステージ2",
       subtitle: "扉のあかない通路",
@@ -565,6 +567,7 @@ function renderGateStage(stage) {
           </div>
         </div>
         ${gateProblemInscription(stage, done)}
+        ${renderSolution(stage, done)}
 
         <div class="device-main-row">
           <div class="premium-slot-row magic-slots">
