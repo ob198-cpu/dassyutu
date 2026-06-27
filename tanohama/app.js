@@ -613,17 +613,56 @@ function gateProblemInscription(stage, done) {
   const problem = stage.textProblem;
   if (!problem) return "";
   return `
-    <section class="device-problem ${done ? "is-solved" : ""}" aria-label="問題文">
-      <div class="device-problem-head">
+    <section class="device-problem source-problem-card ${done ? "is-solved" : ""}" aria-label="問題文">
+      <div class="source-problem-head">
         <span>問題文</span>
-        <strong>${done ? stage.correctEffect : problem.subtitle}</strong>
+        <strong>試練</strong>
       </div>
-      <div class="word-transfer" aria-label="原案の変換条件">
-        <b>納豆</b>
-        <span>粘り強さを下へ移す</span>
-        <b>短気</b>
+      <div class="source-puzzle-sheet" aria-label="ステージ1の問題">
+        <h3>ステージ1</h3>
+        <div class="source-question-grid">
+          <section class="source-question-box">
+            <b class="source-question-number">①</b>
+            <div class="source-kanji-change">
+              <div class="source-kanji-pair source-kanji-top">
+                <span class="source-red-kanji">納</span><span>豆</span>
+              </div>
+              <div class="source-down-arrow">↓</div>
+              <div class="source-kanji-pair source-kanji-bottom">
+                <span class="source-red-kanji">短</span><span>気</span>
+              </div>
+            </div>
+            <p>赤枠内の漢字を変えて<br>上から下へ粘り強さを<br>移動させて下さい。<br><strong>赤枠内に現れる<br>野菜は？</strong></p>
+            <small>「粘り強さを分けてあげると、納豆は粘りが出る前のある物に変わり、短気は粘り強い言葉に変わるのぅ」</small>
+          </section>
+          <section class="source-question-box">
+            <b class="source-question-number">②</b>
+            <p class="source-question-two">給料日の曜日が無くなると現れる<br><strong>野菜は？</strong></p>
+          </section>
+        </div>
+        <p class="source-read-rule">①、②が解けたら次は「つかった①、②の答え」の下のカタカナを読むのじゃ↓</p>
+        <div class="source-katakana-lines" aria-label="下のカタカナ列">
+          <p>⇒ ただいならこくあかんきゅうぴっとくるまります</p>
+          <p>マケオシミノイモノメガ,マチガ「ツ」ウックシイヒト　何になる？</p>
+        </div>
+        <div class="source-answer-row" aria-label="答え欄">
+          <span>こたえ</span>
+          <i></i><i></i><i></i><i></i>
+        </div>
+        ${done ? `
+          <div class="source-spell-frame">
+            <p><b>☆ツケモノ…</b>漬物石だろうか？ 謎の四角を1個生成できる！</p>
+            <div class="source-effect-row">
+              <span class="source-blank-box"></span>
+              <span class="source-effect-copy">←この土台の上にのみ生成可能</span>
+            </div>
+            <div class="source-caption-row">
+              <span>↑（呪文名）</span>
+              <span>↑（効果）</span>
+            </div>
+          </div>
+        ` : ""}
       </div>
-      <p class="problem-prompt">${problem.prompt}</p>
     </section>
   `;
 }

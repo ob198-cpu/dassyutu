@@ -2908,6 +2908,424 @@ body.stage-intro-mode .game-card::before {
     0 0 34px rgba(119, 235, 255, 0.18);
 }
 
+.source-problem-card {
+  align-self: start;
+  max-height: min(48dvh, 390px);
+  overflow: auto;
+  gap: 8px;
+  border-color: rgba(255, 232, 121, 0.58);
+  background:
+    linear-gradient(180deg, rgba(255, 251, 232, 0.98), rgba(246, 237, 203, 0.98));
+  color: #101010;
+  box-shadow:
+    inset 0 0 0 2px rgba(17, 17, 17, 0.08),
+    0 14px 44px rgba(0, 0, 0, 0.36);
+}
+
+.source-problem-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.source-problem-card::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(120, 82, 24, 0.58);
+}
+
+.source-problem-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.source-problem-head span {
+  color: #7a1111;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.source-problem-head strong {
+  color: #101010;
+  font-size: 18px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.source-stage-card,
+.source-transform-card {
+  border: 2px solid #111;
+  background: #fffdf2;
+  padding: 8px;
+}
+
+.source-stage-card h3 {
+  margin: 0 0 6px;
+  color: #111;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 950;
+  text-align: center;
+}
+
+.source-hole-diagram {
+  position: relative;
+  height: 96px;
+  margin: 0 auto 4px;
+  background: #fffdf2;
+}
+
+.source-platform {
+  position: absolute;
+  bottom: 26px;
+  height: 26px;
+  background: #000;
+}
+
+.source-platform-left {
+  left: 4%;
+  width: 40%;
+}
+
+.source-platform-right {
+  right: 4%;
+  width: 40%;
+}
+
+.source-pit {
+  position: absolute;
+  left: 44%;
+  bottom: 0;
+  width: 12%;
+  height: 44px;
+  border: 2px solid #777;
+  border-top: 0;
+  background: #fffdf2;
+}
+
+.source-person {
+  position: absolute;
+  left: 25%;
+  bottom: 52px;
+  width: 28px;
+  height: 40px;
+}
+
+.source-person::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #000;
+}
+
+.source-person::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 11px;
+  width: 4px;
+  height: 28px;
+  background: #000;
+  box-shadow:
+    -10px 9px 0 -1px #000,
+    10px 9px 0 -1px #000,
+    -7px 27px 0 -1px #000,
+    7px 27px 0 -1px #000;
+}
+
+.source-trial-line {
+  margin: 0 0 6px;
+  color: #111;
+  font-size: 15px;
+  font-weight: 950;
+  line-height: 1.25;
+}
+
+.source-kana-slots {
+  display: inline-grid;
+  grid-template-columns: repeat(4, 38px);
+  border: 1px solid #6a6a6a;
+  background: #d8e1cc;
+}
+
+.source-kana-slots span {
+  display: grid;
+  min-height: 34px;
+  place-items: center;
+  border-left: 1px solid #6a6a6a;
+  color: #111;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.source-kana-slots span:first-child {
+  border-left: 0;
+}
+
+.source-spell-frame {
+  margin-top: 8px;
+  border: 2px solid #d31f1f;
+  background: #fff;
+  color: #d31f1f;
+  padding: 5px 6px;
+  font-size: 12px;
+  font-weight: 950;
+  line-height: 1.35;
+}
+
+.source-spell-frame p {
+  margin: 0 0 4px;
+}
+
+.source-effect-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #111;
+}
+
+.source-blank-box {
+  width: 44px;
+  height: 16px;
+  border: 1px solid #111;
+  background: #fff;
+}
+
+.source-effect-copy {
+  color: #111;
+  font-weight: 900;
+}
+
+.source-caption-row {
+  display: flex;
+  gap: 38px;
+  color: #111;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.source-transform-card {
+  border-color: #9c1d1d;
+}
+
+.source-puzzle-sheet {
+  border: 2px solid #111;
+  background: #fffdf2;
+  color: #101010;
+  padding: 7px;
+}
+
+.source-puzzle-sheet h3 {
+  margin: 0 0 4px;
+  color: #111;
+  font-size: clamp(20px, 3vw, 27px);
+  font-weight: 950;
+  line-height: 1;
+}
+
+.source-question-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 2px solid #333;
+}
+
+.source-question-box {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(86px, 0.62fr) minmax(0, 1fr);
+  gap: 6px;
+  min-height: 116px;
+  padding: 8px 8px 6px 31px;
+  background: #fff;
+  border-left: 2px solid #333;
+}
+
+.source-question-box:first-child {
+  border-left: 0;
+}
+
+.source-question-number {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  color: #111;
+  font-size: 24px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.source-kanji-change {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  justify-self: center;
+  min-width: 78px;
+}
+
+.source-kanji-pair {
+  display: grid;
+  grid-template-columns: 34px 34px;
+  align-items: center;
+  justify-items: center;
+  color: #111;
+  font-size: 28px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.source-red-kanji {
+  display: grid;
+  width: 34px;
+  height: 38px;
+  place-items: center;
+  border-left: 2px solid #ff3434;
+  border-right: 2px solid #ff3434;
+}
+
+.source-kanji-top .source-red-kanji {
+  border-top: 2px solid #ff3434;
+}
+
+.source-kanji-bottom .source-red-kanji {
+  border-bottom: 2px solid #ff3434;
+}
+
+.source-down-arrow {
+  margin: -2px 0;
+  color: #111;
+  font-size: 24px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.source-question-box p {
+  align-self: center;
+  margin: 0;
+  color: #111;
+  font-size: clamp(12px, 1.45vw, 14px);
+  font-weight: 850;
+  line-height: 1.34;
+}
+
+.source-question-box strong {
+  color: #d02626;
+  font-weight: 950;
+}
+
+.source-question-box small {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  color: #111;
+  font-size: 9px;
+  font-weight: 780;
+  line-height: 1.35;
+}
+
+.source-question-two {
+  grid-column: 1 / -1;
+  padding-top: 22px;
+  font-size: clamp(15px, 2vw, 20px) !important;
+  font-weight: 950 !important;
+  text-align: center;
+}
+
+.source-question-two strong {
+  color: #138b22;
+}
+
+.source-read-rule {
+  margin: 5px 0 3px;
+  color: #111;
+  font-size: 12px;
+  font-weight: 950;
+  line-height: 1.35;
+}
+
+.source-katakana-lines {
+  border-top: 2px solid #111;
+  padding-top: 3px;
+}
+
+.source-katakana-lines p {
+  margin: 0;
+  color: #111;
+  font-size: clamp(13px, 1.8vw, 17px);
+  font-weight: 950;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.source-answer-row {
+  display: flex;
+  align-items: end;
+  gap: 3px;
+  margin-top: 3px;
+  color: #111;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.source-answer-row i {
+  display: grid;
+  width: 32px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid #555;
+  background: #f5f1dc;
+}
+
+.source-transform-prompt {
+  margin: 0 0 7px;
+  color: #111;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.source-transfer-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 5px;
+}
+
+.source-word-cell {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  min-height: 36px;
+  border: 1px solid #9c1d1d;
+  background: #fffdf2;
+}
+
+.source-word-cell span {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  border-right: 1px solid #9c1d1d;
+  color: #111;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.source-word-cell b {
+  display: grid;
+  place-items: center;
+  color: #111;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.source-transfer-arrow {
+  color: #111;
+  font-size: 12px;
+  font-weight: 950;
+  text-align: center;
+}
+
 .floor-glyphs {
   position: absolute;
   inset: 0;
@@ -2968,9 +3386,10 @@ body.stage-intro-mode .game-card::before {
   display: grid;
   grid-template-columns: minmax(260px, 0.9fr) minmax(430px, 1.1fr);
   grid-template-areas:
+    "problem problem"
     "strip main"
-    "problem tiles"
-    "problem actions"
+    "tiles tiles"
+    "actions actions"
     "result result"
     "stage stage";
   gap: 10px;
@@ -3263,6 +3682,63 @@ body.stage-intro-mode .game-card::before {
   .device-actions .secondary-button,
   .device-actions .text-button {
     min-height: 40px;
+  }
+
+  .source-problem-card {
+    max-height: 38dvh;
+    padding: 8px;
+  }
+
+  .source-question-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .source-question-box {
+    grid-template-columns: minmax(82px, 0.6fr) minmax(0, 1fr);
+    min-height: 122px;
+    padding: 9px 8px 8px 32px;
+    border-left: 0;
+    border-top: 2px solid #333;
+  }
+
+  .source-question-box:first-child {
+    border-top: 0;
+  }
+
+  .source-kanji-pair {
+    grid-template-columns: 34px 34px;
+    font-size: 27px;
+  }
+
+  .source-red-kanji {
+    width: 34px;
+    height: 39px;
+  }
+
+  .source-down-arrow {
+    font-size: 23px;
+  }
+
+  .source-question-box p {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .source-question-box small {
+    font-size: 9px;
+  }
+
+  .source-read-rule {
+    font-size: 11px;
+  }
+
+  .source-katakana-lines p {
+    font-size: 13px;
+  }
+
+  .source-answer-row i {
+    width: 30px;
+    height: 26px;
   }
 
   .stage-one-redesign .fragment-a {
