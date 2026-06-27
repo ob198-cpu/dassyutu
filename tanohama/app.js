@@ -10,7 +10,7 @@ const stages = [
     story:
       "マッシュ室で楽しく焼肉をしていた一行は突然、異空間へ飛ばされてしまった。その時、一枚の紙がヒラリと落ちた。",
     letter:
-      "え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほいじゃあ、バーイ",
+      "え~ちぇっくちぇっく、聞こえとる? あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほいじゃあ、バーイ",
     rules: [
       "呪文は石板にカタカナで記入する。",
       "どこに、どの様に使うかを示す。",
@@ -408,7 +408,7 @@ function gateScene(done) {
       <section class="case-prologue">
         <div class="case-title">【現在異空間　からの脱出】</div>
         <p>マッシュ室で楽しく焼肉をしていた一行は突然、異空間へ飛ばされてしまった。その時、一枚の紙がヒラリと落ちた。</p>
-        <blockquote>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほいじゃあ、バーイ」</blockquote>
+        <blockquote>「え~ちぇっくちぇっく、聞こえとる? あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。キミタチナラ…どんな大きな壁も乗り越えられる！これはワシからのエールじゃ。信じておるぞ、ほいじゃあ、バーイ」</blockquote>
       </section>
       <section class="spell-rule-card">
         <strong>呪文のルール</strong>
@@ -477,11 +477,8 @@ function corridorScene(done) {
           <span>ステージ2</span>
           <strong>『扉のあかない通路』</strong>
         </div>
-        <div class="readable-diagram door-diagram large-door">
-          <span class="diagram-label left-label">通路</span>
-          <span class="diagram-label right-label">閉じた扉</span>
-          <div class="diagram-runner"></div>
-          <div class="diagram-door"></div>
+        <div class="source-crop-frame">
+          <img src="./assets/stage02-overview-crop.png" alt="ステージ2 原案図">
         </div>
         <p class="trial-copy">試練：扉があり通ることが出来ない</p>
         <div class="stone-panel">
@@ -619,7 +616,10 @@ function gateProblemInscription(stage, done) {
         <strong>試練</strong>
       </div>
       <div class="source-puzzle-sheet" aria-label="ステージ1の問題">
-        <h3>ステージ1</h3>
+        <div class="source-puzzle-title-row">
+          <h3>ステージ1</h3>
+          <img src="./assets/stage01-overview-crop.png" alt="ステージ1 原案図">
+        </div>
         <div class="source-question-grid">
           <section class="source-question-box">
             <b class="source-question-number">①</b>
@@ -648,6 +648,7 @@ function gateProblemInscription(stage, done) {
         <div class="source-answer-row" aria-label="答え欄">
           <span>こたえ</span>
           <i></i><i></i><i></i><i></i>
+          <small>「下線に気をつけるんじゃモ」</small>
         </div>
         ${done ? `
           <div class="source-spell-frame">

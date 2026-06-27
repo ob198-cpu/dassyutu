@@ -3119,12 +3119,43 @@ body.stage-intro-mode .game-card::before {
   padding: 7px;
 }
 
+.source-puzzle-title-row {
+  display: grid;
+  grid-template-columns: auto minmax(110px, 0.62fr);
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 4px;
+}
+
 .source-puzzle-sheet h3 {
-  margin: 0 0 4px;
+  margin: 0;
   color: #111;
   font-size: clamp(20px, 3vw, 27px);
   font-weight: 950;
   line-height: 1;
+}
+
+.source-puzzle-title-row img {
+  display: block;
+  justify-self: end;
+  width: min(100%, 210px);
+  max-height: 52px;
+  border: 1px solid #111;
+  background: #fff;
+  object-fit: contain;
+}
+
+.source-crop-frame {
+  margin: 10px;
+  border: 1px solid #111;
+  background: #fff;
+}
+
+.source-crop-frame img {
+  display: block;
+  width: 100%;
+  max-height: 210px;
+  object-fit: contain;
 }
 
 .source-question-grid {
@@ -3138,8 +3169,8 @@ body.stage-intro-mode .game-card::before {
   display: grid;
   grid-template-columns: minmax(86px, 0.62fr) minmax(0, 1fr);
   gap: 6px;
-  min-height: 116px;
-  padding: 8px 8px 6px 31px;
+  min-height: 106px;
+  padding: 7px 8px 5px 30px;
   background: #fff;
   border-left: 2px solid #333;
 }
@@ -3163,24 +3194,24 @@ body.stage-intro-mode .game-card::before {
   place-items: center;
   align-self: center;
   justify-self: center;
-  min-width: 78px;
+  min-width: 72px;
 }
 
 .source-kanji-pair {
   display: grid;
-  grid-template-columns: 34px 34px;
+  grid-template-columns: 31px 31px;
   align-items: center;
   justify-items: center;
   color: #111;
-  font-size: 28px;
+  font-size: 25px;
   font-weight: 950;
   line-height: 1;
 }
 
 .source-red-kanji {
   display: grid;
-  width: 34px;
-  height: 38px;
+  width: 31px;
+  height: 34px;
   place-items: center;
   border-left: 2px solid #ff3434;
   border-right: 2px solid #ff3434;
@@ -3197,7 +3228,7 @@ body.stage-intro-mode .game-card::before {
 .source-down-arrow {
   margin: -2px 0;
   color: #111;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: 950;
   line-height: 1;
 }
@@ -3206,9 +3237,9 @@ body.stage-intro-mode .game-card::before {
   align-self: center;
   margin: 0;
   color: #111;
-  font-size: clamp(12px, 1.45vw, 14px);
+  font-size: clamp(11px, 1.35vw, 13px);
   font-weight: 850;
-  line-height: 1.34;
+  line-height: 1.28;
 }
 
 .source-question-box strong {
@@ -3220,15 +3251,15 @@ body.stage-intro-mode .game-card::before {
   grid-column: 1 / -1;
   margin-top: 2px;
   color: #111;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 780;
   line-height: 1.35;
 }
 
 .source-question-two {
   grid-column: 1 / -1;
-  padding-top: 22px;
-  font-size: clamp(15px, 2vw, 20px) !important;
+  padding-top: 18px;
+  font-size: clamp(14px, 1.8vw, 18px) !important;
   font-weight: 950 !important;
   text-align: center;
 }
@@ -3240,7 +3271,7 @@ body.stage-intro-mode .game-card::before {
 .source-read-rule {
   margin: 5px 0 3px;
   color: #111;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 950;
   line-height: 1.35;
 }
@@ -3253,9 +3284,9 @@ body.stage-intro-mode .game-card::before {
 .source-katakana-lines p {
   margin: 0;
   color: #111;
-  font-size: clamp(13px, 1.8vw, 17px);
+  font-size: clamp(12px, 1.6vw, 15px);
   font-weight: 950;
-  line-height: 1.35;
+  line-height: 1.26;
   letter-spacing: 0;
 }
 
@@ -3266,6 +3297,13 @@ body.stage-intro-mode .game-card::before {
   margin-top: 3px;
   color: #111;
   font-size: 11px;
+  font-weight: 900;
+}
+
+.source-answer-row small {
+  margin-left: auto;
+  color: #111;
+  font-size: 10px;
   font-weight: 900;
 }
 
@@ -3687,6 +3725,17 @@ body.stage-intro-mode .game-card::before {
   .source-problem-card {
     max-height: 38dvh;
     padding: 8px;
+  }
+
+  .source-puzzle-title-row {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .source-puzzle-title-row img {
+    justify-self: start;
+    width: min(100%, 210px);
+    max-height: 58px;
   }
 
   .source-question-grid {
