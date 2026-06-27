@@ -248,6 +248,7 @@ function resetStageInput() {
 
 function render() {
   const stage = stages[state.stageIndex] || stages[0];
+  document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   elements.stageCount.textContent = `${Math.min(state.stageIndex + 1, stages.length)} / ${stages.length}`;
   elements.spellCount.textContent = String(state.spells.length);
   renderNav();
@@ -483,29 +484,14 @@ function renderGateStage(stage) {
   const selected = done ? [...stage.correct].slice(0, stage.slots) : state.slotInput.slice(0, stage.slots);
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
-      <div class="stage-hero">
-        <div>
-          <span class="stage-kicker">STAGE ${stage.number}</span>
-          <h2>${stage.title}</h2>
-          <p>${stage.situation}</p>
-        </div>
-        <div class="stage-progress-pill">${done ? stage.correctEffect : "未解決"}</div>
-      </div>
+      ${gatePlayableVisual(stage, done, feedback)}
 
-      <section class="stage-visual-card premium-visual-card" aria-label="割れた足場の状況">
-        <div class="visual-topline">
-          <span>状況</span>
-          <strong>${done ? stage.correctEffect : stage.situation}</strong>
-        </div>
-        ${gatePlayableVisual(stage, done, feedback)}
-      </section>
-
-      <section class="spell-workbench puzzle-console" aria-label="呪文入力">
-        <div class="console-head">
+      <section class="spell-device" aria-label="呪文入力">
+        <div class="device-head">
           <div>
-            <span class="panel-label">目的</span>
-            <h3>${stage.goal}</h3>
-            <p class="console-subcopy">${stage.operation}</p>
+            <span>呪文装置</span>
+            <strong>${stage.goal}</strong>
+            <p>${stage.operation}</p>
           </div>
           <div class="trial-state">
             <span>石板</span>
@@ -513,46 +499,46 @@ function renderGateStage(stage) {
           </div>
         </div>
 
-        <div class="spell-input-head">
-          <span>呪文入力</span>
-          <button class="text-button" id="clearSlots" type="button" ${done ? "disabled" : ""}>消す</button>
+        <div class="device-main-row">
+          <div class="premium-slot-row magic-slots">
+            ${Array.from({ length: stage.slots })
+              .map((_, i) => `<button class="premium-slot" type="button" data-slot="${i}">${selected[i] || ""}</button>`)
+              .join("")}
+          </div>
+          <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "解決済み" : "呪文を唱える"}</button>
         </div>
-        <div class="premium-slot-row">
-          ${Array.from({ length: stage.slots })
-            .map((_, i) => `<button class="premium-slot" type="button" data-slot="${i}">${selected[i] || ""}</button>`)
-            .join("")}
-        </div>
-        <div class="premium-tile-grid">
+
+        <div class="premium-tile-grid stone-tile-rack">
           ${stage.tiles
             .map((tile) => `<button class="word-button console-word-button" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`)
             .join("")}
         </div>
-        <div class="premium-actions">
+
+        <div class="device-actions">
+          <button class="secondary-button" id="showHint" type="button">${hintLevel ? "次のヒント" : "ヒント"}</button>
           <button class="secondary-button" id="archiveToggle" type="button">記録</button>
-          <button class="secondary-button" id="showHint" type="button">${hintLevel ? "次のヒント" : "ヒントを見る"}</button>
-          <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "解決済み" : "呪文を唱える"}</button>
+          <button class="text-button" id="clearSlots" type="button" ${done ? "disabled" : ""}>消す</button>
         </div>
+
         ${renderGateResult(stage, done, feedback)}
         ${renderGateHints(stage, hintLevel)}
-      </section>
 
-      <details class="archive-drawer" id="sourceArchive">
-        <summary>原案の設定とルール</summary>
-        <div class="archive-body">
-          <p>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。」</p>
-          <ul>
-            <li>呪文は石板にカタカナで記入する。</li>
-            <li>どこに、どの様に使うかを示す。</li>
-            <li>石板の数に合った文字数の呪文しか唱えられない。</li>
-            <li>習得した呪文には☆マークが付き、以後使用可能になる。</li>
-            <li>ステージ1の試練は「穴が開いていて通ることが出来ない」。赤い木札には「漬物石」と残されている。</li>
-          </ul>
+        <details class="archive-drawer" id="sourceArchive">
+          <summary>原案の記録</summary>
+          <div class="archive-body">
+            <p>「え〜ちょっくらちょっく、聞こえとる？ あ、これは紙か。気を取り直して、ここは異空間。この空間にいる奴が自分で異空間って言うのは変かのう？ まあ細かい事はよい。ここは未来空間でも過去空間でもない、まさに現在異空間なんじゃ。キミタチには協力してこの空間からの脱出を目指してもらいたい。」</p>
+            <ul>
+              <li>呪文は石板にカタカナで記入する。</li>
+              <li>石板の数に合った文字数の呪文しか唱えられない。</li>
+              <li>ステージ1の試練は「穴が開いていて通ることが出来ない」。赤い木札には「漬物石」と残されている。</li>
+            </ul>
+          </div>
+        </details>
+
+        <div class="stage-actions">
+          ${done ? `<button class="primary-button" id="nextButton" type="button">次へ進む</button>` : ""}
         </div>
-      </details>
-
-      <div class="stage-actions">
-        ${done ? `<button class="primary-button" id="nextButton" type="button">次へ進む</button>` : ""}
-      </div>
+      </section>
     </section>
   `;
   wireGateStage(stage, done);
@@ -560,23 +546,70 @@ function renderGateStage(stage) {
 
 function gatePlayableVisual(stage, done, feedback) {
   return `
-    <div class="gate-play-visual ${done ? "is-open" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
+    <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/stage01-broken-floor.png" alt="" loading="eager" />
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
-      <div class="sound-fragments">
+      <div class="stage-hud">
+        <div>
+          <span>異空間からの脱出</span>
+          <strong>${stage.number} / ${stage.title}</strong>
+        </div>
+        <em>${state.stageIndex + 1} / ${stages.length}</em>
+      </div>
+      <div class="stage-objective">
+        <p>${stage.situation}</p>
+        <strong>${done ? stage.correctEffect : "音片を組み合わせ、穴を越える呪文を作れ。"}</strong>
+      </div>
+      ${gateProblemTablet(stage, done)}
+      <div class="floor-glyphs" aria-hidden="true">
         ${[
           ["モ", "fragment-a"],
           ["ツ", "fragment-b"],
           ["ノ", "fragment-c"],
           ["ケ", "fragment-d"],
         ]
-          .map(([tile, className]) => `<button class="word-button visual-word-button ${className}" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`)
+          .map(([tile, className]) => `<span class="floor-glyph ${className}">${tile}</span>`)
           .join("")}
       </div>
-      <div class="visual-caption">${done ? stage.correctEffect : stage.goal}</div>
     </div>
+  `;
+}
+
+function gateProblemTablet(stage, done) {
+  const problem = stage.textProblem;
+  if (!problem) return "";
+  return `
+    <section class="problem-tablet ${done ? "is-solved" : ""}" aria-label="問題文">
+      <div class="problem-tablet-head">
+        <span>問題文</span>
+        <strong>${problem.subtitle}</strong>
+      </div>
+      <p class="problem-rule">${problem.rule.replace("呪文のルール: ", "")}</p>
+      <div class="kanji-device" aria-label="原案の変換条件">
+        <div class="kanji-row">
+          <span>上</span>
+          <b>納豆</b>
+        </div>
+        <div class="flow-rune">
+          <i></i>
+          <strong>粘り強さを下へ移す</strong>
+          <i></i>
+        </div>
+        <div class="kanji-row">
+          <span>下</span>
+          <b>短気</b>
+        </div>
+      </div>
+      <p class="problem-prompt">${problem.prompt}</p>
+      <div class="answer-preview" aria-label="4文字の答え">
+        ${Array.from({ length: problem.answerBoxes || stage.slots })
+          .map(() => `<span></span>`)
+          .join("")}
+      </div>
+      <small>${done ? stage.correctEffect : "答えは下の音片から選んで入力する。"}</small>
+    </section>
   `;
 }
 
@@ -587,7 +620,7 @@ function renderGateResult(stage, done, feedback) {
   if (feedback?.type === "fail") {
     return `<p class="result-message is-fail">${stage.failMessage}</p>`;
   }
-  return `<p class="result-message">${stage.operation}</p>`;
+  return "";
 }
 
 function renderGateHints(stage, hintLevel) {
