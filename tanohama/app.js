@@ -94,10 +94,8 @@ const stages = [
     scene: "ice",
     sceneCaption: "凍った足場を渡るには、氷に効くアイテムを選ぶ必要がある。",
     briefing: "式が指す番号は3。3番の棚には、口から火を出す道具が置かれている。",
-    problems: [
-      { file: "page_04.jpg", title: "アイテム屋 原問題" },
-      { file: "page_05.jpg", title: "ステージ3 原問題" },
-    ],
+    problems: [{ file: "stage03-problem-clean.png", title: "ステージ3 原問題" }],
+    sourceProblemImage: "stage03-problem-clean.png",
     textProblem: {
       title: "ステージ3",
       subtitle: "凍った足場",
