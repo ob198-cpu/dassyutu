@@ -478,38 +478,36 @@ function renderGateStage(stage) {
   const hintLevel = Math.min(Number(state.hintLevels[stage.id] || 0), stage.hints.length);
   const selected = done ? [...stage.correct].slice(0, stage.slots) : state.slotInput.slice(0, stage.slots);
   elements.game.innerHTML = `
-    <section class="stage-panel premium-stage ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
+    <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       <div class="stage-hero">
         <div>
           <span class="stage-kicker">STAGE ${stage.number}</span>
           <h2>${stage.title}</h2>
-          <p>${stage.shortMission}</p>
+          <p>足場が崩れ、先へ進めない。音片を選び、4文字の呪文を作る。</p>
         </div>
         <div class="stage-progress-pill">${done ? "道が開いた" : "未解決"}</div>
       </div>
 
-      <div class="gameplay-layout">
-        <section class="stage-visual-card" aria-label="割れた足場の状況">
-          <div class="visual-topline">
-            <span>現在地</span>
-            <strong>割れた床の向こうに出口が見える</strong>
-          </div>
-          ${gatePlayableVisual(done)}
-        </section>
+      <section class="stage-visual-card premium-visual-card" aria-label="割れた足場の状況">
+        <div class="visual-topline">
+          <span>現在地</span>
+          <strong>${done ? "光の橋がかかり、出口へ進める" : "割れた床の向こうに出口が見える"}</strong>
+        </div>
+        ${gatePlayableVisual(done, feedback)}
+      </section>
 
-        <aside class="trial-panel">
-          <span class="panel-label">現在の試練</span>
-          <h3>試練：${stage.trialName}</h3>
-          <p>床の音片を選んで、4文字の呪文を完成させる。</p>
+      <section class="spell-workbench puzzle-console" aria-label="呪文入力">
+        <div class="console-head">
+          <div>
+            <span class="panel-label">現在の試練</span>
+            <h3>試練：${stage.trialName}</h3>
+          </div>
           <div class="trial-state">
             <span>石板</span>
             <strong>${selected.length} / ${stage.slots}</strong>
           </div>
-          <button class="secondary-button" id="showHint" type="button">${hintLevel ? "次のヒント" : "ヒントを見る"}</button>
-        </aside>
-      </div>
+        </div>
 
-      <section class="spell-workbench" aria-label="呪文入力">
         <div class="spell-input-head">
           <span>呪文入力</span>
           <button class="text-button" id="clearSlots" type="button" ${done ? "disabled" : ""}>消す</button>
@@ -520,10 +518,13 @@ function renderGateStage(stage) {
             .join("")}
         </div>
         <div class="premium-tile-grid">
-          ${stage.tiles.map((tile) => `<button class="word-button" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`).join("")}
+          ${stage.tiles
+            .map((tile) => `<button class="word-button console-word-button" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`)
+            .join("")}
         </div>
         <div class="premium-actions">
           <button class="secondary-button" id="archiveToggle" type="button">記録</button>
+          <button class="secondary-button" id="showHint" type="button">${hintLevel ? "次のヒント" : "ヒントを見る"}</button>
           <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "解決済み" : "呪文を唱える"}</button>
         </div>
         ${renderGateResult(stage, done, feedback)}
@@ -552,18 +553,24 @@ function renderGateStage(stage) {
   wireGateStage(stage, done);
 }
 
-function gatePlayableVisual(done) {
+function gatePlayableVisual(done, feedback) {
   return `
-    <div class="gate-play-visual ${done ? "is-open" : ""}">
-      <div class="stone-depth"></div>
-      <div class="far-door"></div>
-      <div class="left-floor"></div>
-      <div class="right-floor"></div>
-      <div class="rift"></div>
+    <div class="gate-play-visual ${done ? "is-open" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
+      <img class="stage-bg-art" src="./assets/stage01-broken-floor.png" alt="" loading="eager" />
+      <div class="art-vignette"></div>
+      <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
       <div class="sound-fragments">
-        <span>モ</span><span>ツ</span><span>ノ</span><span>ケ</span>
+        ${[
+          ["モ", "fragment-a"],
+          ["ツ", "fragment-b"],
+          ["ノ", "fragment-c"],
+          ["ケ", "fragment-d"],
+        ]
+          .map(([tile, className]) => `<button class="word-button visual-word-button ${className}" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`)
+          .join("")}
       </div>
+      <div class="visual-caption">${done ? "呪文の光が足場をつないだ" : "裂け目を越えるための呪文が必要だ"}</div>
     </div>
   `;
 }
