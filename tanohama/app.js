@@ -269,12 +269,14 @@ function renderNav() {
 
 function renderScene(stage) {
   const sceneClass = `scene-${stage.scene}`;
+  const isSourceScene = stage.scene === "gate" || stage.scene === "corridor";
+  const done = stage.id ? isStageCleared(stage.id) : false;
   return `
-    <div class="scene ${sceneClass}" aria-hidden="true">
-      <div class="void-grid"></div>
-      ${stage.sceneCaption ? `<div class="scene-caption">${stage.sceneCaption}</div>` : ""}
-      ${stage.scene === "gate" ? gateScene() : ""}
-      ${stage.scene === "corridor" ? corridorScene() : ""}
+    <div class="scene ${sceneClass} ${isSourceScene ? "source-scene" : ""}" aria-hidden="true">
+      ${isSourceScene ? "" : `<div class="void-grid"></div>`}
+      ${!isSourceScene && stage.sceneCaption ? `<div class="scene-caption">${stage.sceneCaption}</div>` : ""}
+      ${stage.scene === "gate" ? gateScene(done) : ""}
+      ${stage.scene === "corridor" ? corridorScene(done) : ""}
       ${stage.scene === "ice" ? iceScene() : ""}
       ${stage.scene === "time" ? timeScene() : ""}
       ${stage.scene === "boss" ? bossScene() : ""}
@@ -329,23 +331,74 @@ function renderProblems(stage, done = false) {
   `;
 }
 
-function gateScene() {
+function gateScene(done) {
+  const spell = done ? "ツケモノ" : "□□□□";
+  const slots = done ? ["ツ", "ケ", "モ", "ノ"] : ["", "", "", ""];
   return `
-    <div class="platform left"></div>
-    <div class="platform right"></div>
-    <div class="gap"></div>
-    <div class="stone-card"><span>漬物石</span></div>
-    <div class="avatar"></div>
+    <div class="source-sheet">
+      <div class="source-title">【現在異空間　からの脱出】</div>
+      <p class="source-lead">マッシュ室で楽しく焼肉をしていた一行は、突然、異空間へ飛ばされてしまった。その時、一枚の紙がヒラリと落ちた。</p>
+      <p class="source-message">「ここは異空間。キミタチには協力してこの空間からの脱出を目指してもらいたい。ここには全部で4つのステージがある。各ステージをクリアすると呪文を習得する事が可能じゃ。その呪文をうまく使い、試練を打開して先へ進んでもらいたい。」</p>
+      <p class="source-rule">呪文のルール：呪文は石板にカタカナで記入し、どこに、どの様に使うかを示す。石板の数に合った文字数の呪文しか唱える事が出来ない。習得した呪文には☆マークが付き、以後使用可能となる。</p>
+      <div class="original-flow">
+        <section class="original-stage is-active">
+          <h4>ステージ1</h4>
+          <div class="trial-art hole-trial">
+            <div class="stickman"></div>
+            <div class="black-platform platform-a"></div>
+            <div class="black-platform platform-b"></div>
+            <div class="pit-outline"></div>
+          </div>
+          <p class="trial-text">試練：穴が開いていて通ることが出来ない</p>
+          <div class="stone-slots" aria-hidden="true">${slots.map((char) => `<span>${char}</span>`).join("")}</div>
+          <div class="spell-frame">
+            <strong>☆${spell}</strong>
+            <em>漬物石だろうか？ 謎の四角を1個生成できる。</em>
+            <small>この土台の上にのみ生成可能</small>
+          </div>
+        </section>
+        <div class="flow-arrow">→</div>
+        <section class="original-stage is-preview">
+          <h4>ステージ2</h4>
+          <div class="stage-caption-red">『扉のあかない通路』</div>
+          <div class="trial-art door-trial">
+            <div class="runman"></div>
+            <div class="door-shape"></div>
+          </div>
+          <p class="trial-text">試練：扉があり通ることが出来ない</p>
+          <div class="stone-slots six" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="spell-frame">
+            <strong>☆□□□□□□</strong>
+            <em>「　」内の色を消す事が出来る。</em>
+            <small>「　」内の内容の意味が通れば、それは現実となる</small>
+          </div>
+        </section>
+      </div>
+    </div>
   `;
 }
 
-function corridorScene() {
+function corridorScene(done) {
+  const spell = done ? "ゴクロウサマ" : "□□□□□□";
+  const slots = done ? ["ゴ", "ク", "ロ", "ウ", "サ", "マ"] : ["", "", "", "", "", ""];
   return `
-    <div class="corridor-wall">
-      ${["G", "O", "K", "U", "R", "O", "U", "S", "A", "M", "A"].map((letter, i) => `<span style="--i:${i}">${letter}</span>`).join("")}
+    <div class="source-sheet source-sheet-single">
+      <div class="source-title">ステージ2　『扉のあかない通路』</div>
+      <p class="source-rule">通路には扉がある。原案では、色の指定と「　」内の意味を使って、通れる状態に変える呪文を作る。</p>
+      <section class="original-stage is-active">
+        <div class="trial-art door-trial large">
+          <div class="runman"></div>
+          <div class="door-shape"></div>
+        </div>
+        <p class="trial-text">試練：扉があり通ることが出来ない</p>
+        <div class="stone-slots six" aria-hidden="true">${slots.map((char) => `<span>${char}</span>`).join("")}</div>
+        <div class="spell-frame">
+          <strong>☆${spell}</strong>
+          <em>「　」内の色を消す事が出来る。</em>
+          <small>「　」内の内容の意味が通れば、それは現実となる</small>
+        </div>
+      </section>
     </div>
-    <div class="hidden-door"></div>
-    <div class="avatar corridor-avatar"></div>
   `;
 }
 

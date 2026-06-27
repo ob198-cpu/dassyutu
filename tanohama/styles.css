@@ -417,6 +417,299 @@ h1 {
     linear-gradient(180deg, #172a42 0%, #091525 56%, #04080e 100%);
 }
 
+.source-scene {
+  height: auto;
+  min-height: 520px;
+  padding: 10px;
+  overflow: visible;
+  background: #f7f1dc;
+  color: #111827;
+}
+
+.source-sheet {
+  width: 100%;
+  min-height: 500px;
+  border: 2px solid #111827;
+  background: #fffdf2;
+  padding: 10px 12px 12px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #111827;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+.source-sheet-single {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.source-title {
+  background: #8f1111;
+  color: #fff;
+  border: 2px solid #111827;
+  text-align: center;
+  font-weight: 950;
+  font-size: clamp(18px, 4.2vw, 30px);
+  line-height: 1.15;
+  padding: 6px;
+  letter-spacing: 0;
+}
+
+.source-lead {
+  margin: 6px 0 4px;
+  color: #7b7b00;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.source-message {
+  margin: 5px 0;
+  border: 1px solid #d6a8a8;
+  background: #fff8e8;
+  color: #9a250f;
+  padding: 6px;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.source-rule {
+  margin: 6px 0 10px;
+  color: #09155a;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.original-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.original-stage {
+  min-width: 0;
+  text-align: center;
+}
+
+.original-stage h4 {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: clamp(24px, 7vw, 42px);
+  line-height: 1;
+  font-weight: 950;
+}
+
+.stage-caption-red {
+  margin: 0 0 4px;
+  color: #c82121;
+  font-size: clamp(16px, 4.5vw, 26px);
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.flow-arrow {
+  color: #111827;
+  font-size: 34px;
+  font-weight: 950;
+  align-self: center;
+}
+
+.trial-art {
+  position: relative;
+  height: 118px;
+  margin: 0 auto 4px;
+  background: #fffdf2;
+}
+
+.hole-trial {
+  max-width: 300px;
+}
+
+.black-platform {
+  position: absolute;
+  bottom: 28px;
+  height: 34px;
+  background: #000;
+}
+
+.platform-a {
+  left: 6%;
+  width: 38%;
+}
+
+.platform-b {
+  right: 6%;
+  width: 38%;
+}
+
+.pit-outline {
+  position: absolute;
+  left: 43%;
+  bottom: 0;
+  width: 14%;
+  height: 44px;
+  border: 2px solid #999;
+  border-top: 0;
+  background: #fffdf2;
+}
+
+.stickman {
+  position: absolute;
+  left: 28%;
+  bottom: 62px;
+  width: 30px;
+  height: 48px;
+}
+
+.stickman::before,
+.runman::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #000;
+}
+
+.stickman::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  width: 4px;
+  height: 30px;
+  background: #000;
+  box-shadow:
+    -10px 10px 0 -1px #000,
+    10px 10px 0 -1px #000,
+    -7px 30px 0 -1px #000,
+    7px 30px 0 -1px #000;
+}
+
+.door-trial {
+  max-width: 260px;
+  height: 112px;
+}
+
+.door-trial.large {
+  height: 160px;
+}
+
+.door-shape {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  width: 58px;
+  height: 86px;
+  background: #000;
+}
+
+.door-trial.large .door-shape {
+  width: 82px;
+  height: 122px;
+}
+
+.door-shape::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 42%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.runman {
+  position: absolute;
+  left: 28%;
+  bottom: 22px;
+  width: 42px;
+  height: 50px;
+}
+
+.runman::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 4px;
+  height: 28px;
+  background: #000;
+  transform: rotate(24deg);
+  box-shadow:
+    -12px 13px 0 -1px #000,
+    13px 15px 0 -1px #000,
+    -8px 31px 0 -1px #000,
+    13px 31px 0 -1px #000;
+}
+
+.trial-text {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 950;
+  line-height: 1.25;
+}
+
+.stone-slots {
+  display: inline-grid;
+  grid-template-columns: repeat(4, 34px);
+  border: 1px solid #6b7280;
+  background: #d8e2ce;
+}
+
+.stone-slots.six {
+  grid-template-columns: repeat(6, 28px);
+}
+
+.stone-slots span {
+  display: grid;
+  place-items: center;
+  min-height: 32px;
+  border-left: 1px solid #6b7280;
+  color: #111827;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.stone-slots span:first-child {
+  border-left: 0;
+}
+
+.stone-slots span:empty::after,
+.spell-name-blank::after {
+  content: "?";
+  color: rgba(17, 24, 39, 0.28);
+}
+
+.spell-frame {
+  margin-top: 8px;
+  border: 2px solid #cf2f2f;
+  background: #fff;
+  color: #cf2f2f;
+  padding: 5px 6px;
+  font-size: 11px;
+  font-weight: 950;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.spell-frame strong,
+.spell-frame em,
+.spell-frame small {
+  display: block;
+  font-style: normal;
+}
+
+.spell-frame small {
+  color: #111827;
+}
+
 .scene-caption {
   position: absolute;
   left: 10px;
