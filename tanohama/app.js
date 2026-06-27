@@ -130,7 +130,8 @@ const stages = [
     scene: "time",
     sceneCaption: "三つの色ランプと計器がずれている。時差を消す装置名を探す。",
     briefing: "青、緑、黄の順に読んで得た六音。時を移動する装置の名前を入力する。",
-    problems: [{ file: "page_06.jpg", title: "ステージ4 原問題" }],
+    problems: [{ file: "stage04-problem-clean.png", title: "ステージ4 原問題" }],
+    sourceProblemImage: "stage04-problem-clean.png",
     solutionImage: "stage04-solution-clean.png",
     textProblem: {
       title: "ステージ4",
