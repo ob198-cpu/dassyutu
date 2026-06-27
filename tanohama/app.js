@@ -96,6 +96,7 @@ const stages = [
     briefing: "式が指す番号は3。3番の棚には、口から火を出す道具が置かれている。",
     problems: [{ file: "stage03-problem-clean.png", title: "ステージ3 原問題" }],
     sourceProblemImage: "stage03-problem-clean.png",
+    solutionImage: "stage03-solution-clean.png",
     textProblem: {
       title: "ステージ3",
       subtitle: "凍った足場",
@@ -130,6 +131,7 @@ const stages = [
     sceneCaption: "三つの色ランプと計器がずれている。時差を消す装置名を探す。",
     briefing: "青、緑、黄の順に読んで得た六音。時を移動する装置の名前を入力する。",
     problems: [{ file: "page_06.jpg", title: "ステージ4 原問題" }],
+    solutionImage: "stage04-solution-clean.png",
     textProblem: {
       title: "ステージ4",
       subtitle: "時空が歪んで、時差が発生した",
@@ -408,6 +410,21 @@ function renderProblems(stage, done = false) {
           )
           .join("")}
       </div>
+    </section>
+  `;
+}
+
+function renderSolution(stage, done = false) {
+  if (!done || !stage.solutionImage) return "";
+  return `
+    <section class="problem-section source-image-problem solution-section">
+      <div class="section-head">
+        <strong>正解後の解説</strong>
+        <span>タップで拡大</span>
+      </div>
+      <button class="source-problem-image-wrap solution-image-wrap" type="button" data-problem="${stage.solutionImage}" data-title="${stage.number} ${stage.title} 解説">
+        <img src="./assets/${stage.solutionImage}" alt="${stage.number} ${stage.title} 解説" loading="eager" />
+      </button>
     </section>
   `;
 }
@@ -756,6 +773,7 @@ function renderStage(stage) {
       ${stage.type === "tiles" ? tilePuzzle(stage, done) : ""}
       ${stage.type === "shop" ? shopPuzzle(stage, done) : ""}
       ${stage.type === "console" ? consolePuzzle(stage, done) : ""}
+      ${renderSolution(stage, done)}
       <div class="spell-ledger">${state.spells.map((spell) => `<span class="spell-chip">${spell}</span>`).join("")}</div>
       <div class="stage-actions">
         ${done ? `<button class="primary-button" id="nextButton" type="button">${state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次へ"}</button>` : ""}
@@ -888,6 +906,10 @@ function checkStage(stage, value) {
   addUnique(state.cleared, stage.id);
   addUnique(state.spells, stage.reward);
   resetStageInput();
+  if (stage.solutionImage) {
+    render();
+    return;
+  }
   note.textContent = `正解。${stage.reward} を獲得した。`;
   note.className = "note is-ok";
   setTimeout(() => {

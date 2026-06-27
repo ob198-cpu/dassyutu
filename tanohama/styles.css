@@ -303,6 +303,14 @@ h1 {
   background: #fff;
 }
 
+.solution-section {
+  border-color: rgba(255, 92, 92, 0.58);
+}
+
+.solution-image-wrap {
+  box-shadow: 0 0 0 1px rgba(255, 92, 92, 0.18);
+}
+
 .problem-card span {
   display: flex;
   align-items: center;
