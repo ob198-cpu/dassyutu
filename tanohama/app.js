@@ -12,6 +12,7 @@ const stages = [
     correct: "ツケモノ",
     scene: "gate",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある5音だけが反応する。",
+    problems: [{ file: "page_02.jpg", title: "ステージ1 原問題" }],
   },
   {
     id: "path",
@@ -26,6 +27,7 @@ const stages = [
     correct: "ゴクロウサマ",
     scene: "corridor",
     briefing: "青い矢印の順に読む。最後に残るのは、通り抜けた者へ向けた六音の言葉。",
+    problems: [{ file: "page_03.jpg", title: "ステージ2 原問題" }],
   },
   {
     id: "shop",
@@ -38,6 +40,10 @@ const stages = [
     correct: "ドラブレス",
     scene: "ice",
     briefing: "式が指す番号は3。3番の棚には、口から火を出す道具が置かれている。",
+    problems: [
+      { file: "page_04.jpg", title: "アイテム屋 原問題" },
+      { file: "page_05.jpg", title: "ステージ3 原問題" },
+    ],
     items: [
       { name: "メラソード", detail: "切ったものが燃える", icon: "sword" },
       { name: "ソラブーツ", detail: "装備すると素早くなる", icon: "boots" },
@@ -56,6 +62,7 @@ const stages = [
     correct: "タイムマシン",
     scene: "time",
     briefing: "青、緑、黄の順に読んで得た六音。時を移動する装置の名前を入力する。",
+    problems: [{ file: "page_06.jpg", title: "ステージ4 原問題" }],
   },
   {
     id: "boss",
@@ -66,6 +73,7 @@ const stages = [
     type: "boss",
     scene: "boss",
     briefing: "上から順に呪文を放つ。間違えると獣が態勢を立て直す。",
+    problems: [{ file: "page_07.jpg", title: "ラスボス 原問題" }],
   },
 ];
 
@@ -208,6 +216,30 @@ function renderScene(stage) {
   `;
 }
 
+function renderProblems(stage) {
+  if (!stage.problems?.length) return "";
+  return `
+    <section class="problem-section">
+      <div class="section-head">
+        <strong>原問題</strong>
+        <span>タップで拡大</span>
+      </div>
+      <div class="problem-list">
+        ${stage.problems
+          .map(
+            (problem) => `
+              <button class="problem-card" type="button" data-problem="${problem.file}" data-title="${problem.title}">
+                <img src="./assets/${problem.file}" alt="${problem.title}" loading="lazy" />
+                <span>${problem.title}</span>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
 function gateScene() {
   return `
     <div class="platform left"></div>
@@ -267,6 +299,7 @@ function renderStage(stage) {
       </div>
       ${renderScene(stage)}
       <p class="mission">${stage.mission}</p>
+      ${renderProblems(stage)}
       <section class="brief-card">
         <strong>手がかり</strong>
         <p>${stage.briefing}</p>
@@ -281,6 +314,7 @@ function renderStage(stage) {
     </section>
   `;
   wireStage(stage, done);
+  wireProblems();
 }
 
 function tilePuzzle(stage, done) {
@@ -422,6 +456,7 @@ function renderBoss(stage) {
       </div>
       ${renderScene(stage)}
       <p class="mission">${stage.mission}</p>
+      ${renderProblems(stage)}
       <section class="brief-card">
         <strong>戦闘方針</strong>
         <p>${stage.briefing}</p>
@@ -461,6 +496,7 @@ function renderBoss(stage) {
     state.bossInput = [];
     render();
   });
+  wireProblems();
 }
 
 function castSpell(spell) {
@@ -507,7 +543,22 @@ function resetGame() {
   render();
 }
 
+function wireProblems() {
+  document.querySelectorAll("[data-problem]").forEach((button) => {
+    button.addEventListener("click", () => {
+      elements.docImage.src = `./assets/${button.dataset.problem}`;
+      elements.docTitle.textContent = button.dataset.title || "原問題";
+      elements.dialog.showModal();
+    });
+  });
+}
+
 elements.reset.addEventListener("click", resetGame);
 if (elements.closeDoc) elements.closeDoc.addEventListener("click", () => elements.dialog.close());
+if (elements.dialog) {
+  elements.dialog.addEventListener("click", (event) => {
+    if (event.target === elements.dialog) elements.dialog.close();
+  });
+}
 
 render();

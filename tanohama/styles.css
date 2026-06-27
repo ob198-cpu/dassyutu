@@ -228,6 +228,69 @@ h1 {
   font-weight: 700;
 }
 
+.problem-section {
+  border: 1px solid rgba(255, 232, 121, 0.38);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 232, 121, 0.08), rgba(5, 12, 23, 0.5)),
+    rgba(5, 12, 23, 0.72);
+  padding: 10px;
+  margin: 12px 0;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.section-head strong {
+  color: var(--gold);
+  font-size: 14px;
+}
+
+.section-head span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.problem-list {
+  display: grid;
+  gap: 10px;
+}
+
+.problem-card {
+  width: 100%;
+  border: 1px solid rgba(255, 232, 121, 0.42);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0;
+  background: #f5efd9;
+  color: #162033;
+  text-align: left;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+.problem-card img {
+  display: block;
+  width: 100%;
+  background: #f5efd9;
+}
+
+.problem-card span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 7px 10px;
+  background: #fff7d8;
+  font-size: 13px;
+  font-weight: 950;
+}
+
 .scene {
   position: relative;
   height: 248px;
