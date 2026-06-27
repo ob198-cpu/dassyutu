@@ -54,7 +54,7 @@ button {
 }
 
 .phone-shell {
-  width: min(100%, 480px);
+  width: min(100%, 760px);
   min-height: 100dvh;
   margin: 0 auto;
   padding: max(12px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom));
@@ -277,7 +277,6 @@ h1 {
 .doc-card img {
   display: block;
   width: 100%;
-  max-height: 285px;
   object-fit: contain;
   background: var(--paper);
 }
@@ -351,6 +350,29 @@ h1 {
 
 .note.is-ok {
   color: var(--ok);
+}
+
+.readable-card {
+  border: 1px solid rgba(255, 232, 121, 0.48);
+  border-radius: 8px;
+  background: rgba(255, 232, 121, 0.08);
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.readable-card strong {
+  display: block;
+  color: var(--gold);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.readable-card p {
+  margin: 6px 0;
+  color: #f3f8ff;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 750;
 }
 
 .spell-ledger {
@@ -524,14 +546,6 @@ h1 {
 }
 
 @media (min-width: 780px) {
-  .phone-shell {
-    width: min(100%, 860px);
-  }
-
-  .doc-stack {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .stage-actions {
     grid-template-columns: 1fr auto;
   }

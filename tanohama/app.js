@@ -5,9 +5,14 @@ const stages = [
     title: "入口と穴の通路",
     tag: "呪文獲得",
     mission: "異空間に飛ばされた。まずは穴をふさいで通路を作る呪文を見つける。",
+    readable: [
+      "読む場所: 「ステージ1の解き方」と、下部の答え欄。",
+      "やること: 赤枠の漢字を見て、下のカタカナ列から5文字の呪文を読む。",
+      "入力する形: カタカナ5文字。",
+    ],
     docs: [
-      { file: "page_01.jpg", title: "現在異空間からの脱出" },
       { file: "page_02.jpg", title: "ステージ1の解き方" },
+      { file: "page_01.jpg", title: "全体資料" },
     ],
     question: "穴をふさぐための呪文は？",
     answers: ["ツケモノ", "つけもの", "漬物"],
@@ -20,6 +25,11 @@ const stages = [
     title: "扉のない通路",
     tag: "色の迷路",
     mission: "扉のない通路に入った。色の迷路から、通れる道を作る呪文を読む。",
+    readable: [
+      "読む場所: ピンクの色マス全体と、左下の答え欄。",
+      "やること: ①②③④の矢印順に進み、色と白丸の文字を追う。",
+      "入力する形: ねぎらいの言葉、カタカナ6文字。",
+    ],
     docs: [{ file: "page_03.jpg", title: "ステージ2 色の迷路" }],
     question: "扉のない通路を進む呪文は？",
     answers: ["ゴクロウサマ", "ごくろうさま", "御苦労様"],
@@ -32,6 +42,11 @@ const stages = [
     title: "アイテム屋と凍った足場",
     tag: "アイテム選択",
     mission: "凍った足場を渡るには、アイテム屋で正しい道具を選ぶ必要がある。",
+    readable: [
+      "読む場所: アイテム屋の表と、ステージ3の氷の足場。",
+      "やること: 数字の式でアイテム番号を出し、氷を溶かせる道具を選ぶ。",
+      "入力する形: アイテム名、または番号。",
+    ],
     docs: [
       { file: "page_04.jpg", title: "アイテム屋" },
       { file: "page_05.jpg", title: "凍った足場" },
@@ -47,6 +62,11 @@ const stages = [
     title: "時差の部屋",
     tag: "FINAL ANSWER",
     mission: "時空が歪み、時差が発生した。四つの小謎を解き、時差を消す手段を見つける。",
+    readable: [
+      "読む場所: ①〜④の小謎と、下部の FINAL ANSWER。",
+      "やること: それぞれの答えを、青→緑→黄の順で読んでつなげる。",
+      "入力する形: 時間を移動する装置、カタカナ6文字。",
+    ],
     docs: [{ file: "page_06.jpg", title: "ステージ4 時差の部屋" }],
     question: "時差をなくすための FINAL ANSWER は？",
     answers: ["タイムマシン", "たいむましん"],
@@ -59,6 +79,11 @@ const stages = [
     title: "ラスボス戦",
     tag: "呪文順入力",
     mission: "出口を見つけたが、ラスボスが立ちはだかった。資料の順に呪文を放つ。",
+    readable: [
+      "読む場所: ラスボス戦の左側に並ぶ呪文欄。",
+      "やること: 上から下へ、資料に書かれた順番で呪文ボタンを押す。",
+      "間違えたら: 一つ戻すで直せる。",
+    ],
     docs: [{ file: "page_07.jpg", title: "ラスボス戦 呪文一覧" }],
     boss: true,
     hint: "資料の左側、上から下へ。バリから始まり、最後はバタフライエフェクト。",
@@ -206,6 +231,16 @@ function docsMarkup(stage) {
   `;
 }
 
+function readableMarkup(stage) {
+  if (!stage.readable?.length) return "";
+  return `
+    <section class="readable-card" aria-label="読める版の説明">
+      <strong>このステージで見る場所</strong>
+      ${stage.readable.map((line) => `<p>${line}</p>`).join("")}
+    </section>
+  `;
+}
+
 function renderPuzzle(stage) {
   const done = isStageCleared(stage.id);
   elements.game.innerHTML = `
@@ -216,6 +251,7 @@ function renderPuzzle(stage) {
       </div>
       <div class="portal" aria-hidden="true"></div>
       <p class="mission">${stage.mission}</p>
+      ${readableMarkup(stage)}
       ${docsMarkup(stage)}
       <form class="answer-box" id="answerForm">
         <label for="answerInput">${stage.question}</label>
@@ -289,6 +325,7 @@ function renderBoss(stage) {
         <span class="tag">${stage.tag}</span>
       </div>
       <p class="mission">${stage.mission}</p>
+      ${readableMarkup(stage)}
       ${docsMarkup(stage)}
       <div class="boss-arena">
         <div class="boss-visual" aria-label="ラスボス"></div>
