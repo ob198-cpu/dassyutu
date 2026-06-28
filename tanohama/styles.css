@@ -3216,14 +3216,14 @@ body.stage-intro-mode .game-card::before {
 
 .kana-board-overlay {
   position: absolute;
-  left: 3.4%;
-  right: 3.4%;
-  bottom: 4.7%;
-  height: 18%;
+  left: 3.2%;
+  right: 3.2%;
+  bottom: 10.8%;
+  height: 12.8%;
   z-index: 4;
   display: grid;
   align-content: center;
-  gap: 10%;
+  gap: 0;
   pointer-events: auto;
 }
 
@@ -3241,7 +3241,7 @@ body.stage-intro-mode .game-card::before {
   color: transparent;
   cursor: pointer;
   font: inherit;
-  font-size: clamp(11px, 1.9vw, 36px);
+  font-size: clamp(11px, 1.85vw, 34px);
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0;
@@ -3266,7 +3266,7 @@ body.stage-intro-mode .game-card::before {
 }
 
 .kana-glyph.is-composite {
-  font-size: clamp(10px, 1.45vw, 28px);
+  font-size: clamp(10px, 1.38vw, 26px);
   letter-spacing: 0;
 }
 
