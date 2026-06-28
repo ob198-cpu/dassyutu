@@ -254,6 +254,7 @@ function loadState() {
         slotPickerOpen: Boolean(saved.slotPickerOpen),
         hiddenProblems: saved.hiddenProblems && typeof saved.hiddenProblems === "object" ? saved.hiddenProblems : {},
         hiddenSpells: saved.hiddenSpells && typeof saved.hiddenSpells === "object" ? saved.hiddenSpells : {},
+        gatePanelMode: saved.gatePanelMode === "problem" ? "problem" : "spell",
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
@@ -262,7 +263,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, hintLevels: {}, feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -271,11 +272,13 @@ function saveState() {
 
 function forceGateProblemClosedOnStartup() {
   state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+  if (state.gatePanelMode === "problem") state.gatePanelMode = "spell";
 }
 
 function hideProblemOnStageEntry(stage) {
   if (stage?.id !== "gate") return;
   state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+  state.gatePanelMode = "spell";
 }
 
 function normalizeAnswer(value) {
@@ -621,6 +624,7 @@ function renderGateStage(stage) {
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
   const problemHidden = state.hiddenProblems?.[stage.id] === true;
   const spellHidden = state.hiddenSpells?.[stage.id] === true;
+  const gatePanelMode = state.gatePanelMode === "problem" ? "problem" : "spell";
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
     : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
@@ -632,13 +636,14 @@ function renderGateStage(stage) {
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback)}
 
-      ${spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""}" aria-label="呪文入力">
-        <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="呪文ウィンドウを閉じる">×</button>
+      ${spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
+        ${gatePanelMode === "problem" ? "" : `<button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="呪文ウィンドウを閉じる">×</button>`}
         ${
           done
             ? ""
+            : gatePanelMode === "problem"
+              ? gateProblemInscription(stage, done, false)
             : `
-              ${gateProblemInscription(stage, done, problemHidden)}
               ${renderSpellReference(stage)}
               ${renderSpellRuleNotice()}
 
@@ -739,6 +744,8 @@ function wireGateStage(stage, done) {
 
   document.querySelector("#closeProblemWindow")?.addEventListener("click", () => {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
+    state.gatePanelMode = "spell";
     state.slotPickerOpen = false;
     render();
   });
@@ -1079,6 +1086,7 @@ function resetGame() {
   state.slotPickerOpen = false;
   state.hiddenProblems = {};
   state.hiddenSpells = {};
+  state.gatePanelMode = "spell";
   state.hintLevels = {};
   state.feedback = null;
   state.isClear = false;
@@ -1108,6 +1116,16 @@ function showMenuMessage(title, message) {
 
 function focusCurrentProblem() {
   const stage = stages[state.stageIndex] || stages[0];
+  if (stage.id === "gate" && (state.hiddenSpells?.[stage.id] === true || state.hiddenProblems?.[stage.id] === true || state.gatePanelMode !== "problem")) {
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
+    state.gatePanelMode = "problem";
+    state.slotPickerOpen = false;
+    render();
+    requestAnimationFrame(focusCurrentProblem);
+    return;
+  }
+
   if (state.hiddenProblems?.[stage.id] === true) {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
     render();
@@ -1134,8 +1152,10 @@ function focusCurrentProblem() {
 
 function focusCurrentMagic() {
   const stage = stages[state.stageIndex] || stages[0];
-  if (state.hiddenSpells?.[stage.id] === true) {
+  if (stage.id === "gate" && (state.hiddenSpells?.[stage.id] === true || state.gatePanelMode !== "spell")) {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+    state.gatePanelMode = "spell";
     render();
     requestAnimationFrame(focusCurrentMagic);
     return;

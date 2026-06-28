@@ -3604,6 +3604,18 @@ body.stage-intro-mode .game-card::before {
   margin: 0;
 }
 
+.spell-device.is-problem-mode {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "problem";
+  gap: 0;
+  padding: 10px;
+}
+
+.spell-device.is-problem-mode .source-problem-card {
+  height: min(70dvh, 760px);
+  max-height: none;
+}
+
 .spell-window-close {
   position: absolute;
   top: 8px;
@@ -4755,6 +4767,10 @@ h1 {
   .source-problem-card {
     height: 42dvh;
     max-height: none;
+  }
+
+  .spell-device.is-problem-mode .source-problem-card {
+    height: 62dvh;
   }
 
   .spell-reference-card {
