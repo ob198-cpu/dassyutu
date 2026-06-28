@@ -376,6 +376,8 @@ function render() {
     renderBoss(stage);
   } else if (stage.id === "gate") {
     renderGateStage(stage);
+  } else if (stage.id === "path") {
+    renderPathStage(stage);
   } else {
     renderStage(stage);
   }
@@ -398,6 +400,15 @@ function renderIntro(stage) {
     hideProblemOnStageEntry(stages[state.stageIndex]);
     render();
   });
+}
+
+function renderPathStage(stage) {
+  elements.game.innerHTML = `
+    <section class="path-stage-background-only" aria-label="${stage.number} / ${stage.title}">
+      <img src="./assets/ステージ２　背景.png" alt="${stage.number} ${stage.title}" loading="eager">
+    </section>
+  `;
+  wireProblems();
 }
 
 function renderNav() {
