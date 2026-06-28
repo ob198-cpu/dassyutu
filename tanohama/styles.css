@@ -3759,8 +3759,9 @@ body.stage-intro-mode .game-card::before {
 .spell-open-screen {
   grid-area: rule;
   align-self: start;
-  width: 100%;
-  max-height: min(62dvh, 720px);
+  justify-self: center;
+  width: min(96vw, 980px);
+  max-height: 94dvh;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   padding: 0;
@@ -3773,7 +3774,6 @@ body.stage-intro-mode .game-card::before {
 .spell-open-screen .open-screen-art {
   display: block;
   width: 100%;
-  min-width: min(760px, 100%);
   height: auto;
   background: #fff;
 }
