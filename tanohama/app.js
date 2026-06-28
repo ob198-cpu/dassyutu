@@ -237,6 +237,7 @@ function loadState() {
         bossInput: Array.isArray(saved.bossInput) ? saved.bossInput : [],
         slotInput: Array.isArray(saved.slotInput) ? saved.slotInput : [],
         activeSlot: Number.isInteger(saved.activeSlot) ? saved.activeSlot : 0,
+        slotPickerOpen: Boolean(saved.slotPickerOpen),
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
@@ -245,7 +246,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, hintLevels: {}, feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hintLevels: {}, feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -272,6 +273,7 @@ function addUnique(list, value) {
 function resetStageInput() {
   state.slotInput = [];
   state.activeSlot = 0;
+  state.slotPickerOpen = false;
 }
 
 function render() {
@@ -555,6 +557,7 @@ function renderGateStage(stage) {
     ? [...stage.correct].slice(0, stage.slots)
     : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
   const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+  const pickerOpen = !done && state.slotPickerOpen === true;
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback)}
@@ -572,15 +575,7 @@ function renderGateStage(stage) {
           <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "解決済み" : "呪文を唱える"}</button>
         </div>
 
-        <div class="premium-tile-grid stone-tile-rack">
-          ${stage.tiles
-            .map((tile) => `<button class="word-button console-word-button" type="button" data-tile="${tile}" ${done ? "disabled" : ""}>${tile}</button>`)
-            .join("")}
-        </div>
-
-        <div class="device-actions">
-          <button class="text-button" id="clearSlots" type="button" ${done ? "disabled" : ""}>消す</button>
-        </div>
+        ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
 
         ${renderGateResult(stage, done, feedback)}
 
@@ -591,6 +586,22 @@ function renderGateStage(stage) {
     </section>
   `;
   wireGateStage(stage, done);
+}
+
+function renderSlotPicker(stage, activeSlot) {
+  return `
+    <div class="slot-choice-popover" aria-label="${activeSlot + 1}文字目の候補">
+      <div class="slot-choice-head">
+        <span>${activeSlot + 1}文字目</span>
+        <button class="slot-choice-clear" id="clearActiveSlot" type="button">空にする</button>
+      </div>
+      <div class="slot-choice-grid">
+        ${stage.tiles
+          .map((tile) => `<button class="slot-choice-button" type="button" data-tile="${tile}">${tile}</button>`)
+          .join("")}
+      </div>
+    </div>
+  `;
 }
 
 function gatePlayableVisual(stage, done, feedback) {
@@ -682,13 +693,14 @@ function renderGateResult(stage, done, feedback) {
 }
 
 function wireGateStage(stage, done) {
-  document.querySelectorAll(".word-button").forEach((button) => {
+  document.querySelectorAll(".slot-choice-button").forEach((button) => {
     button.addEventListener("click", () => {
       if (done) return;
       const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
       state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
       state.slotInput[slot] = button.dataset.tile;
       state.activeSlot = Math.min(slot + 1, stage.slots - 1);
+      state.slotPickerOpen = false;
       state.feedback = null;
       render();
     });
@@ -698,13 +710,17 @@ function wireGateStage(stage, done) {
     button.addEventListener("click", () => {
       if (done) return;
       state.activeSlot = Number(button.dataset.slot);
+      state.slotPickerOpen = true;
       state.feedback = null;
       render();
     });
   });
 
-  document.querySelector("#clearSlots")?.addEventListener("click", () => {
-    resetStageInput();
+  document.querySelector("#clearActiveSlot")?.addEventListener("click", () => {
+    const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+    state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+    state.slotInput[slot] = "";
+    state.slotPickerOpen = false;
     state.feedback = null;
     render();
   });
@@ -713,12 +729,14 @@ function wireGateStage(stage, done) {
     const answer = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "").join("");
     if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
       state.feedback = { stageId: stage.id, type: "fail" };
+      state.slotPickerOpen = false;
       render();
       return;
     }
     addUnique(state.cleared, stage.id);
     addUnique(state.spells, stage.reward);
     state.feedback = { stageId: stage.id, type: "success" };
+    state.slotPickerOpen = false;
     resetStageInput();
     render();
   });
@@ -986,6 +1004,7 @@ function resetGame() {
   state.bossInput = [];
   state.slotInput = [];
   state.activeSlot = 0;
+  state.slotPickerOpen = false;
   state.hintLevels = {};
   state.feedback = null;
   state.isClear = false;
