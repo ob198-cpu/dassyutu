@@ -5117,8 +5117,9 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .gate-problem-card .problem-art-image-crop .stage-problem-art {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
+  object-position: center center;
+  background: #d6a955;
 }
 
 .source-problem-head {
