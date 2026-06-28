@@ -2862,6 +2862,39 @@ body.stage-intro-mode .game-card::before {
   display: none;
 }
 
+.gate-success-sequence {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 34px);
+  pointer-events: none;
+}
+
+.gate-success-sequence.is-spell {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.gate-success-sequence.is-spell img {
+  width: min(100%, 1320px);
+  max-height: min(92dvh, 920px);
+  object-fit: contain;
+  filter: drop-shadow(0 18px 38px rgba(0, 0, 0, 0.34));
+}
+
+.gate-success-sequence.is-clear2 {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.gate-success-sequence.is-clear2 img {
+  width: min(94%, 760px);
+  max-height: min(28dvh, 180px);
+  object-fit: contain;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.38));
+}
+
 .gate-situation-note {
   position: absolute;
   z-index: 5;
@@ -2901,6 +2934,21 @@ body.stage-intro-mode .game-card::before {
     drop-shadow(0 0 22px rgba(255, 212, 112, 0.18));
   transform-origin: 50% 70%;
   animation: rockDrop 1150ms cubic-bezier(0.18, 0.86, 0.2, 1) both;
+}
+
+.gate-clear-actions {
+  position: absolute;
+  left: 50%;
+  right: auto;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 8;
+  width: min(420px, calc(100% - 32px));
+  transform: translateX(-50%);
+}
+
+.gate-clear-actions .primary-button {
+  min-height: 56px;
+  font-size: 20px;
 }
 
 .stage-one-redesign.is-rock-drop .stage-bg-art {
@@ -4990,6 +5038,21 @@ h1 {
     height: 42dvh;
     max-height: none;
     min-height: 116px;
+  }
+
+  .gate-success-sequence.is-clear2 img {
+    width: min(98%, 720px);
+    max-height: min(22dvh, 150px);
+  }
+
+  .gate-clear-actions {
+    width: min(320px, calc(100% - 24px));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .gate-clear-actions .primary-button {
+    min-height: 48px;
+    font-size: 18px;
   }
 
   .device-main-row {

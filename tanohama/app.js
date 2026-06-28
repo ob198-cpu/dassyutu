@@ -238,13 +238,16 @@ const elements = {
 
 const state = loadState();
 forceGateProblemClosedOnStartup();
-let gateResolveTimer = null;
+let gateSuccessTimers = [];
 
 function loadState() {
   try {
     const raw = localStorage.getItem(storeKey);
     if (raw) {
       const saved = JSON.parse(raw);
+      if (saved.feedback && saved.feedback.type === "success" && saved.feedback.phase !== "done") {
+        saved.feedback = null;
+      }
       return {
         stageIndex: Number.isInteger(saved.stageIndex) ? saved.stageIndex : 0,
         cleared: Array.isArray(saved.cleared) ? saved.cleared : [],
@@ -268,7 +271,11 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(storeKey, JSON.stringify(state));
+  const snapshot = JSON.parse(JSON.stringify(state));
+  if (snapshot.feedback && snapshot.feedback.type === "success" && snapshot.feedback.phase !== "done") {
+    snapshot.feedback = null;
+  }
+  localStorage.setItem(storeKey, JSON.stringify(snapshot));
 }
 
 function forceGateProblemClosedOnStartup() {
@@ -298,6 +305,11 @@ function isStageCleared(id) {
 
 function addUnique(list, value) {
   if (!list.includes(value)) list.push(value);
+}
+
+function clearGateSuccessTimers() {
+  gateSuccessTimers.forEach((timer) => window.clearTimeout(timer));
+  gateSuccessTimers = [];
 }
 
 function getUnlockedStageIndex() {
@@ -644,6 +656,7 @@ function renderGateStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
+  const successAnimating = feedback?.type === "success" && feedback.phase !== "done";
   const problemHidden = state.hiddenProblems?.[stage.id] === true;
   const spellHidden = state.hiddenSpells?.[stage.id] === true;
   const backgroundOnly = problemHidden && spellHidden;
@@ -652,16 +665,15 @@ function renderGateStage(stage) {
     ? [...stage.correct].slice(0, stage.slots)
     : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
   const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
-  const locked = done || rockDropping;
+  const locked = done || rockDropping || successAnimating;
   const pickerOpen = !locked && state.slotPickerOpen === true;
-  if (rockDropping && !gateResolveTimer) scheduleGateSuccess(stage);
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback, backgroundOnly)}
 
-      ${spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
+      ${done || successAnimating || spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="${gatePanelMode === "problem" ? "問題ウィンドウを閉じる" : "呪文ウィンドウを閉じる"}">×</button>
-        ${done ? "" : gatePanelMode === "problem"
+        ${gatePanelMode === "problem"
           ? gateProblemInscription(stage, done, false)
           : `
             ${renderSpellRuleNotice()}
@@ -679,12 +691,14 @@ function renderGateStage(stage) {
           `
         }
 
-        ${renderGateResult(stage, done, feedback)}
+          ${renderGateResult(stage, done, feedback)}
+        </section>`}
 
-        <div class="stage-actions">
-          ${done ? `<button class="primary-button" id="nextButton" type="button">次へ進む</button>` : ""}
-        </div>
-      </section>`}
+      ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
+
+      ${done ? `<div class="gate-clear-actions">
+        <button class="primary-button" id="nextButton" type="button">${stage.id === "gate" ? "はい" : "次へ進む"}</button>
+      </div>` : ""}
     </section>
   `;
   wireGateStage(stage, done);
@@ -693,9 +707,27 @@ function renderGateStage(stage) {
 function renderSpellRuleNotice() {
   return `
     <section class="spell-open-screen open-screen-card" aria-label="ステージ1の画面">
-      <img class="open-screen-art" src="./assets/stage01-open-screen.png" alt="ステージ1の画面">
+      <img class="open-screen-art" src="./assets/ステージ１　呪文.png" alt="ステージ1の呪文">
     </section>
   `;
+}
+
+function renderGateSuccessOverlay(phase) {
+  if (phase === "spell") {
+    return `
+      <section class="gate-success-sequence is-spell" aria-label="ステージ1 呪文">
+        <img src="./assets/ステージ１　呪文.png" alt="ステージ1の呪文" loading="eager" />
+      </section>
+    `;
+  }
+  if (phase === "clear2") {
+    return `
+      <section class="gate-success-sequence is-clear2" aria-label="ステージ1 クリア2">
+        <img src="./assets/ステージ１　クリア2.png" alt="ステージ1 クリア2" loading="eager" />
+      </section>
+    `;
+  }
+  return "";
 }
 
 function renderSlotPicker(stage, activeSlot) {
@@ -716,15 +748,16 @@ function renderSlotPicker(stage, activeSlot) {
 
 function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
-  const background = done ? "stage01-clear.png" : "stage01-start-background-fixed.png";
+  const background = done ? "ステージ１　クリア.png" : "ステージ１　背景.png";
+  const hideNote = done || backgroundOnly || feedback?.type === "success";
   return `
     <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${rockDropping ? "is-rock-dropping" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/${background}" alt="" loading="eager" />
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
-      ${done || backgroundOnly ? "" : `<p class="gate-situation-note">大きな穴が開いていて進むことができない。何かでふさぐことができれば…</p>`}
-      ${rockDropping ? `<img class="falling-rock" src="./assets/stage01-rock-cutout.png" alt="" aria-hidden="true" />` : ""}
+      ${hideNote ? "" : `<p class="gate-situation-note">大きな穴が開いていて進むことができない。何かでふさぐことができれば…</p>`}
+      ${rockDropping ? `<img class="falling-rock" src="./assets/ステージ１　iwa.png" alt="" aria-hidden="true" />` : ""}
     </div>
   `;
 }
@@ -735,7 +768,7 @@ function gateProblemInscription(stage, done, hidden = false) {
   return `
     <section class="device-problem source-problem-card open-screen-card ${done ? "is-solved" : ""}" aria-label="問題文">
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-      <img class="open-screen-art" src="./assets/stage01-open-screen.png" alt="ステージ1 問題">
+      <img class="open-screen-art" src="./assets/なぞステージ１.png" alt="ステージ1 問題">
     </section>
   `;
 }
@@ -752,7 +785,8 @@ function renderGateResult(stage, done, feedback) {
 
 function wireGateStage(stage, done) {
   const rockDropping = state.feedback?.stageId === stage.id && state.feedback?.type === "success" && state.feedback?.phase === "rock";
-  const locked = done || rockDropping;
+  const successAnimating = state.feedback?.stageId === stage.id && state.feedback?.type === "success" && state.feedback?.phase !== "done";
+  const locked = done || rockDropping || successAnimating;
 
   document.querySelector("#closeProblemWindow")?.addEventListener("click", () => {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
@@ -833,15 +867,23 @@ function wireGateStage(stage, done) {
 }
 
 function scheduleGateSuccess(stage) {
-  if (gateResolveTimer) window.clearTimeout(gateResolveTimer);
-  gateResolveTimer = window.setTimeout(() => {
-    gateResolveTimer = null;
+  clearGateSuccessTimers();
+  const setPhase = (phase) => {
+    state.feedback = { stageId: stage.id, type: "success", phase };
+    render();
+  };
+  setPhase("spell");
+  gateSuccessTimers.push(window.setTimeout(() => setPhase("clear2"), 650));
+  gateSuccessTimers.push(window.setTimeout(() => setPhase("background"), 1400));
+  gateSuccessTimers.push(window.setTimeout(() => setPhase("rock"), 2200));
+  gateSuccessTimers.push(window.setTimeout(() => {
     addUnique(state.cleared, stage.id);
     addUnique(state.spells, stage.reward);
     state.feedback = { stageId: stage.id, type: "success", phase: "done" };
     resetStageInput();
     render();
-  }, 1150);
+    clearGateSuccessTimers();
+  }, 3500));
 }
 
 function renderStage(stage) {
@@ -1093,10 +1135,7 @@ function renderClear() {
 }
 
 function resetGame() {
-  if (gateResolveTimer) {
-    window.clearTimeout(gateResolveTimer);
-    gateResolveTimer = null;
-  }
+  clearGateSuccessTimers();
   state.stageIndex = 0;
   state.cleared = [];
   state.spells = [];
