@@ -4202,10 +4202,13 @@ h1 {
 }
 
 .stage-one-redesign .stage-world {
-  height: clamp(360px, 55dvh, 560px);
+  height: clamp(520px, 72dvh, 860px);
 }
 
 .stage-one-redesign .stage-bg-art {
+  object-fit: contain;
+  object-position: center center;
+  transform: none;
   filter: saturate(0.92) contrast(1.08) brightness(0.78);
 }
 
@@ -4523,7 +4526,7 @@ h1 {
   }
 
   .stage-one-redesign .stage-world {
-    height: clamp(350px, 53dvh, 500px);
+    height: clamp(540px, 78dvh, 820px);
   }
 
   .spell-device {
