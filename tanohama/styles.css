@@ -5378,6 +5378,11 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   }
 }
 
+.mobile-problem-fit-toggle,
+.mobile-problem-spell-button {
+  display: none;
+}
+
 @media (max-width: 680px) {
   :root {
     --side-menu-w: 0px;
@@ -6299,6 +6304,29 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     width: 18px;
     height: 18px;
     accent-color: #e4bd42;
+  }
+
+  .mobile-problem-spell-button {
+    position: fixed;
+    z-index: 31;
+    right: 12px;
+    bottom: calc(var(--mobile-nav-h) + var(--mobile-safe-bottom) + 12px);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border: 1px solid rgba(255, 237, 142, 0.92);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.42), transparent 68%),
+      linear-gradient(180deg, #fff3a8 0%, #e7bd36 58%, #b98217 100%);
+    color: #130d04;
+    font-size: 15px;
+    font-weight: 950;
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.62);
   }
 
   .gate-problem-card:has(.mobile-problem-fit-toggle input:checked) .problem-art-shell {

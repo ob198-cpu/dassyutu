@@ -905,6 +905,7 @@ function gateProblemInscription(stage, done, hidden = false) {
         <input type="checkbox" />
         <span>全体表示</span>
       </label>
+      <button class="mobile-problem-spell-button" id="mobileProblemToSpell" type="button">呪文へ</button>
       <div class="problem-art-shell">
         <div class="problem-art-image-crop">
           <img class="open-screen-art stage-problem-art" src="./assets/ステージ１　問題 VER2.png" alt="ステージ1 問題">
@@ -960,6 +961,14 @@ function wireGateStage(stage, done) {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
     state.gatePanelMode = "spell";
+    state.slotPickerOpen = false;
+    render();
+  });
+
+  document.querySelector("#mobileProblemToSpell")?.addEventListener("click", () => {
+    state.gatePanelMode = "spell";
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.slotPickerOpen = false;
     render();
   });
