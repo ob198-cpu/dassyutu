@@ -556,16 +556,6 @@ function renderGateStage(stage) {
       ${gatePlayableVisual(stage, done, feedback)}
 
       <section class="spell-device" aria-label="呪文入力">
-        <div class="device-strip">
-          <div class="device-stage-name">
-            <span>${stage.number} / ${stage.title}</span>
-            <strong>${stage.situation}</strong>
-          </div>
-          <div class="trial-state">
-            <span>石板</span>
-            <strong>${selected.length} / ${stage.slots}</strong>
-          </div>
-        </div>
         ${gateProblemInscription(stage, done)}
         ${renderSolution(stage, done)}
 
