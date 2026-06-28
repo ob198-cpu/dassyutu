@@ -4946,6 +4946,50 @@ h1 {
   font-size: 18px;
 }
 
+body.stage-path-mode {
+  background: #02050a;
+}
+
+body.stage-path-mode .phone-shell {
+  width: calc(100% - var(--side-menu-w)) !important;
+  max-width: none !important;
+  margin-left: var(--side-menu-w) !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+}
+
+body.stage-path-mode .topbar,
+body.stage-path-mode .status-strip,
+body.stage-path-mode .stage-nav {
+  display: none !important;
+}
+
+body.stage-path-mode .game-card {
+  min-height: 100dvh !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #02050a !important;
+  box-shadow: none !important;
+}
+
+body.stage-path-mode .game-card::before {
+  display: none !important;
+}
+
+body.stage-path-mode .path-stage-background-only {
+  min-height: 100dvh;
+  padding: 0;
+}
+
+body.stage-path-mode .path-stage-background-only .stage-world {
+  height: 100dvh;
+}
+
+body.stage-path-mode .path-stage-background-only .stage-bg-art {
+  object-fit: cover;
+  object-position: center center;
+}
+
 .floor-glyph {
   border-color: rgba(242, 213, 107, 0.72);
   border-radius: 8px;
@@ -5372,6 +5416,17 @@ h1 {
     margin-left: 0;
     max-width: none;
     padding: 0;
+  }
+
+  body.stage-path-mode .phone-shell {
+    width: 100% !important;
+    margin-left: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  body.stage-path-mode .game-card {
+    min-height: 72dvh !important;
   }
 
   .status-strip {
