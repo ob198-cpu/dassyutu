@@ -644,7 +644,6 @@ function renderGateStage(stage) {
             : gatePanelMode === "problem"
               ? gateProblemInscription(stage, done, false)
             : `
-              ${renderSpellReference(stage)}
               ${renderSpellRuleNotice()}
 
               <div class="device-main-row">
@@ -706,6 +705,7 @@ function gatePlayableVisual(stage, done, feedback) {
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
+      ${done ? "" : `<p class="gate-situation-note">大きな穴が開いていて進むことができない。何かでふさぐことができれば…</p>`}
       ${rockDropping ? `<img class="falling-rock" src="./assets/stage01-rock-cutout.png" alt="" aria-hidden="true" />` : ""}
     </div>
   `;
