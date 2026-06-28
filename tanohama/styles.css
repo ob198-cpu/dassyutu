@@ -5687,3 +5687,122 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     line-height: 1.65;
   }
 }
+
+@media (max-width: 680px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  button,
+  .side-menu-button,
+  .side-stage-button,
+  .primary-button,
+  .ghost-button,
+  .secondary-button,
+  .text-button {
+    touch-action: manipulation;
+  }
+
+  .side-menu {
+    z-index: 90;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    padding: max(5px, env(safe-area-inset-top)) 5px 6px;
+  }
+
+  .side-menu-command {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .side-stage-nav {
+    padding-bottom: 1px;
+  }
+
+  .side-stage-button {
+    flex-basis: 136px;
+    min-height: 44px;
+  }
+
+  .phone-shell {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .game-card {
+    width: 100%;
+    min-height: calc(100dvh - 98px);
+  }
+
+  body.stage-one-mode .game-card,
+  body.stage-path-mode .game-card {
+    min-height: calc(100dvh - 92px) !important;
+  }
+
+  .stage-one-redesign {
+    min-height: calc(100dvh - 92px);
+  }
+
+  .stage-one-redesign .stage-world {
+    height: min(62dvh, 620px);
+    min-height: 360px;
+  }
+
+  .path-stage-background-only .stage-world {
+    height: calc(100dvh - 92px);
+    min-height: 420px;
+  }
+
+  .spell-device {
+    max-height: min(56dvh, 440px);
+    border-radius: 10px 10px 0 0;
+  }
+
+  .spell-device.is-problem-mode {
+    position: fixed;
+    inset: 0;
+    padding: max(6px, env(safe-area-inset-top)) 6px max(8px, env(safe-area-inset-bottom));
+    z-index: 70;
+    overflow: auto;
+  }
+
+  .gate-problem-card {
+    width: 100%;
+    max-height: none;
+    align-self: start;
+  }
+
+  .gate-problem-card .problem-art-shell {
+    max-height: calc(100dvh - 28px);
+  }
+
+  .gate-problem-card .problem-art-image-crop {
+    aspect-ratio: 1062 / 425;
+  }
+
+  .kana-board {
+    width: 94%;
+    margin-top: 5px;
+  }
+
+  .learned-spell-viewer,
+  .doc-dialog,
+  .hint-dialog {
+    max-width: calc(100vw - 12px);
+  }
+
+  .doc-dialog {
+    width: calc(100vw - 12px);
+    max-height: 86dvh;
+    padding: 8px;
+  }
+
+  .doc-dialog img {
+    max-height: calc(86dvh - 62px);
+    object-fit: contain;
+  }
+}
