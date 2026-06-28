@@ -4445,8 +4445,12 @@ h1 {
 }
 
 .source-problem-card {
-  max-height: min(30dvh, 250px);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  height: min(54dvh, 620px);
+  max-height: none;
   padding: 7px;
+  overflow: hidden;
 }
 
 .source-problem-head {
@@ -4461,12 +4465,18 @@ h1 {
   padding: 0;
   overflow: hidden;
   background: #fff;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  place-items: center;
 }
 
 .source-problem-full-image {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
 }
 
 .source-puzzle-title-row {
@@ -4668,7 +4678,8 @@ h1 {
   }
 
   .source-problem-card {
-    max-height: 25dvh;
+    height: 42dvh;
+    max-height: none;
   }
 
   .device-main-row {
