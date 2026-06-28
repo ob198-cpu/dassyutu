@@ -2638,7 +2638,10 @@ body.stage-one-mode .phone-shell {
 }
 
 body.stage-intro-mode .phone-shell {
-  width: min(100%, 1320px);
+  width: calc(100% - var(--side-menu-w));
+  max-width: 1560px;
+  margin-left: var(--side-menu-w);
+  margin-right: 0;
   padding: 0;
 }
 
