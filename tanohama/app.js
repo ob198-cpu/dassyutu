@@ -1287,6 +1287,7 @@ function showMenuMessage(title, message) {
 }
 
 function focusCurrentProblem() {
+  closeInfoDialogs();
   const stage = stages[state.stageIndex] || stages[0];
   if (stage.id === "gate") {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
@@ -1322,6 +1323,7 @@ function focusCurrentProblem() {
 }
 
 function focusCurrentMagic() {
+  closeInfoDialogs();
   const stage = stages[state.stageIndex] || stages[0];
   if (stage.id === "gate" && (state.hiddenSpells?.[stage.id] === true || state.gatePanelMode !== "spell")) {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
