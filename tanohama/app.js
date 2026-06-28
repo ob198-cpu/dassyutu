@@ -313,6 +313,11 @@ function clearGateSuccessTimers() {
   gateSuccessTimers = [];
 }
 
+function closeInfoDialogs() {
+  if (elements.dialog?.open) elements.dialog.close();
+  if (elements.hintDialog?.open) elements.hintDialog.close();
+}
+
 function getUnlockedStageIndex() {
   return Math.min(stages.length - 1, Math.max(0, state.cleared.length));
 }
@@ -323,6 +328,7 @@ function canOpenStage(index) {
 
 function openStage(index) {
   if (!canOpenStage(index)) return false;
+  closeInfoDialogs();
   const stage = stages[index] || stages[0];
   state.isClear = false;
   state.stageIndex = index;
@@ -378,6 +384,7 @@ function renderIntro(stage) {
     </section>
   `;
   document.querySelector("#introStartButton")?.addEventListener("click", () => {
+    closeInfoDialogs();
     addUnique(state.cleared, stage.id);
     state.stageIndex = 1;
     state.feedback = null;
@@ -1162,6 +1169,7 @@ function renderClear() {
 }
 
 function resetGame() {
+  closeInfoDialogs();
   clearGateSuccessTimers();
   state.stageIndex = 0;
   state.cleared = [];
@@ -1189,12 +1197,14 @@ function wireProblems() {
 }
 
 function openDocumentImage(file, title) {
+  closeInfoDialogs();
   elements.docImage.src = `./assets/${file}`;
   elements.docTitle.textContent = title || "資料";
   if (!elements.dialog.open) elements.dialog.showModal();
 }
 
 function showMenuMessage(title, message) {
+  closeInfoDialogs();
   elements.hintTitle.textContent = title;
   elements.hintBody.textContent = message;
   if (!elements.hintDialog.open) elements.hintDialog.showModal();
