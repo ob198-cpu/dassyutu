@@ -5901,3 +5901,94 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     max-height: calc(100dvh - 18px);
   }
 }
+
+@media (max-width: 680px) {
+  :root {
+    --mobile-nav-h: 58px;
+  }
+
+  .side-menu {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    top: auto !important;
+    bottom: 0;
+    z-index: 90;
+    height: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom));
+    min-height: 0;
+    padding: 6px 6px max(6px, env(safe-area-inset-bottom));
+    background:
+      linear-gradient(180deg, rgba(7, 12, 18, 0.96), rgba(1, 4, 8, 0.98)),
+      #02050a;
+    border-top: 1px solid rgba(242, 213, 107, 0.32);
+    border-bottom: 0;
+    box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.48);
+  }
+
+  .side-menu-command {
+    flex: 0 0 68px;
+    min-height: 42px;
+    font-size: 11px;
+  }
+
+  .side-stage-button {
+    flex: 0 0 104px;
+    min-height: 42px;
+  }
+
+  .phone-shell {
+    padding-bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom));
+  }
+
+  body.stage-one-mode .phone-shell,
+  body.stage-path-mode .phone-shell,
+  body.stage-intro-mode .phone-shell {
+    padding-bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom)) !important;
+  }
+
+  .game-card {
+    min-height: calc(100dvh - var(--mobile-nav-h) - env(safe-area-inset-bottom)) !important;
+  }
+
+  body.stage-one-mode .game-card,
+  body.stage-path-mode .game-card {
+    min-height: calc(100dvh - var(--mobile-nav-h) - env(safe-area-inset-bottom)) !important;
+  }
+
+  .stage-one-redesign,
+  .path-stage-background-only {
+    min-height: calc(100dvh - var(--mobile-nav-h) - env(safe-area-inset-bottom));
+  }
+
+  .stage-one-redesign .stage-world {
+    height: min(72dvh, 720px);
+    min-height: 420px;
+  }
+
+  .path-stage-background-only .stage-world {
+    height: calc(100dvh - var(--mobile-nav-h) - env(safe-area-inset-bottom));
+    min-height: 440px;
+  }
+
+  .spell-device {
+    bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom) + 6px);
+    max-height: min(48dvh, 420px);
+  }
+
+  .gate-clear-actions {
+    bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom) + 10px);
+  }
+
+  .gate-success-sequence.is-prompt2 {
+    padding-bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom) + 12px);
+  }
+
+  .spell-device.is-problem-mode {
+    inset: 0;
+    padding-bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom) + 8px);
+  }
+
+  .learned-spell-viewer {
+    max-height: calc(100dvh - var(--mobile-nav-h) - 18px);
+  }
+}
