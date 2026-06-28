@@ -3682,8 +3682,10 @@ body.stage-intro-mode .game-card::before {
 
 .spell-open-screen {
   grid-area: rule;
-  height: clamp(220px, 32dvh, 390px);
-  min-height: 220px;
+  align-self: start;
+  height: min(48dvh, 390px);
+  max-height: min(48dvh, 390px);
+  min-height: 150px;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -3741,7 +3743,9 @@ body.stage-intro-mode .game-card::before {
 
 .spell-reference-card {
   grid-area: reference;
-  height: min(30dvh, 300px);
+  align-self: start;
+  height: min(48dvh, 390px);
+  max-height: min(48dvh, 390px);
   min-height: 150px;
   display: grid;
   place-items: center;
@@ -4961,7 +4965,14 @@ h1 {
   }
 
   .spell-reference-card {
-    height: 24dvh;
+    height: 42dvh;
+    max-height: none;
+    min-height: 116px;
+  }
+
+  .spell-open-screen {
+    height: 42dvh;
+    max-height: none;
     min-height: 116px;
   }
 
