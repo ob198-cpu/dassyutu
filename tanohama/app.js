@@ -663,7 +663,7 @@ function renderSlotPicker(stage, activeSlot) {
 
 function gatePlayableVisual(stage, done, feedback) {
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
-  const background = done ? "stage01-clear.png" : "stage01-background.png";
+  const background = done ? "stage01-clear.png" : "stage01-start-background-fixed.png";
   return `
     <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${rockDropping ? "is-rock-dropping" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/${background}" alt="" loading="eager" />
@@ -685,52 +685,8 @@ function gateProblemInscription(stage, done, hidden = false) {
         <span>問題文</span>
         <strong>試練</strong>
       </div>
-      <div class="source-puzzle-sheet" aria-label="ステージ1の問題">
-        <div class="source-puzzle-title-row">
-          <h3>ステージ1</h3>
-          <img src="./assets/stage01-overview-crop.png" alt="ステージ1 原案図">
-        </div>
-        <div class="source-question-grid">
-          <section class="source-question-box">
-            <b class="source-question-number">①</b>
-            <div class="source-kanji-change">
-              <div class="source-kanji-pair source-kanji-top">
-                <span class="source-red-kanji">納</span><span>豆</span>
-              </div>
-              <div class="source-down-arrow">↓</div>
-              <div class="source-kanji-pair source-kanji-bottom">
-                <span class="source-red-kanji">短</span><span>気</span>
-              </div>
-            </div>
-            <p>赤枠内の漢字を変えて<br>上から下へ粘り強さを<br>移動させて下さい。<br><strong>赤枠内に現れる<br>野菜は？</strong></p>
-            <small>「粘り強さを分けてあげると、納豆は粘りが出る前のある物に変わり、短気は粘り強い言葉に変わるのぅ」</small>
-          </section>
-          <section class="source-question-box">
-            <b class="source-question-number">②</b>
-            <p class="source-question-two">給料日の曜日が無くなると現れる<br><strong>野菜は？</strong></p>
-          </section>
-        </div>
-        <div class="source-katakana-image" aria-label="①、②が解けた後に読む下のカタカナ列">
-          <img src="./assets/stage01-katakana-read-crop.png" alt="①、②が解けたら次は、つかった①、②の答えの下のカタカナを読む">
-        </div>
-        <div class="source-answer-row" aria-label="答え欄">
-          <span>こたえ</span>
-          <i></i><i></i><i></i><i></i>
-          <small>「下線に気をつけるんじゃモ」</small>
-        </div>
-        ${done ? `
-          <div class="source-spell-frame">
-            <p><b>☆ツケモノ…</b>漬物石だろうか？ 謎の四角を1個生成できる！</p>
-            <div class="source-effect-row">
-              <span class="source-blank-box"></span>
-              <span class="source-effect-copy">←この土台の上にのみ生成可能</span>
-            </div>
-            <div class="source-caption-row">
-              <span>↑（呪文名）</span>
-              <span>↑（効果）</span>
-            </div>
-          </div>
-        ` : ""}
+      <div class="source-puzzle-sheet source-puzzle-image-only" aria-label="ステージ1の問題">
+        <img class="source-problem-full-image" src="./assets/stage01-problem-fixed.png" alt="ステージ1 問題">
       </div>
     </section>
   `;

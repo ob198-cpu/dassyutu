@@ -4444,6 +4444,18 @@ h1 {
   padding: 6px;
 }
 
+.source-puzzle-image-only {
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.source-problem-full-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .source-puzzle-title-row {
   gap: 5px;
   margin-bottom: 5px;
