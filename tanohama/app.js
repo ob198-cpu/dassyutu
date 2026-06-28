@@ -266,6 +266,7 @@ function loadState() {
         hiddenSpells: saved.hiddenSpells && typeof saved.hiddenSpells === "object" ? saved.hiddenSpells : {},
         gatePanelMode: saved.gatePanelMode === "problem" ? "problem" : "spell",
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
+        kanaBoardActive: Array.isArray(saved.kanaBoardActive) ? saved.kanaBoardActive : [],
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
       };
@@ -273,7 +274,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -833,6 +834,7 @@ function gateProblemInscription(stage, done, hidden = false) {
 }
 
 function renderKanaBoardOverlay() {
+  const active = new Set(Array.isArray(state.kanaBoardActive) ? state.kanaBoardActive : []);
   return `
     <div class="kana-board-overlay" aria-label="文字盤">
       ${stage1KanaBoardRows
@@ -842,9 +844,10 @@ function renderKanaBoardOverlay() {
               ${line
                 .map((char, index) => {
                   const key = `${rowIndex}:${index}`;
+                  const activeClass = active.has(key) ? " is-active" : "";
                   const arrowClass = char === "\u2192" ? " is-arrow" : "";
                   const compositeClass = char === "\u300c\u30c4\u300d" ? " is-composite" : "";
-                  return `<button type="button" class="kana-glyph${arrowClass}${compositeClass}" data-kana-key="${key}" aria-pressed="false">${char}</button>`;
+                  return `<button type="button" class="kana-glyph${activeClass}${arrowClass}${compositeClass}" data-kana-key="${key}" aria-pressed="${active.has(key)}">${char}</button>`;
                 })
                 .join("")}
             </div>
@@ -880,9 +883,16 @@ function wireGateStage(stage, done) {
 
   document.querySelectorAll("[data-kana-key]").forEach((button) => {
     button.addEventListener("click", () => {
-      const pressed = button.getAttribute("aria-pressed") === "true";
-      button.setAttribute("aria-pressed", String(!pressed));
-      button.classList.toggle("is-active", !pressed);
+      const key = button.dataset.kanaKey;
+      if (!key) return;
+      const active = new Set(Array.isArray(state.kanaBoardActive) ? state.kanaBoardActive : []);
+      if (active.has(key)) {
+        active.delete(key);
+      } else {
+        active.add(key);
+      }
+      state.kanaBoardActive = [...active];
+      render();
     });
   });
 
@@ -1258,6 +1268,7 @@ function resetGame() {
   state.hiddenSpells = {};
   state.gatePanelMode = "spell";
   state.hintLevels = {};
+  state.kanaBoardActive = [];
   state.feedback = null;
   state.isClear = false;
   saveState();
