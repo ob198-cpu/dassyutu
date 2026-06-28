@@ -2654,11 +2654,7 @@ body.stage-intro-mode .phone-shell {
 }
 
 body.stage-one-mode .topbar {
-  margin: 0;
-  min-height: 56px;
-  padding: 8px 12px;
-  border-bottom: 1px solid rgba(255, 232, 121, 0.24);
-  background: rgba(2, 5, 10, 0.92);
+  display: none;
 }
 
 body.stage-intro-mode .topbar {
@@ -2692,7 +2688,7 @@ body.stage-intro-mode .stage-nav {
 }
 
 body.stage-one-mode .game-card {
-  min-height: calc(100dvh - 56px);
+  min-height: 100dvh;
   border: 0;
   border-radius: 0;
   background: #02050a;
@@ -3654,12 +3650,21 @@ body.stage-intro-mode .game-card::before {
 }
 
 .spell-device.is-problem-mode {
-  top: 12px;
-  bottom: 18px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: var(--side-menu-w);
+  right: 0;
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas: "problem";
   gap: 0;
-  padding: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: hidden;
 }
 
 .spell-device.is-problem-mode .source-problem-card {
@@ -3702,6 +3707,11 @@ body.stage-intro-mode .game-card::before {
   right: 12px;
   z-index: 30;
   font-size: 30px;
+}
+
+.spell-device.is-problem-mode .open-screen-art {
+  object-fit: contain;
+  background: #05070d;
 }
 
 .spell-window-close {
