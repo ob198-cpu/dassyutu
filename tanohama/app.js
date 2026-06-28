@@ -777,14 +777,12 @@ function renderSlotPicker(stage, activeSlot) {
 function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
   const background = done ? "ステージ１　クリア.png" : "ステージ１　背景.png";
-  const hideNote = done || backgroundOnly || feedback?.type === "success";
   return `
     <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${rockDropping ? "is-rock-dropping" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/${background}" alt="" loading="eager" />
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
-      ${hideNote ? "" : `<p class="gate-situation-note">大きな穴が開いていて進むことができない。何かでふさぐことができれば…</p>`}
       ${rockDropping ? `<img class="falling-rock" src="./assets/ステージ１　iwa.png" alt="" aria-hidden="true" />` : ""}
     </div>
   `;
