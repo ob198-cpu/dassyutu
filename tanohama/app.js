@@ -236,6 +236,7 @@ function loadState() {
         spells: Array.isArray(saved.spells) ? saved.spells : [],
         bossInput: Array.isArray(saved.bossInput) ? saved.bossInput : [],
         slotInput: Array.isArray(saved.slotInput) ? saved.slotInput : [],
+        activeSlot: Number.isInteger(saved.activeSlot) ? saved.activeSlot : 0,
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
@@ -244,7 +245,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], hintLevels: {}, feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, hintLevels: {}, feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -270,6 +271,7 @@ function addUnique(list, value) {
 
 function resetStageInput() {
   state.slotInput = [];
+  state.activeSlot = 0;
 }
 
 function render() {
@@ -549,7 +551,10 @@ function bossScene() {
 function renderGateStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
-  const selected = done ? [...stage.correct].slice(0, stage.slots) : state.slotInput.slice(0, stage.slots);
+  const selected = done
+    ? [...stage.correct].slice(0, stage.slots)
+    : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback)}
@@ -561,7 +566,7 @@ function renderGateStage(stage) {
         <div class="device-main-row">
           <div class="premium-slot-row magic-slots">
             ${Array.from({ length: stage.slots })
-              .map((_, i) => `<button class="premium-slot" type="button" data-slot="${i}">${selected[i] || ""}</button>`)
+              .map((_, i) => `<button class="premium-slot ${!done && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!done && i === activeSlot}">${selected[i] || ""}</button>`)
               .join("")}
           </div>
           <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "解決済み" : "呪文を唱える"}</button>
@@ -679,8 +684,11 @@ function renderGateResult(stage, done, feedback) {
 function wireGateStage(stage, done) {
   document.querySelectorAll(".word-button").forEach((button) => {
     button.addEventListener("click", () => {
-      if (done || state.slotInput.length >= stage.slots) return;
-      state.slotInput.push(button.dataset.tile);
+      if (done) return;
+      const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+      state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+      state.slotInput[slot] = button.dataset.tile;
+      state.activeSlot = Math.min(slot + 1, stage.slots - 1);
       state.feedback = null;
       render();
     });
@@ -689,7 +697,7 @@ function wireGateStage(stage, done) {
   document.querySelectorAll(".premium-slot").forEach((button) => {
     button.addEventListener("click", () => {
       if (done) return;
-      state.slotInput.splice(Number(button.dataset.slot), 1);
+      state.activeSlot = Number(button.dataset.slot);
       state.feedback = null;
       render();
     });
@@ -702,7 +710,8 @@ function wireGateStage(stage, done) {
   });
 
   document.querySelector("#activateStage")?.addEventListener("click", () => {
-    if (normalizeAnswer(state.slotInput.join("")) !== normalizeAnswer(stage.correct)) {
+    const answer = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "").join("");
+    if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
       state.feedback = { stageId: stage.id, type: "fail" };
       render();
       return;
@@ -976,6 +985,7 @@ function resetGame() {
   state.spells = [];
   state.bossInput = [];
   state.slotInput = [];
+  state.activeSlot = 0;
   state.hintLevels = {};
   state.feedback = null;
   state.isClear = false;
