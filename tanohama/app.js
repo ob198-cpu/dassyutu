@@ -823,20 +823,22 @@ function gateProblemInscription(stage, done, hidden = false) {
   const problem = stage.textProblem;
   if (!problem || hidden) return "";
   return `
-    <section class="device-problem source-problem-card open-screen-card ${done ? "is-solved" : ""}" aria-label="問題文">
+    <section class="device-problem source-problem-card open-screen-card gate-problem-card ${done ? "is-solved" : ""}" aria-label="問題文">
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
       <div class="problem-art-shell">
-        <img class="open-screen-art stage-problem-art" src="./assets/なぞステージ１.png" alt="ステージ1 問題">
-        ${stage.id === "gate" ? renderKanaBoardOverlay() : ""}
+        <div class="problem-art-image-crop">
+          <img class="open-screen-art stage-problem-art" src="./assets/なぞステージ１.png" alt="ステージ1 問題">
+        </div>
+        ${stage.id === "gate" ? renderKanaBoard() : ""}
       </div>
     </section>
   `;
 }
 
-function renderKanaBoardOverlay() {
+function renderKanaBoard() {
   const active = new Set(Array.isArray(state.kanaBoardActive) ? state.kanaBoardActive : []);
   return `
-    <div class="kana-board-overlay" aria-label="文字盤">
+    <div class="kana-board" aria-label="文字盤">
       ${stage1KanaBoardRows
         .map(
           (line, rowIndex) => `

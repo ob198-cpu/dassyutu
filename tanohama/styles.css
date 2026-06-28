@@ -3207,6 +3207,25 @@ body.stage-intro-mode .game-card::before {
 .problem-art-shell {
   position: relative;
   width: 100%;
+  display: grid;
+  grid-template-rows: auto auto;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(223, 177, 84, 0.08), rgba(128, 79, 19, 0.14)),
+    #d6a955;
+}
+
+.problem-art-image-crop {
+  width: 100%;
+  aspect-ratio: 1672 / 708;
+  overflow: hidden;
+  background: #d1a351;
+}
+
+.problem-art-image-crop .stage-problem-art {
+  width: 100%;
+  height: auto;
+  max-width: none;
 }
 
 .stage-problem-art {
@@ -3214,16 +3233,17 @@ body.stage-intro-mode .game-card::before {
   height: auto;
 }
 
-.kana-board-overlay {
-  position: absolute;
-  left: 3.2%;
-  right: 3.2%;
-  bottom: 10.8%;
-  height: 12.8%;
+.kana-board {
+  position: relative;
   z-index: 4;
   display: grid;
-  align-content: center;
-  gap: 0;
+  gap: clamp(5px, 0.7vw, 10px);
+  padding: clamp(8px, 1.15vw, 18px) 3.2% clamp(10px, 1.3vw, 20px);
+  border-top: 2px solid rgba(65, 37, 10, 0.58);
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 239, 165, 0.26), transparent 62%),
+    linear-gradient(180deg, rgba(241, 196, 104, 0.94), rgba(190, 124, 28, 0.9));
+  box-shadow: inset 0 12px 28px rgba(55, 27, 4, 0.18);
   pointer-events: auto;
 }
 
@@ -3238,20 +3258,20 @@ body.stage-intro-mode .game-card::before {
   border: 0;
   border-radius: 4px;
   background: transparent;
-  color: transparent;
+  color: #090806;
   cursor: pointer;
   font: inherit;
-  font-size: clamp(11px, 1.85vw, 34px);
+  font-size: clamp(14px, 2vw, 35px);
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0;
-  padding: 0.08em 0.04em;
+  padding: 0.06em 0.02em;
   text-align: center;
   user-select: none;
 }
 
 .kana-glyph:hover {
-  color: rgba(175, 32, 24, 0.2);
+  color: #6f1111;
 }
 
 .kana-glyph.is-active {
@@ -3266,7 +3286,7 @@ body.stage-intro-mode .game-card::before {
 }
 
 .kana-glyph.is-composite {
-  font-size: clamp(10px, 1.38vw, 26px);
+  font-size: clamp(12px, 1.5vw, 27px);
   letter-spacing: 0;
 }
 
@@ -4873,6 +4893,27 @@ h1 {
   max-height: none;
   padding: 7px;
   overflow: hidden;
+}
+
+.gate-problem-card {
+  place-items: stretch;
+}
+
+.gate-problem-card .problem-art-shell {
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.gate-problem-card .problem-art-image-crop {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.gate-problem-card .problem-art-image-crop .stage-problem-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
 }
 
 .source-problem-head {
