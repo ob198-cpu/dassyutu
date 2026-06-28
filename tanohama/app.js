@@ -310,19 +310,9 @@ function render() {
 
 function renderIntro(stage) {
   elements.game.innerHTML = `
-    <section class="intro-stage" aria-label="導入">
-      <div class="intro-bg"></div>
-      <div class="intro-vignette"></div>
-      <article class="intro-scroll">
-        <span>00 / 導入</span>
-        <h2>現在異空間からの脱出</h2>
-        <p>${stage.story}</p>
-        <blockquote>${stage.letter}</blockquote>
-        <ul>
-          ${stage.rules.map((rule) => `<li>${rule}</li>`).join("")}
-        </ul>
-        <button class="primary-button intro-start-button" id="introStartButton" type="button">01へ進む</button>
-      </article>
+    <section class="intro-stage intro-image-stage" aria-label="異世界へ！？">
+      <img class="intro-opening-image" src="./assets/intro-current-isekai.png" alt="現在異空間からの脱出">
+      <button class="primary-button intro-start-button" id="introStartButton" type="button">つぎへ</button>
     </section>
   `;
   document.querySelector("#introStartButton")?.addEventListener("click", () => {
