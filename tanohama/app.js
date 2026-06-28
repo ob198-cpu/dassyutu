@@ -549,7 +549,6 @@ function bossScene() {
 function renderGateStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
-  const hintLevel = Math.min(Number(state.hintLevels[stage.id] || 0), stage.hints.length);
   const selected = done ? [...stage.correct].slice(0, stage.slots) : state.slotInput.slice(0, stage.slots);
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
@@ -575,12 +574,10 @@ function renderGateStage(stage) {
         </div>
 
         <div class="device-actions">
-          <button class="secondary-button" id="showHint" type="button">${hintLevel ? "次のヒント" : "ヒント"}</button>
           <button class="text-button" id="clearSlots" type="button" ${done ? "disabled" : ""}>消す</button>
         </div>
 
         ${renderGateResult(stage, done, feedback)}
-        ${renderGateHints(stage, hintLevel)}
 
         <div class="stage-actions">
           ${done ? `<button class="primary-button" id="nextButton" type="button">次へ進む</button>` : ""}
@@ -679,16 +676,6 @@ function renderGateResult(stage, done, feedback) {
   return "";
 }
 
-function renderGateHints(stage, hintLevel) {
-  if (!hintLevel) return "";
-  return `
-    <section class="hint-panel">
-      <span>ヒント ${hintLevel}</span>
-      <p>${stage.hints[hintLevel - 1]}</p>
-    </section>
-  `;
-}
-
 function wireGateStage(stage, done) {
   document.querySelectorAll(".word-button").forEach((button) => {
     button.addEventListener("click", () => {
@@ -711,11 +698,6 @@ function wireGateStage(stage, done) {
   document.querySelector("#clearSlots")?.addEventListener("click", () => {
     resetStageInput();
     state.feedback = null;
-    render();
-  });
-
-  document.querySelector("#showHint")?.addEventListener("click", () => {
-    state.hintLevels[stage.id] = Math.min((Number(state.hintLevels[stage.id] || 0) + 1), stage.hints.length);
     render();
   });
 
