@@ -4483,6 +4483,7 @@ h1 {
   font-size: 15px;
   font-weight: 850;
   line-height: 1.65;
+  white-space: pre-line;
 }
 
 .is-menu-focus {

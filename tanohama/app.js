@@ -36,9 +36,8 @@ const stages = [
     tiles: ["モ", "シ", "ケ", "ガ", "ノ", "テ", "ツ", "オ", "ミ", "マ"],
     correct: "ツケモノ",
     hints: [
-      "赤い木札には「漬物石」。穴を越えるために、足場の代わりになるものを考えよう。",
-      "呪文は4文字。床に散らばる音片の中から、赤枠の野菜名につながる音だけを選ぶ。",
-      "「ツ」「ケ」「モ」「ノ」を順番に並べると、四角い石の呪文になる。",
+      "ヒント①「粘り強さを分けてあげると、納豆は粘りが出る前のある物に変わり、短気は粘り強い言葉に変わるのぅ」",
+      "ヒント②「下線に気をつけるんじゃぞ」",
     ],
     successMessage: "光の橋が現れた。",
     failMessage: "何も起こらない。",
@@ -1082,7 +1081,7 @@ function focusCurrentProblem() {
 
 function showCurrentHint() {
   const stage = stages[state.stageIndex] || stages[0];
-  const hint = Array.isArray(stage.hints) && stage.hints.length ? stage.hints[0] : stage.briefing || "このステージのヒントはまだありません。";
+  const hint = Array.isArray(stage.hints) && stage.hints.length ? stage.hints.join("\n\n") : stage.briefing || "このステージのヒントはまだありません。";
   showMenuMessage(`${stage.number} / ${stage.title} ヒント`, hint);
 }
 
