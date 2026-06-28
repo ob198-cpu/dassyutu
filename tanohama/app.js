@@ -730,7 +730,7 @@ function renderGateStage(stage) {
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback, backgroundOnly)}
 
-      ${done || successAnimating || spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
+      ${successAnimating || spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="${gatePanelMode === "problem" ? "問題ウィンドウを閉じる" : "呪文ウィンドウを閉じる"}">×</button>
         ${gatePanelMode === "problem"
           ? gateProblemInscription(stage, done, false)
@@ -1427,12 +1427,20 @@ function focusCurrentProblem() {
 function focusCurrentMagic() {
   closeInfoDialogs();
   const stage = stages[state.stageIndex] || stages[0];
-  if (stage.id === "gate" && (state.hiddenSpells?.[stage.id] === true || state.gatePanelMode !== "spell")) {
+  if (stage.id === "gate") {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
     state.gatePanelMode = "spell";
+    state.slotPickerOpen = false;
     render();
-    requestAnimationFrame(focusCurrentMagic);
+    requestAnimationFrame(() => {
+      const magic = document.querySelector(".spell-device");
+      if (magic) {
+        magic.scrollIntoView({ behavior: "smooth", block: "center" });
+        magic.classList.remove("is-menu-focus");
+        requestAnimationFrame(() => magic.classList.add("is-menu-focus"));
+      }
+    });
     return;
   }
 
