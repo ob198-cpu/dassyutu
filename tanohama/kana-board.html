@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>文字盤</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #18120b;
+        --active: #d31d1d;
+        --paper-a: #d9a23f;
+        --paper-b: #bc8628;
+        --paper-c: #f5d57d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.28), transparent 20%),
+          radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.12), transparent 22%),
+          linear-gradient(180deg, #e3ba58 0%, #c38f30 52%, #a36f1b 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.22), transparent 38%),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.05), transparent 14%, transparent 86%, rgba(0, 0, 0, 0.04)),
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.02) 0,
+            rgba(255, 255, 255, 0.02) 2px,
+            transparent 2px,
+            transparent 14px
+          );
+        mix-blend-mode: multiply;
+        opacity: 0.9;
+      }
+
+      .shell {
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+      }
+
+      .board {
+        width: min(100%, 1400px);
+        border-radius: 18px;
+        padding: clamp(18px, 2.5vw, 32px);
+        background:
+          linear-gradient(180deg, rgba(255, 241, 180, 0.44), rgba(116, 73, 12, 0.06)),
+          linear-gradient(180deg, var(--paper-c), var(--paper-a) 54%, var(--paper-b));
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.28),
+          inset 0 0 0 1px rgba(69, 36, 6, 0.18),
+          inset 0 0 80px rgba(255, 255, 255, 0.2);
+      }
+
+      .rows {
+        display: grid;
+        gap: clamp(18px, 2.4vw, 34px);
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 6px;
+      }
+
+      .line {
+        display: inline-grid;
+        grid-auto-flow: column;
+        grid-auto-columns: max-content;
+        align-items: center;
+        justify-content: start;
+        gap: clamp(10px, 1.4vw, 26px);
+        min-width: 100%;
+      }
+
+      .glyph {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        font-size: clamp(24px, 2.65vw, 42px);
+        line-height: 1;
+        font-weight: 700;
+        padding: 0.04em 0.12em;
+        border-radius: 6px;
+        cursor: pointer;
+        user-select: none;
+        transition:
+          color 120ms ease,
+          transform 120ms ease,
+          text-shadow 120ms ease;
+      }
+
+      .glyph:hover {
+        transform: translateY(-1px);
+      }
+
+      .glyph.is-active {
+        color: var(--active);
+        text-shadow: 0 0 0.5px rgba(0, 0, 0, 0.5);
+      }
+
+      .glyph.is-arrow {
+        font-size: clamp(22px, 2.4vw, 38px);
+        margin-right: 0.2em;
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .reset {
+        appearance: none;
+        border: 1px solid rgba(52, 28, 6, 0.22);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.24);
+        color: var(--ink);
+        padding: 10px 18px;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .reset:active {
+        transform: translateY(1px);
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          padding: 12px;
+        }
+
+        .board {
+          padding: 14px 12px 16px;
+        }
+
+        .glyph {
+          font-size: 22px;
+        }
+
+        .glyph.is-arrow {
+          font-size: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="board" aria-label="クリックで赤くなる文字盤">
+        <div class="rows" id="boardRows"></div>
+        <div class="toolbar">
+          <button class="reset" id="resetButton" type="button">リセット</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const rows = [
+        ["→", "た", "だ", "い", "ま", "ち", "こ", "く", "あ", "か", "ん", "き", "ゅ", "う", "ぴ", "っ", "と", "く", "る", "ま", "り", "ま", "す"],
+        ["マ", "ケ", "オ", "シ", "ミ", "イ", "イ", "モ", "ノ", "ア", "ガ", "マ", "チ", "ガ", "「", "ツ", "」", "テ", "ウ", "ツ", "ク", "シ", "イ", "ヒ", "ト"],
+      ];
+
+      const boardRows = document.getElementById("boardRows");
+      const resetButton = document.getElementById("resetButton");
+      const active = new Set();
+
+      function renderBoard() {
+        boardRows.innerHTML = rows
+          .map(
+            (line, rowIndex) => `
+              <div class="line" role="group" aria-label="行 ${rowIndex + 1}">
+                ${line
+                  .map((char, index) => {
+                    const key = `${rowIndex}:${index}`;
+                    const activeClass = active.has(key) ? " is-active" : "";
+                    const arrowClass = char === "→" ? " is-arrow" : "";
+                    return `<button type="button" class="glyph${activeClass}${arrowClass}" data-key="${key}" aria-pressed="${active.has(key)}">${char}</button>`;
+                  })
+                  .join("")}
+              </div>
+            `,
+          )
+          .join("");
+
+        boardRows.querySelectorAll(".glyph").forEach((button) => {
+          button.addEventListener("click", () => {
+            const key = button.dataset.key;
+            if (!key) return;
+            if (active.has(key)) {
+              active.delete(key);
+              button.classList.remove("is-active");
+              button.setAttribute("aria-pressed", "false");
+              return;
+            }
+            active.add(key);
+            button.classList.add("is-active");
+            button.setAttribute("aria-pressed", "true");
+          });
+        });
+      }
+
+      resetButton.addEventListener("click", () => {
+        active.clear();
+        renderBoard();
+      });
+
+      renderBoard();
+    </script>
+  </body>
+</html>
