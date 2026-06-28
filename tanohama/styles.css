@@ -3922,7 +3922,7 @@ body::before {
   bottom: 0;
   width: var(--menu-w);
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
   gap: 12px;
   padding: max(12px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
   border-right: 1px solid rgba(242, 213, 107, 0.26);

@@ -219,6 +219,7 @@ const elements = {
   spellCount: document.querySelector("#spellCount"),
   reset: document.querySelector("#menuReset"),
   menuProblem: document.querySelector("#menuProblem"),
+  menuMagic: document.querySelector("#menuMagic"),
   menuHint: document.querySelector("#menuHint"),
   dialog: document.querySelector("#docDialog"),
   docImage: document.querySelector("#docImage"),
@@ -1079,6 +1080,18 @@ function focusCurrentProblem() {
   showMenuMessage("問題", "このステージの問題は画面内に表示されています。");
 }
 
+function focusCurrentMagic() {
+  const magic = document.querySelector(".spell-device, .spell-workbench, .spell-grid, .slot-row, .stone-panel");
+  if (magic) {
+    magic.scrollIntoView({ behavior: "smooth", block: "center" });
+    magic.classList.remove("is-menu-focus");
+    requestAnimationFrame(() => magic.classList.add("is-menu-focus"));
+    return;
+  }
+
+  showMenuMessage("魔法", "このステージでは、魔法を使う場所はまだありません。");
+}
+
 function showCurrentHint() {
   const stage = stages[state.stageIndex] || stages[0];
   const hint = Array.isArray(stage.hints) && stage.hints.length ? stage.hints.join("\n\n") : stage.briefing || "このステージのヒントはまだありません。";
@@ -1087,6 +1100,7 @@ function showCurrentHint() {
 
 if (elements.reset) elements.reset.addEventListener("click", resetGame);
 if (elements.menuProblem) elements.menuProblem.addEventListener("click", focusCurrentProblem);
+if (elements.menuMagic) elements.menuMagic.addEventListener("click", focusCurrentMagic);
 if (elements.menuHint) elements.menuHint.addEventListener("click", showCurrentHint);
 if (elements.closeDoc) elements.closeDoc.addEventListener("click", () => elements.dialog.close());
 if (elements.dialog) {
