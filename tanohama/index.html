@@ -7,12 +7,18 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <aside class="side-menu" aria-label="左メニュー">
+      <button id="menuReset" class="side-menu-button side-menu-command" type="button">リセット</button>
+      <button id="menuProblem" class="side-menu-button side-menu-command" type="button">問題</button>
+      <button id="menuHint" class="side-menu-button side-menu-command" type="button">ヒント</button>
+      <nav id="sideStageNav" class="side-stage-nav" aria-label="ステージショートカット"></nav>
+    </aside>
+
     <main class="phone-shell">
       <header class="topbar">
         <div>
           <h1 id="topTitle">異空間からの脱出</h1>
         </div>
-        <button id="resetButton" class="ghost-button" type="button">リセット</button>
       </header>
 
       <section class="status-strip" aria-live="polite">
@@ -37,6 +43,14 @@
         <button id="closeDoc" class="ghost-button" type="button">閉じる</button>
       </div>
       <img id="docImage" alt="謎解き資料の拡大画像" />
+    </dialog>
+
+    <dialog id="hintDialog" class="hint-dialog">
+      <div class="dialog-head">
+        <strong id="hintTitle">ヒント</strong>
+        <button id="closeHint" class="ghost-button" type="button">閉じる</button>
+      </div>
+      <p id="hintBody"></p>
     </dialog>
 
     <script src="./app.js"></script>

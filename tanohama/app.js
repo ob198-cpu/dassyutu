@@ -214,14 +214,21 @@ const storeKey = "tanohamaEscapeStateV4";
 const elements = {
   game: document.querySelector("#game"),
   nav: document.querySelector("#stageNav"),
+  sideNav: document.querySelector("#sideStageNav"),
   topTitle: document.querySelector("#topTitle"),
   stageCount: document.querySelector("#stageCount"),
   spellCount: document.querySelector("#spellCount"),
-  reset: document.querySelector("#resetButton"),
+  reset: document.querySelector("#menuReset"),
+  menuProblem: document.querySelector("#menuProblem"),
+  menuHint: document.querySelector("#menuHint"),
   dialog: document.querySelector("#docDialog"),
   docImage: document.querySelector("#docImage"),
   docTitle: document.querySelector("#docTitle"),
   closeDoc: document.querySelector("#closeDoc"),
+  hintDialog: document.querySelector("#hintDialog"),
+  hintTitle: document.querySelector("#hintTitle"),
+  hintBody: document.querySelector("#hintBody"),
+  closeHint: document.querySelector("#closeHint"),
 };
 
 const state = loadState();
@@ -329,6 +336,7 @@ function renderIntro(stage) {
 
 function renderNav() {
   elements.nav.innerHTML = "";
+  elements.sideNav.innerHTML = "";
   stages.forEach((stage, index) => {
     const button = document.createElement("button");
     button.className = "stage-dot";
@@ -346,6 +354,21 @@ function renderNav() {
       }
     });
     elements.nav.appendChild(button);
+
+    const shortcut = document.createElement("button");
+    shortcut.className = "side-menu-button side-stage-button";
+    if (index === state.stageIndex && !state.isClear) shortcut.classList.add("is-current");
+    if (isStageCleared(stage.id)) shortcut.classList.add("is-done");
+    shortcut.type = "button";
+    shortcut.textContent = stage.number;
+    shortcut.addEventListener("click", () => {
+      state.isClear = false;
+      state.stageIndex = index;
+      state.feedback = null;
+      resetStageInput();
+      render();
+    });
+    elements.sideNav.appendChild(shortcut);
   });
 }
 
@@ -1012,18 +1035,61 @@ function resetGame() {
 function wireProblems() {
   document.querySelectorAll("[data-problem]").forEach((button) => {
     button.addEventListener("click", () => {
-      elements.docImage.src = `./assets/${button.dataset.problem}`;
-      elements.docTitle.textContent = button.dataset.title || "原問題";
-      elements.dialog.showModal();
+      openDocumentImage(button.dataset.problem, button.dataset.title || "原問題");
     });
   });
 }
 
-elements.reset.addEventListener("click", resetGame);
+function openDocumentImage(file, title) {
+  elements.docImage.src = `./assets/${file}`;
+  elements.docTitle.textContent = title || "資料";
+  if (!elements.dialog.open) elements.dialog.showModal();
+}
+
+function showMenuMessage(title, message) {
+  elements.hintTitle.textContent = title;
+  elements.hintBody.textContent = message;
+  if (!elements.hintDialog.open) elements.hintDialog.showModal();
+}
+
+function focusCurrentProblem() {
+  const stage = stages[state.stageIndex] || stages[0];
+  const image = stage.id === "gate" ? null : stage.sourceProblemImage || stage.problems?.[0]?.file;
+  if (image) {
+    openDocumentImage(image, `${stage.number} ${stage.title} 問題`);
+    return;
+  }
+
+  const problem = document.querySelector(".device-problem, .text-problem, .source-image-problem, .problem-section");
+  if (problem) {
+    problem.scrollIntoView({ behavior: "smooth", block: "center" });
+    problem.classList.remove("is-menu-focus");
+    requestAnimationFrame(() => problem.classList.add("is-menu-focus"));
+    return;
+  }
+
+  showMenuMessage("問題", "このステージの問題は画面内に表示されています。");
+}
+
+function showCurrentHint() {
+  const stage = stages[state.stageIndex] || stages[0];
+  const hint = Array.isArray(stage.hints) && stage.hints.length ? stage.hints[0] : stage.briefing || "このステージのヒントはまだありません。";
+  showMenuMessage(`${stage.number} / ${stage.title} ヒント`, hint);
+}
+
+if (elements.reset) elements.reset.addEventListener("click", resetGame);
+if (elements.menuProblem) elements.menuProblem.addEventListener("click", focusCurrentProblem);
+if (elements.menuHint) elements.menuHint.addEventListener("click", showCurrentHint);
 if (elements.closeDoc) elements.closeDoc.addEventListener("click", () => elements.dialog.close());
 if (elements.dialog) {
   elements.dialog.addEventListener("click", (event) => {
     if (event.target === elements.dialog) elements.dialog.close();
+  });
+}
+if (elements.closeHint) elements.closeHint.addEventListener("click", () => elements.hintDialog.close());
+if (elements.hintDialog) {
+  elements.hintDialog.addEventListener("click", (event) => {
+    if (event.target === elements.hintDialog) elements.hintDialog.close();
   });
 }
 
