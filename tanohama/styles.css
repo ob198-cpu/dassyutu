@@ -5806,3 +5806,98 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     object-fit: contain;
   }
 }
+
+@media (max-width: 680px) {
+  .side-menu {
+    display: flex !important;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    min-height: 50px;
+    padding: max(4px, env(safe-area-inset-top)) 5px 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .side-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .side-menu-command {
+    flex: 0 0 74px;
+    min-height: 38px;
+    padding: 5px 6px;
+    font-size: 12px;
+  }
+
+  .side-stage-nav {
+    flex: 0 0 auto;
+    display: flex;
+    min-width: max-content;
+    overflow: visible;
+    gap: 5px;
+  }
+
+  .side-stage-button {
+    flex: 0 0 116px;
+    min-height: 38px;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .side-stage-number {
+    min-height: 26px;
+    font-size: 11px;
+  }
+
+  .side-stage-title {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .game-card {
+    min-height: calc(100dvh - 54px) !important;
+  }
+
+  body.stage-one-mode .game-card,
+  body.stage-path-mode .game-card {
+    min-height: calc(100dvh - 50px) !important;
+  }
+
+  .stage-one-redesign,
+  .path-stage-background-only {
+    min-height: calc(100dvh - 50px);
+  }
+
+  .stage-one-redesign .stage-world {
+    height: min(68dvh, 680px);
+    min-height: 390px;
+  }
+
+  .path-stage-background-only .stage-world {
+    height: calc(100dvh - 50px);
+    min-height: 450px;
+  }
+
+  .spell-device {
+    max-height: min(50dvh, 420px);
+  }
+
+  .spell-device.is-problem-mode {
+    z-index: 140;
+  }
+
+  .learned-spell-viewer,
+  .doc-dialog,
+  .hint-dialog {
+    z-index: 150;
+  }
+
+  .gate-problem-card .problem-art-shell {
+    max-height: calc(100dvh - 18px);
+  }
+}
