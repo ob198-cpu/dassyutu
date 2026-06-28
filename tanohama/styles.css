@@ -65,7 +65,7 @@ button {
   top: 0;
   z-index: 5;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
   margin: -12px -12px 10px;
@@ -85,7 +85,7 @@ button {
 
 h1 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.15;
 }
 
@@ -2666,11 +2666,11 @@ body.stage-intro-mode .topbar .eyebrow {
 }
 
 body.stage-one-mode .topbar h1 {
-  font-size: 16px;
+  font-size: 21px;
 }
 
 body.stage-intro-mode .topbar h1 {
-  font-size: 16px;
+  font-size: 21px;
 }
 
 body.stage-one-mode .status-strip,
@@ -3908,7 +3908,9 @@ body::before {
 }
 
 h1 {
-  font-size: 16px;
+  font-size: clamp(20px, 5.6vw, 25px);
+  line-height: 1.18;
+  font-weight: 950;
 }
 
 .status-strip {

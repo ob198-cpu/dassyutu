@@ -214,6 +214,7 @@ const storeKey = "tanohamaEscapeStateV4";
 const elements = {
   game: document.querySelector("#game"),
   nav: document.querySelector("#stageNav"),
+  topTitle: document.querySelector("#topTitle"),
   stageCount: document.querySelector("#stageCount"),
   spellCount: document.querySelector("#spellCount"),
   reset: document.querySelector("#resetButton"),
@@ -280,6 +281,9 @@ function render() {
   const stage = stages[state.stageIndex] || stages[0];
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
+  elements.topTitle.textContent = state.isClear
+    ? "異空間からの脱出 CLEAR"
+    : `異空間からの脱出 ${stage.number} / ${stage.title}`;
   elements.stageCount.textContent = stage.isIntro ? `00 / ${String(puzzleTotal).padStart(2, "0")}` : `${stage.number} / ${String(puzzleTotal).padStart(2, "0")}`;
   elements.spellCount.textContent = String(state.spells.length);
   renderNav();
@@ -611,13 +615,6 @@ function gatePlayableVisual(stage, done, feedback) {
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
-      <div class="stage-hud">
-        <div>
-          <span>異空間からの脱出</span>
-          <strong>${stage.number} / ${stage.title}</strong>
-        </div>
-        <em>${stage.number} / ${puzzleTotal}</em>
-      </div>
     </div>
   `;
 }
