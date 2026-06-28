@@ -246,6 +246,7 @@ function loadState() {
         slotInput: Array.isArray(saved.slotInput) ? saved.slotInput : [],
         activeSlot: Number.isInteger(saved.activeSlot) ? saved.activeSlot : 0,
         slotPickerOpen: Boolean(saved.slotPickerOpen),
+        hiddenProblems: saved.hiddenProblems && typeof saved.hiddenProblems === "object" ? saved.hiddenProblems : {},
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
@@ -254,7 +255,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hintLevels: {}, feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hintLevels: {}, feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -589,6 +590,7 @@ function bossScene() {
 function renderGateStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const problemHidden = state.hiddenProblems?.[stage.id] === true;
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
     : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
@@ -599,7 +601,7 @@ function renderGateStage(stage) {
       ${gatePlayableVisual(stage, done, feedback)}
 
       <section class="spell-device" aria-label="呪文入力">
-        ${gateProblemInscription(stage, done)}
+        ${gateProblemInscription(stage, done, problemHidden)}
         ${renderSolution(stage, done)}
 
         <div class="device-main-row">
@@ -651,11 +653,12 @@ function gatePlayableVisual(stage, done, feedback) {
   `;
 }
 
-function gateProblemInscription(stage, done) {
+function gateProblemInscription(stage, done, hidden = false) {
   const problem = stage.textProblem;
-  if (!problem) return "";
+  if (!problem || hidden) return "";
   return `
     <section class="device-problem source-problem-card ${done ? "is-solved" : ""}" aria-label="問題文">
+      <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
       <div class="source-problem-head">
         <span>問題文</span>
         <strong>試練</strong>
@@ -722,6 +725,12 @@ function renderGateResult(stage, done, feedback) {
 }
 
 function wireGateStage(stage, done) {
+  document.querySelector("#closeProblemWindow")?.addEventListener("click", () => {
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+    state.slotPickerOpen = false;
+    render();
+  });
+
   document.querySelectorAll(".slot-choice-button").forEach((button) => {
     button.addEventListener("click", () => {
       if (done) return;
@@ -1034,6 +1043,7 @@ function resetGame() {
   state.slotInput = [];
   state.activeSlot = 0;
   state.slotPickerOpen = false;
+  state.hiddenProblems = {};
   state.hintLevels = {};
   state.feedback = null;
   state.isClear = false;
@@ -1063,6 +1073,13 @@ function showMenuMessage(title, message) {
 
 function focusCurrentProblem() {
   const stage = stages[state.stageIndex] || stages[0];
+  if (state.hiddenProblems?.[stage.id] === true) {
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
+    render();
+    requestAnimationFrame(focusCurrentProblem);
+    return;
+  }
+
   const image = stage.id === "gate" ? null : stage.sourceProblemImage || stage.problems?.[0]?.file;
   if (image) {
     openDocumentImage(image, `${stage.number} ${stage.title} 問題`);
