@@ -360,7 +360,14 @@ function renderNav() {
     if (index === state.stageIndex && !state.isClear) shortcut.classList.add("is-current");
     if (isStageCleared(stage.id)) shortcut.classList.add("is-done");
     shortcut.type = "button";
-    shortcut.textContent = stage.number;
+    const menuLabel = sideStageLabel(stage);
+    const menuNumber = document.createElement("span");
+    menuNumber.className = "side-stage-number";
+    menuNumber.textContent = menuLabel.number;
+    const menuTitle = document.createElement("span");
+    menuTitle.className = "side-stage-title";
+    menuTitle.textContent = menuLabel.title;
+    shortcut.append(menuNumber, menuTitle);
     shortcut.addEventListener("click", () => {
       state.isClear = false;
       state.stageIndex = index;
@@ -370,6 +377,18 @@ function renderNav() {
     });
     elements.sideNav.appendChild(shortcut);
   });
+}
+
+function sideStageLabel(stage) {
+  const labels = {
+    intro: { number: "00", title: "異世界へ！？" },
+    gate: { number: "01", title: "崩れた足場" },
+    path: { number: "02", title: "開かずの間" },
+    shop: { number: "03", title: "凍った足場" },
+    time: { number: "04", title: "時差の機械室" },
+    boss: { number: "05", title: "出口前" },
+  };
+  return labels[stage.id] || { number: stage.number, title: stage.title };
 }
 
 function renderScene(stage) {
