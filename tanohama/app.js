@@ -300,6 +300,26 @@ function addUnique(list, value) {
   if (!list.includes(value)) list.push(value);
 }
 
+function getUnlockedStageIndex() {
+  return Math.min(stages.length - 1, Math.max(0, state.cleared.length));
+}
+
+function canOpenStage(index) {
+  return index <= getUnlockedStageIndex();
+}
+
+function openStage(index) {
+  if (!canOpenStage(index)) return false;
+  const stage = stages[index] || stages[0];
+  state.isClear = false;
+  state.stageIndex = index;
+  state.feedback = null;
+  resetStageInput();
+  hideProblemOnStageEntry(stage);
+  render();
+  return true;
+}
+
 function resetStageInput() {
   state.slotInput = [];
   state.activeSlot = 0;
@@ -307,6 +327,13 @@ function resetStageInput() {
 }
 
 function render() {
+  if (!state.isClear) {
+    const maxOpen = getUnlockedStageIndex();
+    if (state.stageIndex > maxOpen) {
+      state.stageIndex = maxOpen;
+      resetStageInput();
+    }
+  }
   const stage = stages[state.stageIndex] || stages[0];
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
@@ -351,29 +378,29 @@ function renderNav() {
   elements.nav.innerHTML = "";
   elements.sideNav.innerHTML = "";
   stages.forEach((stage, index) => {
+    const unlocked = canOpenStage(index) || isStageCleared(stage.id);
+    const locked = !unlocked;
+
     const button = document.createElement("button");
     button.className = "stage-dot";
     if (index === state.stageIndex) button.classList.add("is-current");
     if (isStageCleared(stage.id)) button.classList.add("is-done");
+    if (locked) button.classList.add("is-locked");
     button.type = "button";
     button.textContent = stage.number;
-    button.addEventListener("click", () => {
-      const maxOpen = Math.min(stages.length - 1, state.cleared.length);
-      if (index <= maxOpen || isStageCleared(stage.id)) {
-        state.stageIndex = index;
-        state.feedback = null;
-        resetStageInput();
-        hideProblemOnStageEntry(stage);
-        render();
-      }
-    });
+    button.disabled = locked;
+    button.title = locked ? "前の問題を解くと開けます" : "";
+    button.addEventListener("click", () => openStage(index));
     elements.nav.appendChild(button);
 
     const shortcut = document.createElement("button");
     shortcut.className = "side-menu-button side-stage-button";
     if (index === state.stageIndex && !state.isClear) shortcut.classList.add("is-current");
     if (isStageCleared(stage.id)) shortcut.classList.add("is-done");
+    if (locked) shortcut.classList.add("is-locked");
     shortcut.type = "button";
+    shortcut.disabled = locked;
+    shortcut.title = locked ? "前の問題を解くと開けます" : "";
     const menuLabel = sideStageLabel(stage);
     const menuNumber = document.createElement("span");
     menuNumber.className = "side-stage-number";
@@ -382,14 +409,7 @@ function renderNav() {
     menuTitle.className = "side-stage-title";
     menuTitle.textContent = menuLabel.title;
     shortcut.append(menuNumber, menuTitle);
-    shortcut.addEventListener("click", () => {
-      state.isClear = false;
-      state.stageIndex = index;
-      state.feedback = null;
-      resetStageInput();
-      hideProblemOnStageEntry(stage);
-      render();
-    });
+    shortcut.addEventListener("click", () => openStage(index));
     elements.sideNav.appendChild(shortcut);
   });
 }

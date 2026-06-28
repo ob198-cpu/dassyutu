@@ -169,6 +169,14 @@ h1 {
   color: var(--ok);
 }
 
+.stage-dot:disabled,
+.stage-dot.is-locked {
+  cursor: not-allowed;
+  opacity: 0.45;
+  filter: grayscale(0.55) saturate(0.75);
+  box-shadow: none;
+}
+
 .game-card {
   position: relative;
   overflow: hidden;
@@ -4338,6 +4346,14 @@ body::before {
 .side-stage-button.is-done:not(.is-current) {
   border-color: rgba(96, 240, 186, 0.44);
   color: #caffdf;
+}
+
+.side-stage-button:disabled,
+.side-stage-button.is-locked {
+  cursor: not-allowed;
+  opacity: 0.46;
+  filter: grayscale(0.6) saturate(0.75);
+  box-shadow: none;
 }
 
 .phone-shell {
