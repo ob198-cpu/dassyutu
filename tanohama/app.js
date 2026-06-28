@@ -447,7 +447,7 @@ function renderScene(stage) {
       ${isSourceScene ? "" : `<div class="void-grid"></div>`}
       ${!isSourceScene && stage.sceneCaption ? `<div class="scene-caption">${stage.sceneCaption}</div>` : ""}
       ${stage.scene === "gate" ? gateScene(done) : ""}
-      ${stage.scene === "corridor" ? corridorScene(done) : ""}
+      ${stage.id === "path" ? corridorScene(stage) : stage.scene === "corridor" ? corridorScene(done) : ""}
       ${stage.scene === "ice" ? iceScene() : ""}
       ${stage.scene === "time" ? timeScene() : ""}
       ${stage.scene === "boss" ? bossScene() : ""}
@@ -456,6 +456,26 @@ function renderScene(stage) {
 }
 
 function renderProblems(stage, done = false) {
+  if (stage.id === "path" && stage.textProblem) {
+    const problem = stage.textProblem;
+    return `
+      <section class="problem-section text-problem stage-two-text-problem">
+        <div class="section-head">
+          <strong>問題文</strong>
+          <span>画像は使わない</span>
+        </div>
+        <article class="problem-paper">
+          <h3>${problem.title}</h3>
+          <p class="problem-subtitle">${problem.subtitle}</p>
+          <p class="problem-rule">${problem.rule}</p>
+          <p class="problem-prompt">${problem.prompt}</p>
+          ${problem.answerHint ? `<p class="problem-hint">${problem.answerHint}</p>` : ""}
+          ${problem.answerBoxes ? `<div class="problem-blanks">${Array.from({ length: problem.answerBoxes }).map(() => `<span></span>`).join("")}</div>` : ""}
+          ${done && problem.solvedNote ? `<p class="spell-note">${problem.solvedNote}</p>` : ""}
+        </article>
+      </section>
+    `;
+  }
   if (stage.sourceProblemImage) {
     return `
       <section class="problem-section source-image-problem">
@@ -516,6 +536,7 @@ function renderProblems(stage, done = false) {
 }
 
 function renderSolution(stage, done = false) {
+  if (stage.id === "path") return "";
   if (!done || !stage.solutionImage) return "";
   return `
     <section class="problem-section source-image-problem solution-section">
@@ -606,10 +627,17 @@ function gateScene(done) {
   `;
 }
 
-function corridorScene() {
+function corridorScene(stage) {
+  if (stage?.id === "path") {
+    return `
+      <div class="stage-two-background-only" aria-hidden="true">
+        <img src="./assets/ステージ２　背景.png" alt="" loading="eager" />
+      </div>
+    `;
+  }
   return `
-    <div class="case-sheet single-stage-sheet stage02-source-visual">
-      <section class="case-stage current-case">
+      <div class="case-sheet single-stage-sheet stage02-source-visual">
+        <section class="case-stage current-case">
         <div class="case-stage-head">
           <span>ステージ2</span>
           <strong>『扉のあかない通路』</strong>

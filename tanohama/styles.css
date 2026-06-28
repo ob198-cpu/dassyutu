@@ -467,6 +467,26 @@ h1 {
   color: #111827;
 }
 
+.stage-two-background-only {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #02050a;
+  overflow: hidden;
+}
+
+.stage-two-background-only img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stage-two-text-problem {
+  margin-top: 14px;
+}
+
 .case-sheet {
   width: 100%;
   padding: 12px;
