@@ -3288,7 +3288,7 @@ body.stage-path-mode .game-card::before {
 
 .problem-art-image-crop {
   width: 100%;
-  aspect-ratio: 1672 / 708;
+  aspect-ratio: 1062 / 425;
   overflow: hidden;
   background: #d1a351;
 }

@@ -45,8 +45,8 @@ const stages = [
     scene: "gate",
     sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
-    problems: [{ file: "なぞステージ１.png", title: "ステージ1 原問題" }],
-    sourceProblemImage: "なぞステージ１.png",
+    problems: [{ file: "ステージ１　問題 VER2.png", title: "ステージ1 原問題" }],
+    sourceProblemImage: "ステージ１　問題 VER2.png",
     solutionImage: "stage01-02-solution.png",
     textProblem: {
       title: "ステージ1",
@@ -895,7 +895,7 @@ function gateProblemInscription(stage, done, hidden = false) {
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
       <div class="problem-art-shell">
         <div class="problem-art-image-crop">
-          <img class="open-screen-art stage-problem-art" src="./assets/なぞステージ１.png" alt="ステージ1 問題">
+          <img class="open-screen-art stage-problem-art" src="./assets/ステージ１　問題 VER2.png" alt="ステージ1 問題">
         </div>
         ${stage.id === "gate" ? renderKanaBoard() : ""}
       </div>
