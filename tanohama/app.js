@@ -642,7 +642,7 @@ function renderSlotPicker(stage, activeSlot) {
 function gatePlayableVisual(stage, done, feedback) {
   return `
     <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
-      <img class="stage-bg-art" src="./assets/stage01-broken-floor.png" alt="" loading="eager" />
+      <img class="stage-bg-art" src="./assets/stage01-nazo-main.png" alt="" loading="eager" />
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>

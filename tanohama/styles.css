@@ -2633,7 +2633,7 @@ body.stage-intro-mode::before {
 }
 
 body.stage-one-mode .phone-shell {
-  width: min(100%, 860px);
+  width: min(100%, 1320px);
   padding: 0;
 }
 
@@ -4202,7 +4202,7 @@ h1 {
 }
 
 .stage-one-redesign .stage-world {
-  height: clamp(520px, 72dvh, 860px);
+  height: clamp(620px, calc(100dvh - 64px), 820px);
 }
 
 .stage-one-redesign .stage-bg-art {
