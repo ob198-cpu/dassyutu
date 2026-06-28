@@ -6387,9 +6387,31 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 @media (max-width: 680px) {
   body.stage-one-mode .stage-one-redesign .stage-world,
   body.stage-path-mode .path-stage-background-only .stage-world {
-    height: auto !important;
+    height: min(48dvh, calc(100dvh - var(--mobile-nav-h) - var(--mobile-safe-bottom))) !important;
     min-height: 0 !important;
     display: block;
+    overflow: hidden;
+    position: relative;
+  }
+
+  body.stage-one-mode .stage-one-redesign .stage-world::before,
+  body.stage-path-mode .path-stage-background-only .stage-world::before {
+    content: "";
+    position: absolute;
+    inset: -22px;
+    z-index: 0;
+    background-position: center center;
+    background-size: cover;
+    filter: blur(18px) brightness(0.62) saturate(1.05);
+    transform: scale(1.08);
+  }
+
+  body.stage-one-mode .stage-one-redesign .stage-world::before {
+    background-image: url("./assets/ステージ１　背景.png");
+  }
+
+  body.stage-path-mode .path-stage-background-only .stage-world::before {
+    background-image: url("./assets/ステージ２　背景.png");
   }
 
   body.stage-one-mode .stage-one-redesign .stage-bg-art,
@@ -6397,6 +6419,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     position: relative !important;
     inset: auto !important;
     display: block;
+    z-index: 1;
     width: 100%;
     height: auto;
     min-height: 0;
