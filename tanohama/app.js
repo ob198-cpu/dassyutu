@@ -1118,13 +1118,12 @@ function showMenuMessage(title, message) {
 
 function focusCurrentProblem() {
   const stage = stages[state.stageIndex] || stages[0];
-  if (stage.id === "gate" && (state.hiddenSpells?.[stage.id] === true || state.hiddenProblems?.[stage.id] === true || state.gatePanelMode !== "problem")) {
+  if (stage.id === "gate") {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
     state.gatePanelMode = "problem";
     state.slotPickerOpen = false;
     render();
-    requestAnimationFrame(focusCurrentProblem);
     return;
   }
 
