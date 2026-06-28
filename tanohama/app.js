@@ -749,17 +749,33 @@ function renderSpellRuleNotice() {
 }
 
 function renderGateSuccessOverlay(phase) {
-  if (phase === "spell") {
+  if (phase === "prompt1") {
     return `
-      <section class="gate-success-sequence is-spell" aria-label="ステージ1 呪文">
-        <img src="./assets/ステージ１　呪文.png" alt="ステージ1の呪文" loading="eager" />
+      <section class="gate-success-sequence is-prompt1" aria-label="ステージ1 続行確認">
+        <div class="gate-choice-card">
+          <div class="gate-choice-media">
+            <img src="./assets/ステージ１　呪文.png" alt="ステージ1の呪文" loading="eager" />
+            <img src="./assets/ステージ１　クリア2.png" alt="ステージ1 クリア2" loading="eager" />
+          </div>
+          <p class="gate-choice-question">進みますか？</p>
+          <div class="gate-choice-actions">
+            <button class="primary-button gate-choice-button" type="button" data-gate-choice="yes">はい</button>
+            <button class="ghost-button gate-choice-button" type="button" data-gate-choice="no">いいえ</button>
+          </div>
+        </div>
       </section>
     `;
   }
-  if (phase === "clear2") {
+  if (phase === "prompt2") {
     return `
-      <section class="gate-success-sequence is-clear2" aria-label="ステージ1 クリア2">
-        <img src="./assets/ステージ１　クリア2.png" alt="ステージ1 クリア2" loading="eager" />
+      <section class="gate-success-sequence is-prompt2" aria-label="ステージ2へ進む確認">
+        <div class="gate-choice-card gate-choice-card--compact">
+          <p class="gate-choice-question">ステージ2に進みますか？</p>
+          <div class="gate-choice-actions">
+            <button class="primary-button gate-choice-button" type="button" data-gate-choice="yes">はい</button>
+            <button class="ghost-button gate-choice-button" type="button" data-gate-choice="no">いいえ</button>
+          </div>
+        </div>
       </section>
     `;
   }
@@ -783,8 +799,9 @@ function renderSlotPicker(stage, activeSlot) {
 }
 
 function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
-  const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
-  const background = done ? "ステージ１　クリア.png" : "ステージ１　背景.png";
+  const successPhase = feedback?.type === "success" ? feedback.phase : null;
+  const rockDropping = successPhase === "rock";
+  const background = done || successPhase === "prompt2" ? "ステージ１　クリア.png" : "ステージ１　背景.png";
   return `
     <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${rockDropping ? "is-rock-dropping" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/${background}" alt="" loading="eager" />
@@ -881,9 +898,28 @@ function wireGateStage(stage, done) {
       return;
     }
     state.slotPickerOpen = false;
-    state.feedback = { stageId: stage.id, type: "success", phase: "rock" };
+    addUnique(state.spells, stage.reward);
+    state.feedback = { stageId: stage.id, type: "success", phase: "prompt1" };
     render();
-    scheduleGateSuccess(stage);
+  });
+
+  document.querySelectorAll("[data-gate-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (state.feedback?.stageId !== stage.id || state.feedback.type !== "success") return;
+      const choice = button.dataset.gateChoice;
+      const phase = state.feedback.phase;
+      if (choice === "no") {
+        render();
+        return;
+      }
+      if (phase === "prompt1") {
+        beginGateDescent(stage);
+        return;
+      }
+      if (phase === "prompt2") {
+        finishGateSuccess(stage);
+      }
+    });
   });
 
   document.querySelector("#nextButton")?.addEventListener("click", () => {
@@ -900,24 +936,25 @@ function wireGateStage(stage, done) {
   });
 }
 
-function scheduleGateSuccess(stage) {
+function beginGateDescent(stage) {
   clearGateSuccessTimers();
   const setPhase = (phase) => {
     state.feedback = { stageId: stage.id, type: "success", phase };
     render();
   };
-  setPhase("spell");
-  gateSuccessTimers.push(window.setTimeout(() => setPhase("clear2"), 650));
-  gateSuccessTimers.push(window.setTimeout(() => setPhase("background"), 1400));
-  gateSuccessTimers.push(window.setTimeout(() => setPhase("rock"), 2200));
-  gateSuccessTimers.push(window.setTimeout(() => {
-    addUnique(state.cleared, stage.id);
-    addUnique(state.spells, stage.reward);
-    state.feedback = { stageId: stage.id, type: "success", phase: "done" };
-    resetStageInput();
-    render();
-    clearGateSuccessTimers();
-  }, 3500));
+  setPhase("background");
+  gateSuccessTimers.push(window.setTimeout(() => setPhase("rock"), 1100));
+  gateSuccessTimers.push(window.setTimeout(() => setPhase("prompt2"), 2450));
+}
+
+function finishGateSuccess(stage) {
+  clearGateSuccessTimers();
+  addUnique(state.cleared, stage.id);
+  addUnique(state.spells, stage.reward);
+  state.feedback = null;
+  resetStageInput();
+  state.stageIndex = Math.min(state.stageIndex + 1, stages.length - 1);
+  render();
 }
 
 function renderStage(stage) {
