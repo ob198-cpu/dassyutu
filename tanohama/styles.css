@@ -3580,6 +3580,30 @@ body.stage-intro-mode .game-card::before {
   backdrop-filter: blur(18px);
 }
 
+.spell-device.is-clear-compact {
+  left: 50%;
+  right: auto;
+  bottom: 18px;
+  width: min(620px, calc(100% - 36px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "result"
+    "stage";
+  gap: 10px;
+  padding: 12px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(6, 18, 16, 0.82), rgba(2, 8, 9, 0.9));
+}
+
+.spell-device.is-clear-compact .result-message {
+  margin: 0;
+}
+
+.spell-device.is-clear-compact .stage-actions {
+  margin: 0;
+}
+
 .spell-window-close {
   position: absolute;
   top: 8px;

@@ -632,23 +632,28 @@ function renderGateStage(stage) {
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback)}
 
-      ${spellHidden ? "" : `<section class="spell-device" aria-label="呪文入力">
+      ${spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""}" aria-label="呪文入力">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="呪文ウィンドウを閉じる">×</button>
-        ${gateProblemInscription(stage, done, problemHidden)}
-        ${renderSolution(stage, done)}
-        ${renderSpellReference(stage)}
-        ${renderSpellRuleNotice()}
+        ${
+          done
+            ? ""
+            : `
+              ${gateProblemInscription(stage, done, problemHidden)}
+              ${renderSpellReference(stage)}
+              ${renderSpellRuleNotice()}
 
-        <div class="device-main-row">
-          <div class="premium-slot-row magic-slots">
-            ${Array.from({ length: stage.slots })
-              .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
-              .join("")}
-          </div>
-          <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${done ? "解決済み" : rockDropping ? "発動中..." : "呪文を唱える"}</button>
-        </div>
+              <div class="device-main-row">
+                <div class="premium-slot-row magic-slots">
+                  ${Array.from({ length: stage.slots })
+                    .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
+                    .join("")}
+                </div>
+                <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${rockDropping ? "発動中..." : "呪文を唱える"}</button>
+              </div>
 
-        ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
+              ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
+            `
+        }
 
         ${renderGateResult(stage, done, feedback)}
 
