@@ -364,6 +364,7 @@ function render() {
   const stage = stages[state.stageIndex] || stages[0];
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
+  document.body.classList.toggle("stage-path-mode", !state.isClear && stage.id === "path");
   elements.topTitle.textContent = state.isClear
     ? "異空間からの脱出 CLEAR"
     : `異空間からの脱出 ${stage.number} / ${stage.title}`;
@@ -406,8 +407,11 @@ function renderIntro(stage) {
 
 function renderPathStage(stage) {
   elements.game.innerHTML = `
-    <section class="path-stage-background-only" aria-label="${stage.number} / ${stage.title}">
-      <img src="./assets/ステージ２　背景.png" alt="${stage.number} ${stage.title}" loading="eager">
+    <section class="stage-panel premium-stage path-stage-background-only" aria-label="${stage.number} / ${stage.title}">
+      <div class="stage-world">
+        <img class="stage-bg-art" src="./assets/ステージ２　背景.png" alt="${stage.number} ${stage.title}" loading="eager">
+        <div class="art-vignette"></div>
+      </div>
     </section>
   `;
   wireProblems();

@@ -490,18 +490,30 @@ h1 {
 .path-stage-background-only {
   position: relative;
   width: 100%;
-  min-height: calc(100dvh - 24px);
+  min-height: 100dvh;
+  padding: 0;
   overflow: hidden;
   background: #02050a;
 }
 
-.path-stage-background-only img {
+.path-stage-background-only .stage-world {
+  height: 100dvh;
+  background: #02050a;
+}
+
+.path-stage-background-only .stage-bg-art {
   display: block;
   width: 100%;
-  height: min(100dvh, 900px);
+  height: 100%;
   object-fit: contain;
   object-position: center center;
-  background: #02050a;
+  filter: saturate(0.96) contrast(1.04) brightness(0.9);
+}
+
+.path-stage-background-only .art-vignette {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.44) 78%, rgba(0, 0, 0, 0.82)),
+    radial-gradient(circle at 50% 50%, transparent 28%, rgba(0, 0, 0, 0.28) 78%);
 }
 
 .case-sheet {
@@ -2677,12 +2689,20 @@ body.stage-intro-mode {
   background: #02050a;
 }
 
+body.stage-path-mode {
+  background: #02050a;
+}
+
 body.stage-one-mode::before {
   opacity: 0.18;
 }
 
 body.stage-intro-mode::before {
   opacity: 0.16;
+}
+
+body.stage-path-mode::before {
+  opacity: 0.18;
 }
 
 body.stage-one-mode .phone-shell {
@@ -2698,11 +2718,23 @@ body.stage-intro-mode .phone-shell {
   padding: 0;
 }
 
+body.stage-path-mode .phone-shell {
+  width: calc(100% - var(--side-menu-w));
+  max-width: none;
+  margin-left: var(--side-menu-w);
+  margin-right: 0;
+  padding: 0;
+}
+
 body.stage-one-mode .topbar {
   display: none;
 }
 
 body.stage-intro-mode .topbar {
+  display: none;
+}
+
+body.stage-path-mode .topbar {
   display: none;
 }
 
@@ -2732,6 +2764,11 @@ body.stage-intro-mode .stage-nav {
   display: none;
 }
 
+body.stage-path-mode .status-strip,
+body.stage-path-mode .stage-nav {
+  display: none;
+}
+
 body.stage-one-mode .game-card {
   min-height: 100dvh;
   border: 0;
@@ -2748,11 +2785,23 @@ body.stage-intro-mode .game-card {
   box-shadow: none;
 }
 
+body.stage-path-mode .game-card {
+  min-height: 100dvh;
+  border: 0;
+  border-radius: 0;
+  background: #02050a;
+  box-shadow: none;
+}
+
 body.stage-one-mode .game-card::before {
   display: none;
 }
 
 body.stage-intro-mode .game-card::before {
+  display: none;
+}
+
+body.stage-path-mode .game-card::before {
   display: none;
 }
 
@@ -5322,6 +5371,13 @@ h1 {
     margin-left: 0;
   }
 
+  body.stage-path-mode .phone-shell {
+    width: 100%;
+    margin-left: 0;
+    max-width: none;
+    padding: 0;
+  }
+
   .status-strip {
     display: none;
   }
@@ -5340,6 +5396,14 @@ h1 {
 
   .stage-one-redesign .stage-world {
     height: clamp(540px, 78dvh, 820px);
+  }
+
+  .path-stage-background-only {
+    min-height: 72dvh;
+  }
+
+  .path-stage-background-only .stage-world {
+    height: 72dvh;
   }
 
   .spell-device {
