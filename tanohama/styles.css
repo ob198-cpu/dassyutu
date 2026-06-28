@@ -6385,6 +6385,31 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 }
 
 @media (max-width: 680px) {
+  body.stage-intro-mode .intro-stage {
+    min-height: calc(100dvh - var(--mobile-nav-h) - var(--mobile-safe-bottom)) !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 14px 12px 18px;
+    overflow: hidden;
+  }
+
+  body.stage-intro-mode .intro-opening-image {
+    width: 100%;
+    max-height: min(58dvh, 440px);
+    margin-top: 0;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  body.stage-intro-mode .intro-start-button {
+    width: 100%;
+    min-height: 62px;
+    margin: 0;
+    font-size: 22px;
+  }
+
   body.stage-one-mode .stage-one-redesign .stage-world,
   body.stage-path-mode .path-stage-background-only .stage-world {
     height: min(48dvh, calc(100dvh - var(--mobile-nav-h) - var(--mobile-safe-bottom))) !important;
