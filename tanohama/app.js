@@ -737,7 +737,6 @@ function renderGateStage(stage) {
           : `
             ${renderSpellRuleNotice()}
             ${renderLearnedSpellButton()}
-            ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
 
             <div class="device-main-row">
               <div class="premium-slot-row magic-slots">
@@ -756,6 +755,7 @@ function renderGateStage(stage) {
         </section>`}
 
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
+      ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
 
       ${done ? `<div class="gate-clear-actions">
         <button class="primary-button" id="nextButton" type="button">${stage.id === "gate" ? "はい" : "次へ進む"}</button>

@@ -4257,16 +4257,25 @@ body.stage-path-mode .game-card::before {
 }
 
 .learned-spell-viewer {
-  grid-area: reference;
+  position: fixed;
+  z-index: 80;
+  top: 50%;
+  left: calc(var(--side-menu-w) + ((100vw - var(--side-menu-w)) / 2));
+  transform: translate(-50%, -50%);
+  width: min(calc(100vw - var(--side-menu-w) - 32px), 1180px);
+  max-height: min(88dvh, 820px);
+  overflow: auto;
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: 14px;
+  padding: clamp(14px, 1.8vw, 24px);
   border: 1px solid rgba(242, 213, 107, 0.44);
-  border-radius: 10px;
+  border-radius: 14px;
   background:
     radial-gradient(circle at 50% 0%, rgba(255, 232, 121, 0.12), transparent 70%),
     linear-gradient(180deg, rgba(11, 17, 22, 0.96), rgba(3, 6, 10, 0.98));
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.72),
+    0 0 0 9999px rgba(0, 0, 0, 0.58);
 }
 
 .learned-spell-head {
@@ -4313,7 +4322,7 @@ body.stage-path-mode .game-card::before {
 .learned-spell-images img {
   display: block;
   width: 100%;
-  max-height: min(32dvh, 280px);
+  max-height: min(58dvh, 520px);
   object-fit: contain;
   border-radius: 8px;
   background: #fff;
@@ -5494,6 +5503,13 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     width: 100%;
   }
 
+  .learned-spell-viewer {
+    left: 50%;
+    width: calc(100vw - 18px);
+    max-height: 86dvh;
+    padding: 12px;
+  }
+
   .learned-stage-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5503,7 +5519,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   }
 
   .learned-spell-images img {
-    max-height: min(30dvh, 240px);
+    max-height: min(36dvh, 300px);
   }
 
   .gate-success-sequence.is-clear2 img {
