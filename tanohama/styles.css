@@ -6385,6 +6385,27 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 }
 
 @media (max-width: 680px) {
+  :root {
+    --mobile-nav-h: 68px;
+  }
+
+  .side-menu {
+    flex-wrap: nowrap;
+    align-content: center;
+    row-gap: 0;
+  }
+
+  .side-stage-nav {
+    display: none !important;
+  }
+
+  .side-menu-button,
+  .side-menu-command {
+    flex: 1 1 0;
+    min-height: 50px;
+    font-size: 12px;
+  }
+
   body.stage-intro-mode .intro-stage {
     min-height: calc(100dvh - var(--mobile-nav-h) - var(--mobile-safe-bottom)) !important;
     display: flex;
