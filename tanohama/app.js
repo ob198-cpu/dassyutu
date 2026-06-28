@@ -208,6 +208,10 @@ const spellBank = [
   "バタフライエフェクト",
 ];
 
+const spellRuleText =
+  "呪文のルール: 呪文は石板にカタカナで記入し、どこに、どの様に使うかを示す。石板の数に合った文字数の呪文しか唱える事が出来ない。習得した呪文には☆マークが付き、以後使用可能となる。";
+const spellActivationText = "各ステージの呪文は空欄に文字を正しく打ち込むと発動";
+
 const storeKey = "tanohamaEscapeStateV4";
 
 const elements = {
@@ -607,6 +611,7 @@ function renderGateStage(stage) {
       <section class="spell-device" aria-label="呪文入力">
         ${gateProblemInscription(stage, done, problemHidden)}
         ${renderSolution(stage, done)}
+        ${renderSpellRuleNotice()}
 
         <div class="device-main-row">
           <div class="premium-slot-row magic-slots">
@@ -628,6 +633,16 @@ function renderGateStage(stage) {
     </section>
   `;
   wireGateStage(stage, done);
+}
+
+function renderSpellRuleNotice() {
+  return `
+    <section class="spell-rule-notice" aria-label="呪文のルール">
+      <strong>呪文のルール</strong>
+      <p>${spellRuleText}</p>
+      <small>${spellActivationText}</small>
+    </section>
+  `;
 }
 
 function renderSlotPicker(stage, activeSlot) {
@@ -1132,7 +1147,7 @@ function focusCurrentMagic() {
     return;
   }
 
-  showMenuMessage("魔法", "このステージでは、魔法を使う場所はまだありません。");
+  showMenuMessage("呪文", "このステージでは、呪文を使う場所はまだありません。");
 }
 
 function showCurrentHint() {
