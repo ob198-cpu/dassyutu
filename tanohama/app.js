@@ -784,13 +784,16 @@ function renderLearnedSpellButton() {
 }
 
 function renderLearnedSpellViewer() {
-  const selectedStage = state.learnedSpellStage || "gate";
   const stageTabs = [
     { id: "gate", label: "ステージ1" },
     { id: "path", label: "ステージ2" },
     { id: "shop", label: "ステージ3" },
     { id: "time", label: "ステージ4" },
   ];
+  const unlockedTabs = stageTabs.filter((tab) => isStageCleared(tab.id));
+  const selectedStage = unlockedTabs.some((tab) => tab.id === state.learnedSpellStage)
+    ? state.learnedSpellStage
+    : unlockedTabs[0]?.id || "";
   return `
     <section class="learned-spell-viewer" aria-label="覚えた呪文">
       <div class="learned-spell-head">
@@ -800,15 +803,20 @@ function renderLearnedSpellViewer() {
       <div class="learned-stage-tabs" aria-label="ステージ選択">
         ${stageTabs
           .map(
-            (tab) => `
-              <button class="learned-stage-tab ${selectedStage === tab.id ? "is-active" : ""}" type="button" data-learned-stage="${tab.id}">
-                ${tab.label}
+            (tab) => {
+              const unlocked = isStageCleared(tab.id);
+              const activeClass = selectedStage === tab.id ? " is-active" : "";
+              const lockedClass = unlocked ? "" : " is-locked";
+              return `
+              <button class="learned-stage-tab${activeClass}${lockedClass}" type="button" data-learned-stage="${tab.id}" ${unlocked ? "" : "disabled"}>
+                ${tab.label}${unlocked ? "" : " 未クリア"}
               </button>
-            `,
+            `;
+            },
           )
           .join("")}
       </div>
-      ${selectedStage === "gate" ? renderLearnedStageOneSpells() : `<p class="learned-empty">このステージの呪文資料はまだ未登録です。</p>`}
+      ${selectedStage === "gate" ? renderLearnedStageOneSpells() : `<p class="learned-empty">クリア済みステージの呪文だけ確認できます。</p>`}
     </section>
   `;
 }
