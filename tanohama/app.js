@@ -236,6 +236,7 @@ const elements = {
 };
 
 const state = loadState();
+forceGateProblemClosedOnStartup();
 let gateResolveTimer = null;
 
 function loadState() {
@@ -265,6 +266,15 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(storeKey, JSON.stringify(state));
+}
+
+function forceGateProblemClosedOnStartup() {
+  state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+}
+
+function hideProblemOnStageEntry(stage) {
+  if (stage?.id !== "gate") return;
+  state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
 }
 
 function normalizeAnswer(value) {
@@ -326,6 +336,7 @@ function renderIntro(stage) {
     state.stageIndex = 1;
     state.feedback = null;
     resetStageInput();
+    hideProblemOnStageEntry(stages[state.stageIndex]);
     render();
   });
 }
@@ -346,6 +357,7 @@ function renderNav() {
         state.stageIndex = index;
         state.feedback = null;
         resetStageInput();
+        hideProblemOnStageEntry(stage);
         render();
       }
     });
@@ -369,6 +381,7 @@ function renderNav() {
       state.stageIndex = index;
       state.feedback = null;
       resetStageInput();
+      hideProblemOnStageEntry(stage);
       render();
     });
     elements.sideNav.appendChild(shortcut);
