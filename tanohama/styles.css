@@ -3204,6 +3204,77 @@ body.stage-intro-mode .game-card::before {
   object-position: center center;
 }
 
+.problem-art-shell {
+  position: relative;
+  width: 100%;
+}
+
+.stage-problem-art {
+  width: 100%;
+  height: auto;
+}
+
+.kana-board-overlay {
+  position: absolute;
+  left: 3.2%;
+  right: 3.2%;
+  bottom: 4.4%;
+  height: 18.6%;
+  display: grid;
+  align-content: center;
+  gap: 11%;
+  pointer-events: auto;
+  z-index: 3;
+}
+
+.kana-board-row {
+  display: grid;
+  grid-template-columns: repeat(23, minmax(0, 1fr));
+  align-items: center;
+}
+
+.kana-glyph {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  font: inherit;
+  font-size: clamp(14px, 1.45vw, 24px);
+  line-height: 1;
+  font-weight: 700;
+  padding: 0.04em 0.08em;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  justify-self: center;
+  transition:
+    color 120ms ease,
+    transform 120ms ease,
+    text-shadow 120ms ease;
+}
+
+.kana-glyph:hover {
+  color: rgba(123, 84, 28, 0.28);
+  transform: translateY(-1px);
+}
+
+.kana-glyph.is-active {
+  color: #c91d1d;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.kana-glyph.is-arrow {
+  justify-self: start;
+  padding-left: 0.12em;
+  font-size: clamp(13px, 1.2vw, 20px);
+}
+
+.kana-glyph.is-composite {
+  font-size: clamp(12px, 1.1vw, 18px);
+  letter-spacing: -0.04em;
+}
+
 .problem-window-close {
   position: absolute;
   top: 8px;
@@ -5174,6 +5245,27 @@ h1 {
   .gate-clear-actions .primary-button {
     min-height: 48px;
     font-size: 18px;
+  }
+
+  .kana-board-overlay {
+    left: 2.8%;
+    right: 2.8%;
+    bottom: 4.1%;
+    height: 19.5%;
+    gap: 9%;
+  }
+
+  .kana-glyph {
+    font-size: clamp(11px, 1.8vw, 18px);
+    padding: 0.02em 0.04em;
+  }
+
+  .kana-glyph.is-arrow {
+    font-size: clamp(10px, 1.6vw, 16px);
+  }
+
+  .kana-glyph.is-composite {
+    font-size: clamp(10px, 1.5vw, 16px);
   }
 
   .device-main-row {

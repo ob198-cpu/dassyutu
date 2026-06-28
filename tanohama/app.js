@@ -237,6 +237,11 @@ const elements = {
   closeHint: document.querySelector("#closeHint"),
 };
 
+const stage1KanaBoardRows = [
+  ["?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?"],
+  ["?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "???", "?", "?", "?", "?", "?", "?", "?", "?"],
+];
+
 const state = loadState();
 forceGateProblemClosedOnStartup();
 let gateSuccessTimers = [];
@@ -261,6 +266,7 @@ function loadState() {
         hiddenSpells: saved.hiddenSpells && typeof saved.hiddenSpells === "object" ? saved.hiddenSpells : {},
         gatePanelMode: saved.gatePanelMode === "problem" ? "problem" : "spell",
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
+        kanaBoardActive: Array.isArray(saved.kanaBoardActive) ? saved.kanaBoardActive : [],
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
       };
@@ -268,7 +274,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -817,14 +823,43 @@ function gateProblemInscription(stage, done, hidden = false) {
   const problem = stage.textProblem;
   if (!problem || hidden) return "";
   return `
-    <section class="device-problem source-problem-card open-screen-card ${done ? "is-solved" : ""}" aria-label="問題文">
-      <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-      <img class="open-screen-art" src="./assets/なぞステージ１.png" alt="ステージ1 問題">
+    <section class="device-problem source-problem-card open-screen-card ${done ? "is-solved" : ""}" aria-label="???">
+      <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="???????????">?</button>
+      <div class="problem-art-shell">
+        <img class="open-screen-art stage-problem-art" src="./assets/${stage.sourceProblemImage || "stage01-problem-fixed.png"}" alt="????1 ??">
+        ${stage.id === "gate" ? renderKanaBoardOverlay() : ""}
+      </div>
     </section>
   `;
 }
 
+function renderKanaBoardOverlay() {
+  const active = new Set(Array.isArray(state.kanaBoardActive) ? state.kanaBoardActive : []);
+  return `
+    <div class="kana-board-overlay" aria-label="???">
+      ${stage1KanaBoardRows
+        .map(
+          (line, rowIndex) => `
+            <div class="kana-board-row" role="group" aria-label="? ${rowIndex + 1}">
+              ${line
+                .map((char, index) => {
+                  const key = `${rowIndex}:${index}`;
+                  const activeClass = active.has(key) ? " is-active" : "";
+                  const arrowClass = char === "?" ? " is-arrow" : "";
+                  const compositeClass = char === "???" ? " is-composite" : "";
+                  return `<button type="button" class="kana-glyph${activeClass}${arrowClass}${compositeClass}" data-kana-key="${key}" aria-pressed="${active.has(key)}">${char}</button>`;
+                })
+                .join("")}
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
 function renderGateResult(stage, done, feedback) {
+
   if (done) {
     return `<p class="result-message is-success">${stage.successMessage}</p>`;
   }
@@ -1219,6 +1254,7 @@ function resetGame() {
   state.hiddenSpells = {};
   state.gatePanelMode = "spell";
   state.hintLevels = {};
+  state.kanaBoardActive = [];
   state.feedback = null;
   state.isClear = false;
   saveState();
