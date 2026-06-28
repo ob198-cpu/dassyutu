@@ -210,7 +210,7 @@ const spellBank = [
 
 const spellRuleText =
   "呪文のルール: 呪文は石板にカタカナで記入し、どこに、どの様に使うかを示す。石板の数に合った文字数の呪文しか唱える事が出来ない。習得した呪文には☆マークが付き、以後使用可能となる。";
-const spellActivationText = "各ステージの呪文は空欄に文字を正しく打ち込むと発動";
+const spellActivationText = "問題を解くと呪文が現れるかも…<br>各ステージの呪文は空欄に文字を正しく打ち込むと発動";
 
 const storeKey = "tanohamaEscapeStateV4";
 
@@ -638,25 +638,22 @@ function renderGateStage(stage) {
 
       ${spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="${gatePanelMode === "problem" ? "問題ウィンドウを閉じる" : "呪文ウィンドウを閉じる"}">×</button>
-        ${
-          done
-            ? ""
-            : gatePanelMode === "problem"
-              ? gateProblemInscription(stage, done, false)
-            : `
-              ${renderSpellRuleNotice()}
+        ${done ? "" : gatePanelMode === "problem"
+          ? gateProblemInscription(stage, done, false)
+          : `
+            ${renderSpellRuleNotice()}
 
-              <div class="device-main-row">
-                <div class="premium-slot-row magic-slots">
-                  ${Array.from({ length: stage.slots })
-                    .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
-                    .join("")}
-                </div>
-                <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${rockDropping ? "発動中..." : "呪文を唱える"}</button>
+            <div class="device-main-row">
+              <div class="premium-slot-row magic-slots">
+                ${Array.from({ length: stage.slots })
+                  .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
+                  .join("")}
               </div>
+              <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${rockDropping ? "発動中..." : "呪文を唱える"}</button>
+            </div>
 
-              ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
-            `
+            ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
+          `
         }
 
         ${renderGateResult(stage, done, feedback)}
@@ -672,10 +669,8 @@ function renderGateStage(stage) {
 
 function renderSpellRuleNotice() {
   return `
-    <section class="spell-rule-notice" aria-label="呪文のルール">
-      <strong>呪文のルール</strong>
-      <p>${spellRuleText}</p>
-      <small>${spellActivationText}</small>
+    <section class="spell-open-screen open-screen-card" aria-label="ステージ1の画面">
+      <img class="open-screen-art" src="./assets/stage01-open-screen.png" alt="ステージ1の画面">
     </section>
   `;
 }
@@ -715,15 +710,9 @@ function gateProblemInscription(stage, done, hidden = false) {
   const problem = stage.textProblem;
   if (!problem || hidden) return "";
   return `
-    <section class="device-problem source-problem-card ${done ? "is-solved" : ""}" aria-label="問題文">
+    <section class="device-problem source-problem-card open-screen-card ${done ? "is-solved" : ""}" aria-label="問題文">
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-      <div class="source-problem-head">
-        <span>問題文</span>
-        <strong>試練</strong>
-      </div>
-      <div class="source-puzzle-sheet source-puzzle-image-only" aria-label="ステージ1の問題">
-        <img class="source-problem-full-image" src="./assets/stage01-problem-fixed.png" alt="ステージ1 問題">
-      </div>
+      <img class="open-screen-art" src="./assets/stage01-open-screen.png" alt="ステージ1 問題">
     </section>
   `;
 }
@@ -808,6 +797,12 @@ function wireGateStage(stage, done) {
 
   document.querySelector("#nextButton")?.addEventListener("click", () => {
     state.stageIndex = Math.min(state.stageIndex + 1, stages.length - 1);
+    const nextStage = stages[state.stageIndex];
+    if (nextStage?.id === "gate") {
+      state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+      state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
+      state.gatePanelMode = "spell";
+    }
     state.feedback = null;
     resetStageInput();
     render();
