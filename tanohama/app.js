@@ -267,6 +267,8 @@ function loadState() {
         gatePanelMode: saved.gatePanelMode === "problem" ? "problem" : "spell",
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
         kanaBoardActive: Array.isArray(saved.kanaBoardActive) ? saved.kanaBoardActive : [],
+        learnedSpellViewerOpen: Boolean(saved.learnedSpellViewerOpen),
+        learnedSpellStage: saved.learnedSpellStage || "gate",
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
       };
@@ -274,7 +276,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -730,6 +732,8 @@ function renderGateStage(stage) {
           ? gateProblemInscription(stage, done, false)
           : `
             ${renderSpellRuleNotice()}
+            ${renderLearnedSpellButton()}
+            ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
 
             <div class="device-main-row">
               <div class="premium-slot-row magic-slots">
@@ -762,6 +766,55 @@ function renderSpellRuleNotice() {
     <section class="spell-open-screen open-screen-card" aria-label="ステージ1の画面">
       <img class="open-screen-art" src="./assets/ステージ１　呪文.png" alt="ステージ1の呪文">
     </section>
+  `;
+}
+
+function renderLearnedSpellButton() {
+  return `
+    <div class="learned-spell-toolbar">
+      <button class="secondary-button learned-spell-open" id="toggleLearnedSpellViewer" type="button">
+        覚えた呪文を見る
+      </button>
+    </div>
+  `;
+}
+
+function renderLearnedSpellViewer() {
+  const selectedStage = state.learnedSpellStage || "gate";
+  const stageTabs = [
+    { id: "gate", label: "ステージ1" },
+    { id: "path", label: "ステージ2" },
+    { id: "shop", label: "ステージ3" },
+    { id: "time", label: "ステージ4" },
+  ];
+  return `
+    <section class="learned-spell-viewer" aria-label="覚えた呪文">
+      <div class="learned-spell-head">
+        <strong>覚えた呪文</strong>
+        <button class="text-button learned-spell-close" id="closeLearnedSpellViewer" type="button">閉じる</button>
+      </div>
+      <div class="learned-stage-tabs" aria-label="ステージ選択">
+        ${stageTabs
+          .map(
+            (tab) => `
+              <button class="learned-stage-tab ${selectedStage === tab.id ? "is-active" : ""}" type="button" data-learned-stage="${tab.id}">
+                ${tab.label}
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+      ${selectedStage === "gate" ? renderLearnedStageOneSpells() : `<p class="learned-empty">このステージの呪文資料はまだ未登録です。</p>`}
+    </section>
+  `;
+}
+
+function renderLearnedStageOneSpells() {
+  return `
+    <div class="learned-spell-images">
+      <img src="./assets/ステージ１　呪文.png" alt="ステージ1 呪文">
+      <img src="./assets/ステージ１　クリア2.png" alt="ステージ1 クリア資料">
+    </div>
   `;
 }
 
@@ -914,7 +967,26 @@ function wireGateStage(stage, done) {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
     state.gatePanelMode = "spell";
     state.slotPickerOpen = false;
+    state.learnedSpellViewerOpen = false;
     render();
+  });
+
+  document.querySelector("#toggleLearnedSpellViewer")?.addEventListener("click", () => {
+    state.learnedSpellViewerOpen = !state.learnedSpellViewerOpen;
+    state.slotPickerOpen = false;
+    render();
+  });
+
+  document.querySelector("#closeLearnedSpellViewer")?.addEventListener("click", () => {
+    state.learnedSpellViewerOpen = false;
+    render();
+  });
+
+  document.querySelectorAll("[data-learned-stage]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.learnedSpellStage = button.dataset.learnedStage || "gate";
+      render();
+    });
   });
 
   document.querySelectorAll(".slot-choice-button").forEach((button) => {
@@ -1282,6 +1354,8 @@ function resetGame() {
   state.gatePanelMode = "spell";
   state.hintLevels = {};
   state.kanaBoardActive = [];
+  state.learnedSpellViewerOpen = false;
+  state.learnedSpellStage = "gate";
   state.feedback = null;
   state.isClear = false;
   saveState();

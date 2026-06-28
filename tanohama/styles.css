@@ -4188,6 +4188,98 @@ body.stage-intro-mode .game-card::before {
   color: #fff1a9;
 }
 
+.learned-spell-toolbar {
+  grid-area: rule;
+  justify-self: end;
+  align-self: end;
+  position: relative;
+  z-index: 3;
+  margin-top: -58px;
+  margin-right: 10px;
+}
+
+.learned-spell-open {
+  min-height: 44px;
+  padding: 0 16px;
+  border-color: rgba(255, 232, 121, 0.7);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 245, 178, 0.24), transparent 64%),
+    linear-gradient(180deg, rgba(35, 31, 20, 0.98), rgba(7, 9, 12, 0.98));
+  color: #fff1a9;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.36);
+}
+
+.learned-spell-viewer {
+  grid-area: reference;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(242, 213, 107, 0.44);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 232, 121, 0.12), transparent 70%),
+    linear-gradient(180deg, rgba(11, 17, 22, 0.96), rgba(3, 6, 10, 0.98));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.learned-spell-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #fff1a9;
+  font-weight: 950;
+}
+
+.learned-spell-close {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.learned-stage-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.learned-stage-tab {
+  min-height: 40px;
+  border: 1px solid rgba(242, 213, 107, 0.34);
+  border-radius: 8px;
+  background: rgba(4, 8, 12, 0.92);
+  color: #dfe8f0;
+  font-weight: 900;
+}
+
+.learned-stage-tab.is-active {
+  border-color: rgba(255, 232, 121, 0.9);
+  background: linear-gradient(180deg, #fff0a2, #d4aa2f);
+  color: #100d05;
+}
+
+.learned-spell-images {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.learned-spell-images img {
+  display: block;
+  width: 100%;
+  max-height: min(32dvh, 280px);
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+}
+
+.learned-empty {
+  margin: 0;
+  padding: 14px;
+  color: #fff4c6;
+  font-weight: 850;
+}
+
 .spell-device .result-message {
   grid-area: result;
   min-height: 0;
@@ -5275,6 +5367,27 @@ h1 {
 
   .spell-open-screen {
     max-height: 58dvh;
+  }
+
+  .learned-spell-toolbar {
+    justify-self: stretch;
+    margin: 0;
+  }
+
+  .learned-spell-open {
+    width: 100%;
+  }
+
+  .learned-stage-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .learned-spell-images {
+    grid-template-columns: 1fr;
+  }
+
+  .learned-spell-images img {
+    max-height: min(30dvh, 240px);
   }
 
   .gate-success-sequence.is-clear2 img {
