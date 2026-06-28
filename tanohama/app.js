@@ -637,7 +637,7 @@ function renderGateStage(stage) {
       ${gatePlayableVisual(stage, done, feedback)}
 
       ${spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
-        ${gatePanelMode === "problem" ? "" : `<button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="呪文ウィンドウを閉じる">×</button>`}
+        <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="${gatePanelMode === "problem" ? "問題ウィンドウを閉じる" : "呪文ウィンドウを閉じる"}">×</button>
         ${
           done
             ? ""
@@ -752,6 +752,8 @@ function wireGateStage(stage, done) {
 
   document.querySelector("#closeSpellWindow")?.addEventListener("click", () => {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+    state.gatePanelMode = "spell";
     state.slotPickerOpen = false;
     render();
   });

@@ -3605,6 +3605,8 @@ body.stage-intro-mode .game-card::before {
 }
 
 .spell-device.is-problem-mode {
+  top: 12px;
+  bottom: 18px;
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas: "problem";
   gap: 0;
@@ -3612,8 +3614,21 @@ body.stage-intro-mode .game-card::before {
 }
 
 .spell-device.is-problem-mode .source-problem-card {
-  height: min(70dvh, 760px);
+  height: 100%;
   max-height: none;
+}
+
+.spell-device.is-problem-mode .problem-window-close {
+  display: none;
+}
+
+.spell-device.is-problem-mode .spell-window-close {
+  width: 46px;
+  height: 46px;
+  top: 12px;
+  right: 12px;
+  z-index: 30;
+  font-size: 30px;
 }
 
 .spell-window-close {
@@ -4770,7 +4785,7 @@ h1 {
   }
 
   .spell-device.is-problem-mode .source-problem-card {
-    height: 62dvh;
+    height: 100%;
   }
 
   .spell-reference-card {
