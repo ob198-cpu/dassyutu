@@ -278,6 +278,7 @@ function forceGateProblemClosedOnStartup() {
 function hideProblemOnStageEntry(stage) {
   if (stage?.id !== "gate") return;
   state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+  state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
   state.gatePanelMode = "spell";
 }
 
@@ -624,6 +625,7 @@ function renderGateStage(stage) {
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
   const problemHidden = state.hiddenProblems?.[stage.id] === true;
   const spellHidden = state.hiddenSpells?.[stage.id] === true;
+  const backgroundOnly = problemHidden && spellHidden;
   const gatePanelMode = state.gatePanelMode === "problem" ? "problem" : "spell";
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
@@ -634,7 +636,7 @@ function renderGateStage(stage) {
   if (rockDropping && !gateResolveTimer) scheduleGateSuccess(stage);
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
-      ${gatePlayableVisual(stage, done, feedback)}
+      ${gatePlayableVisual(stage, done, feedback, backgroundOnly)}
 
       ${spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="${gatePanelMode === "problem" ? "問題ウィンドウを閉じる" : "呪文ウィンドウを閉じる"}">×</button>
@@ -691,7 +693,7 @@ function renderSlotPicker(stage, activeSlot) {
   `;
 }
 
-function gatePlayableVisual(stage, done, feedback) {
+function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
   const background = done ? "stage01-clear.png" : "stage01-start-background-fixed.png";
   return `
@@ -700,7 +702,7 @@ function gatePlayableVisual(stage, done, feedback) {
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
-      ${done ? "" : `<p class="gate-situation-note">大きな穴が開いていて進むことができない。何かでふさぐことができれば…</p>`}
+      ${done || backgroundOnly ? "" : `<p class="gate-situation-note">大きな穴が開いていて進むことができない。何かでふさぐことができれば…</p>`}
       ${rockDropping ? `<img class="falling-rock" src="./assets/stage01-rock-cutout.png" alt="" aria-hidden="true" />` : ""}
     </div>
   `;
