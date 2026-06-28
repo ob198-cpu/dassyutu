@@ -4070,6 +4070,16 @@ body::before {
 
 .side-menu-command {
   min-height: 70px;
+  border-color: rgba(255, 237, 142, 0.92);
+  color: #130d04;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.48), transparent 68%),
+    linear-gradient(180deg, #fff3a8 0%, #e7bd36 58%, #b98217 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 176, 0.2),
+    0 10px 26px rgba(226, 174, 42, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.38);
 }
 
 .side-stage-nav {
