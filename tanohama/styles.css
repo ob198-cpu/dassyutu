@@ -3761,7 +3761,7 @@ body.stage-intro-mode .game-card::before {
   align-self: start;
   justify-self: center;
   width: min(96vw, 980px);
-  max-height: 94dvh;
+  max-height: min(62dvh, 720px);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   padding: 0;
@@ -3775,6 +3775,7 @@ body.stage-intro-mode .game-card::before {
   display: block;
   width: 100%;
   height: auto;
+  max-width: 100%;
   background: #fff;
 }
 
@@ -5067,9 +5068,7 @@ h1 {
   }
 
   .spell-open-screen {
-    height: 42dvh;
-    max-height: none;
-    min-height: 116px;
+    max-height: 58dvh;
   }
 
   .gate-success-sequence.is-clear2 img {
