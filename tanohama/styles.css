@@ -3204,6 +3204,72 @@ body.stage-intro-mode .game-card::before {
   object-position: center center;
 }
 
+.problem-art-shell {
+  position: relative;
+  width: 100%;
+}
+
+.stage-problem-art {
+  width: 100%;
+  height: auto;
+}
+
+.kana-board-overlay {
+  position: absolute;
+  left: 3.2%;
+  right: 3.2%;
+  bottom: 4.5%;
+  height: 18.4%;
+  z-index: 4;
+  display: grid;
+  align-content: center;
+  gap: 10%;
+  pointer-events: auto;
+}
+
+.kana-board-row {
+  display: grid;
+  grid-template-columns: repeat(23, minmax(0, 1fr));
+  align-items: center;
+}
+
+.kana-glyph {
+  appearance: none;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: clamp(10px, 1.9vw, 34px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  padding: 0.08em 0.04em;
+  text-align: center;
+  user-select: none;
+}
+
+.kana-glyph:hover {
+  color: rgba(175, 32, 24, 0.2);
+}
+
+.kana-glyph.is-active {
+  color: #d21e1e;
+  text-shadow:
+    0 0 1px rgba(0, 0, 0, 0.55),
+    0 0 7px rgba(255, 230, 126, 0.25);
+}
+
+.kana-glyph.is-arrow {
+  justify-self: start;
+}
+
+.kana-glyph.is-composite {
+  font-size: clamp(9px, 1.45vw, 26px);
+  letter-spacing: 0;
+}
+
 .problem-window-close {
   position: absolute;
   top: 8px;

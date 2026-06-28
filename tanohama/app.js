@@ -237,6 +237,11 @@ const elements = {
   closeHint: document.querySelector("#closeHint"),
 };
 
+const stage1KanaBoardRows = [
+  ["\u2192", "\u305f", "\u3060", "\u3044", "\u307e", "\u3061", "\u3053", "\u304f", "\u3042", "\u304b", "\u3093", "\u304d", "\u3085", "\u3046", "\u3074", "\u3063", "\u3068", "\u304f", "\u308b", "\u307e", "\u308a", "\u307e", "\u3059"],
+  ["\u30de", "\u30b1", "\u30aa", "\u30b7", "\u30df", "\u30a4", "\u30a4", "\u30e2", "\u30ce", "\u30a2", "\u30ac", "\u30de", "\u30c1", "\u30ac", "\u300c\u30c4\u300d", "\u30c6", "\u30a6", "\u30c4", "\u30af", "\u30b7", "\u30a4", "\u30d2", "\u30c8"],
+];
+
 const state = loadState();
 forceGateProblemClosedOnStartup();
 let gateSuccessTimers = [];
@@ -819,8 +824,34 @@ function gateProblemInscription(stage, done, hidden = false) {
   return `
     <section class="device-problem source-problem-card open-screen-card ${done ? "is-solved" : ""}" aria-label="問題文">
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-      <img class="open-screen-art" src="./assets/なぞステージ１.png" alt="ステージ1 問題">
+      <div class="problem-art-shell">
+        <img class="open-screen-art stage-problem-art" src="./assets/なぞステージ１.png" alt="ステージ1 問題">
+        ${stage.id === "gate" ? renderKanaBoardOverlay() : ""}
+      </div>
     </section>
+  `;
+}
+
+function renderKanaBoardOverlay() {
+  return `
+    <div class="kana-board-overlay" aria-label="文字盤">
+      ${stage1KanaBoardRows
+        .map(
+          (line, rowIndex) => `
+            <div class="kana-board-row" role="group" aria-label="行 ${rowIndex + 1}">
+              ${line
+                .map((char, index) => {
+                  const key = `${rowIndex}:${index}`;
+                  const arrowClass = char === "\u2192" ? " is-arrow" : "";
+                  const compositeClass = char === "\u300c\u30c4\u300d" ? " is-composite" : "";
+                  return `<button type="button" class="kana-glyph${arrowClass}${compositeClass}" data-kana-key="${key}" aria-pressed="false">${char}</button>`;
+                })
+                .join("")}
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
   `;
 }
 
@@ -845,6 +876,14 @@ function wireGateStage(stage, done) {
     state.gatePanelMode = "spell";
     state.slotPickerOpen = false;
     render();
+  });
+
+  document.querySelectorAll("[data-kana-key]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const pressed = button.getAttribute("aria-pressed") === "true";
+      button.setAttribute("aria-pressed", String(!pressed));
+      button.classList.toggle("is-active", !pressed);
+    });
   });
 
   document.querySelector("#closeSpellWindow")?.addEventListener("click", () => {
