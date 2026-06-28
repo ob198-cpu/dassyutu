@@ -253,6 +253,7 @@ function loadState() {
         activeSlot: Number.isInteger(saved.activeSlot) ? saved.activeSlot : 0,
         slotPickerOpen: Boolean(saved.slotPickerOpen),
         hiddenProblems: saved.hiddenProblems && typeof saved.hiddenProblems === "object" ? saved.hiddenProblems : {},
+        hiddenSpells: saved.hiddenSpells && typeof saved.hiddenSpells === "object" ? saved.hiddenSpells : {},
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
@@ -261,7 +262,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hintLevels: {}, feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, hintLevels: {}, feedback: null, isClear: false };
 }
 
 function saveState() {
@@ -610,6 +611,7 @@ function renderGateStage(stage) {
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
   const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
   const problemHidden = state.hiddenProblems?.[stage.id] === true;
+  const spellHidden = state.hiddenSpells?.[stage.id] === true;
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
     : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
@@ -621,7 +623,8 @@ function renderGateStage(stage) {
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback)}
 
-      <section class="spell-device" aria-label="呪文入力">
+      ${spellHidden ? "" : `<section class="spell-device" aria-label="呪文入力">
+        <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="呪文ウィンドウを閉じる">×</button>
         ${gateProblemInscription(stage, done, problemHidden)}
         ${renderSolution(stage, done)}
         ${renderSpellRuleNotice()}
@@ -642,7 +645,7 @@ function renderGateStage(stage) {
         <div class="stage-actions">
           ${done ? `<button class="primary-button" id="nextButton" type="button">次へ進む</button>` : ""}
         </div>
-      </section>
+      </section>`}
     </section>
   `;
   wireGateStage(stage, done);
@@ -721,6 +724,12 @@ function wireGateStage(stage, done) {
 
   document.querySelector("#closeProblemWindow")?.addEventListener("click", () => {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
+    state.slotPickerOpen = false;
+    render();
+  });
+
+  document.querySelector("#closeSpellWindow")?.addEventListener("click", () => {
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
     state.slotPickerOpen = false;
     render();
   });
@@ -1054,6 +1063,7 @@ function resetGame() {
   state.activeSlot = 0;
   state.slotPickerOpen = false;
   state.hiddenProblems = {};
+  state.hiddenSpells = {};
   state.hintLevels = {};
   state.feedback = null;
   state.isClear = false;
@@ -1108,6 +1118,14 @@ function focusCurrentProblem() {
 }
 
 function focusCurrentMagic() {
+  const stage = stages[state.stageIndex] || stages[0];
+  if (state.hiddenSpells?.[stage.id] === true) {
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+    render();
+    requestAnimationFrame(focusCurrentMagic);
+    return;
+  }
+
   const magic = document.querySelector(".spell-device, .spell-workbench, .spell-grid, .slot-row, .stone-panel");
   if (magic) {
     magic.scrollIntoView({ behavior: "smooth", block: "center" });

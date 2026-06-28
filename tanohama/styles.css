@@ -3579,11 +3579,36 @@ body.stage-intro-mode .game-card::before {
   backdrop-filter: blur(18px);
 }
 
+.spell-window-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 18;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(242, 213, 107, 0.82);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.24), transparent 38%),
+    rgba(7, 10, 14, 0.92);
+  color: #fff3b0;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.38);
+  font-size: 25px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.spell-window-close:active {
+  transform: translateY(1px);
+}
+
 .spell-rule-notice {
   grid-area: rule;
   display: grid;
   gap: 5px;
-  padding: 10px 12px;
+  padding: 10px 56px 10px 12px;
   border: 1px solid rgba(242, 213, 107, 0.36);
   border-radius: 9px;
   background:
