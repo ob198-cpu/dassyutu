@@ -6275,4 +6275,44 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     bottom: calc(var(--mobile-nav-h) + var(--mobile-safe-bottom) + 10px);
     height: auto;
   }
+
+  .mobile-problem-fit-toggle {
+    position: fixed;
+    z-index: 31;
+    top: 18px;
+    left: 12px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 12px;
+    border: 1px solid rgba(242, 213, 107, 0.72);
+    border-radius: 999px;
+    background: rgba(4, 7, 11, 0.86);
+    color: #fff3ad;
+    font-size: 14px;
+    font-weight: 950;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34);
+  }
+
+  .mobile-problem-fit-toggle input {
+    width: 18px;
+    height: 18px;
+    accent-color: #e4bd42;
+  }
+
+  .gate-problem-card:has(.mobile-problem-fit-toggle input:checked) .problem-art-shell {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .gate-problem-card:has(.mobile-problem-fit-toggle input:checked) .problem-art-image-crop,
+  .gate-problem-card:has(.mobile-problem-fit-toggle input:checked) .kana-board {
+    width: 100%;
+  }
+
+  .gate-problem-card:has(.mobile-problem-fit-toggle input:checked) .kana-glyph {
+    min-height: 24px;
+    font-size: clamp(10px, 2.8vw, 14px);
+  }
 }
