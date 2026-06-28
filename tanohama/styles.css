@@ -4841,17 +4841,86 @@ h1 {
 
 @media (max-width: 680px) {
   :root {
-    --side-menu-w: 110px;
+    --side-menu-w: 0px;
+  }
+
+  body {
+    overflow-x: hidden;
   }
 
   body.stage-one-mode .topbar h1 {
     font-size: 19px;
   }
 
+  .side-menu {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    bottom: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    grid-auto-rows: auto;
+    gap: 8px;
+    padding: 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(242, 213, 107, 0.26);
+    box-shadow: none;
+    overflow: visible;
+    margin-bottom: 8px;
+  }
+
+  .side-menu-button {
+    min-height: 46px;
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .side-menu-command {
+    min-height: 44px;
+  }
+
+  .side-stage-nav {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding-top: 0;
+  }
+
+  .side-stage-button {
+    min-height: 52px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .side-stage-number {
+    min-height: 32px;
+    font-size: 12px;
+  }
+
+  .side-stage-title {
+    font-size: 12px;
+    line-height: 1.08;
+  }
+
   .phone-shell {
-    width: calc(100% - var(--side-menu-w));
-    margin-left: var(--side-menu-w);
-    padding: max(8px, env(safe-area-inset-top)) 8px max(12px, env(safe-area-inset-bottom));
+    width: 100%;
+    margin-left: 0;
+    max-width: none;
+    padding: 8px 8px max(12px, env(safe-area-inset-bottom));
+  }
+
+  body.stage-intro-mode .phone-shell {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  body.stage-one-mode .phone-shell {
+    width: 100%;
+    margin-left: 0;
   }
 
   .status-strip {
