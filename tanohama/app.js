@@ -39,7 +39,7 @@ const stages = [
       "ヒント①「粘り強さを分けてあげると、納豆は粘りが出る前のある物に変わり、短気は粘り強い言葉に変わるのぅ」",
       "ヒント②「下線に気をつけるんじゃぞ」",
     ],
-    successMessage: "光の橋が現れた。",
+    successMessage: "漬物石のおかげで渡れるようになった！",
     failMessage: "何も起こらない。",
     scene: "gate",
     sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
@@ -232,6 +232,7 @@ const elements = {
 };
 
 const state = loadState();
+let gateResolveTimer = null;
 
 function loadState() {
   try {
@@ -590,14 +591,17 @@ function bossScene() {
 function renderGateStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
   const problemHidden = state.hiddenProblems?.[stage.id] === true;
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
     : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
   const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
-  const pickerOpen = !done && state.slotPickerOpen === true;
+  const locked = done || rockDropping;
+  const pickerOpen = !locked && state.slotPickerOpen === true;
+  if (rockDropping && !gateResolveTimer) scheduleGateSuccess(stage);
   elements.game.innerHTML = `
-    <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
+    <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback)}
 
       <section class="spell-device" aria-label="呪文入力">
@@ -607,10 +611,10 @@ function renderGateStage(stage) {
         <div class="device-main-row">
           <div class="premium-slot-row magic-slots">
             ${Array.from({ length: stage.slots })
-              .map((_, i) => `<button class="premium-slot ${!done && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!done && i === activeSlot}">${selected[i] || ""}</button>`)
+              .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
               .join("")}
           </div>
-          <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "解決済み" : "呪文を唱える"}</button>
+          <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${done ? "解決済み" : rockDropping ? "発動中..." : "呪文を唱える"}</button>
         </div>
 
         ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
@@ -643,12 +647,15 @@ function renderSlotPicker(stage, activeSlot) {
 }
 
 function gatePlayableVisual(stage, done, feedback) {
+  const rockDropping = feedback?.type === "success" && feedback.phase === "rock";
+  const background = done ? "stage01-clear.png" : "stage01-background.png";
   return `
-    <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
-      <img class="stage-bg-art" src="./assets/stage01-background.png" alt="" loading="eager" />
+    <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${rockDropping ? "is-rock-dropping" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
+      <img class="stage-bg-art" src="./assets/${background}" alt="" loading="eager" />
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
+      ${rockDropping ? `<img class="falling-rock" src="./assets/stage01-rock-cutout.png" alt="" aria-hidden="true" />` : ""}
     </div>
   `;
 }
@@ -725,6 +732,9 @@ function renderGateResult(stage, done, feedback) {
 }
 
 function wireGateStage(stage, done) {
+  const rockDropping = state.feedback?.stageId === stage.id && state.feedback?.type === "success" && state.feedback?.phase === "rock";
+  const locked = done || rockDropping;
+
   document.querySelector("#closeProblemWindow")?.addEventListener("click", () => {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
     state.slotPickerOpen = false;
@@ -733,7 +743,7 @@ function wireGateStage(stage, done) {
 
   document.querySelectorAll(".slot-choice-button").forEach((button) => {
     button.addEventListener("click", () => {
-      if (done) return;
+      if (locked) return;
       const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
       state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
       state.slotInput[slot] = button.dataset.tile;
@@ -746,7 +756,7 @@ function wireGateStage(stage, done) {
 
   document.querySelectorAll(".premium-slot").forEach((button) => {
     button.addEventListener("click", () => {
-      if (done) return;
+      if (locked) return;
       state.activeSlot = Number(button.dataset.slot);
       state.slotPickerOpen = true;
       state.feedback = null;
@@ -755,6 +765,7 @@ function wireGateStage(stage, done) {
   });
 
   document.querySelector("#clearActiveSlot")?.addEventListener("click", () => {
+    if (locked) return;
     const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
     state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
     state.slotInput[slot] = "";
@@ -764,6 +775,7 @@ function wireGateStage(stage, done) {
   });
 
   document.querySelector("#activateStage")?.addEventListener("click", () => {
+    if (locked) return;
     const answer = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "").join("");
     if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
       state.feedback = { stageId: stage.id, type: "fail" };
@@ -771,12 +783,10 @@ function wireGateStage(stage, done) {
       render();
       return;
     }
-    addUnique(state.cleared, stage.id);
-    addUnique(state.spells, stage.reward);
-    state.feedback = { stageId: stage.id, type: "success" };
     state.slotPickerOpen = false;
-    resetStageInput();
+    state.feedback = { stageId: stage.id, type: "success", phase: "rock" };
     render();
+    scheduleGateSuccess(stage);
   });
 
   document.querySelector("#nextButton")?.addEventListener("click", () => {
@@ -785,6 +795,18 @@ function wireGateStage(stage, done) {
     resetStageInput();
     render();
   });
+}
+
+function scheduleGateSuccess(stage) {
+  if (gateResolveTimer) window.clearTimeout(gateResolveTimer);
+  gateResolveTimer = window.setTimeout(() => {
+    gateResolveTimer = null;
+    addUnique(state.cleared, stage.id);
+    addUnique(state.spells, stage.reward);
+    state.feedback = { stageId: stage.id, type: "success", phase: "done" };
+    resetStageInput();
+    render();
+  }, 1150);
 }
 
 function renderStage(stage) {
@@ -1036,6 +1058,10 @@ function renderClear() {
 }
 
 function resetGame() {
+  if (gateResolveTimer) {
+    window.clearTimeout(gateResolveTimer);
+    gateResolveTimer = null;
+  }
   state.stageIndex = 0;
   state.cleared = [];
   state.spells = [];
