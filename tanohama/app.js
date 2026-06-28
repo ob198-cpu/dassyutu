@@ -44,7 +44,8 @@ const stages = [
     scene: "gate",
     sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
-    problems: [{ file: "page_02.jpg", title: "ステージ1 原問題" }],
+    problems: [{ file: "なぞステージ１.png", title: "ステージ1 原問題" }],
+    sourceProblemImage: "なぞステージ１.png",
     solutionImage: "stage01-02-solution.png",
     textProblem: {
       title: "ステージ1",
