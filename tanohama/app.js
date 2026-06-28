@@ -493,6 +493,15 @@ function renderSolution(stage, done = false) {
   `;
 }
 
+function renderSpellReference(stage) {
+  if (stage.id !== "gate") return "";
+  return `
+    <section class="spell-reference-card" aria-label="ステージ1 呪文欄">
+      <img src="./assets/stage01-spell-reference.png" alt="ステージ1 呪文欄">
+    </section>
+  `;
+}
+
 function gateScene(done) {
   const spell = done ? "ツケモノ" : "□□□□";
   const slots = done ? ["ツ", "ケ", "モ", "ノ"] : ["", "", "", ""];
@@ -627,6 +636,7 @@ function renderGateStage(stage) {
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="呪文ウィンドウを閉じる">×</button>
         ${gateProblemInscription(stage, done, problemHidden)}
         ${renderSolution(stage, done)}
+        ${renderSpellReference(stage)}
         ${renderSpellRuleNotice()}
 
         <div class="device-main-row">

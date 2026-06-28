@@ -3560,6 +3560,7 @@ body.stage-intro-mode .game-card::before {
   grid-template-columns: minmax(260px, 0.9fr) minmax(430px, 1.1fr);
   grid-template-areas:
     "problem problem"
+    "reference reference"
     "rule rule"
     "strip main"
     "tiles tiles"
@@ -3602,6 +3603,30 @@ body.stage-intro-mode .game-card::before {
 
 .spell-window-close:active {
   transform: translateY(1px);
+}
+
+.spell-reference-card {
+  grid-area: reference;
+  height: min(30dvh, 300px);
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 6px;
+  border: 1px solid rgba(242, 213, 107, 0.42);
+  border-radius: 9px;
+  background: #fffdf7;
+  box-shadow:
+    inset 0 0 0 1px rgba(40, 30, 8, 0.12),
+    0 12px 26px rgba(0, 0, 0, 0.28);
+}
+
+.spell-reference-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
 }
 
 .spell-rule-notice {
@@ -4455,6 +4480,7 @@ h1 {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
     "problem"
+    "reference"
     "rule"
     "main"
     "picker"
@@ -4705,6 +4731,11 @@ h1 {
   .source-problem-card {
     height: 42dvh;
     max-height: none;
+  }
+
+  .spell-reference-card {
+    height: 24dvh;
+    min-height: 116px;
   }
 
   .device-main-row {
