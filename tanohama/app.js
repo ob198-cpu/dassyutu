@@ -806,17 +806,23 @@ function renderLearnedSpellViewer() {
             (tab) => {
               const unlocked = isStageCleared(tab.id);
               const activeClass = selectedStage === tab.id ? " is-active" : "";
-              const lockedClass = unlocked ? "" : " is-locked";
+              if (!unlocked) {
+                return `
+              <span class="learned-stage-tab is-locked" aria-disabled="true">
+                ${tab.label} 未クリア
+              </span>
+            `;
+              }
               return `
-              <button class="learned-stage-tab${activeClass}${lockedClass}" type="button" data-learned-stage="${tab.id}" ${unlocked ? "" : "disabled"}>
-                ${tab.label}${unlocked ? "" : " 未クリア"}
+              <button class="learned-stage-tab${activeClass}" type="button" data-learned-stage="${tab.id}">
+                ${tab.label}
               </button>
             `;
             },
           )
           .join("")}
       </div>
-      ${selectedStage === "gate" ? renderLearnedStageOneSpells() : `<p class="learned-empty">クリア済みステージの呪文だけ確認できます。</p>`}
+      ${selectedStage === "gate" && isStageCleared("gate") ? renderLearnedStageOneSpells() : `<p class="learned-empty">クリア済みステージの呪文だけ確認できます。</p>`}
     </section>
   `;
 }
