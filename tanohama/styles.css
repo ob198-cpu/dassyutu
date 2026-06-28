@@ -6236,3 +6236,43 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     overflow: auto;
   }
 }
+
+@media (max-width: 680px) {
+  .spell-device.is-problem-mode .source-problem-card,
+  .gate-problem-card {
+    overflow: auto !important;
+    overscroll-behavior: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  .gate-problem-card .problem-art-shell {
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+  }
+
+  .gate-problem-card .problem-art-image-crop,
+  .kana-board {
+    width: min(860px, 194vw);
+    max-width: none;
+  }
+
+  .gate-problem-card .problem-art-image-crop {
+    height: auto !important;
+  }
+
+  .kana-board {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .kana-glyph {
+    min-height: 30px;
+  }
+
+  .hint-dialog {
+    top: 10px;
+    bottom: calc(var(--mobile-nav-h) + var(--mobile-safe-bottom) + 10px);
+    height: auto;
+  }
+}
