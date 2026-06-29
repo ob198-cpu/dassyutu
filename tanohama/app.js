@@ -341,6 +341,13 @@ function openStage(index) {
   state.isClear = false;
   state.stageIndex = index;
   state.feedback = null;
+  state.slotPickerOpen = false;
+  state.learnedSpellViewerOpen = false;
+  if (stage.id !== "gate") {
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
+    state.gatePanelMode = "spell";
+  }
   resetStageInput();
   hideProblemOnStageEntry(stage);
   render();
@@ -1471,7 +1478,20 @@ function focusCurrentMagic() {
     return;
   }
 
-  const magic = document.querySelector(".spell-device, .spell-workbench, .spell-grid, .slot-row, .stone-panel");
+  if (stage.id === "path") {
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
+    state.gatePanelMode = "spell";
+    state.slotPickerOpen = false;
+    state.learnedSpellViewerOpen = false;
+    render();
+    requestAnimationFrame(() => {
+      showMenuMessage("呪文", "このステージでは、まだ呪文を使う場所はありません。");
+    });
+    return;
+  }
+
+  const magic = document.querySelector(".spell-workbench, .spell-grid, .slot-row, .stone-panel");
   if (magic) {
     magic.scrollIntoView({ behavior: "smooth", block: "center" });
     magic.classList.remove("is-menu-focus");
