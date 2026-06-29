@@ -6293,10 +6293,10 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   }
 
   .kana-board {
-    margin-left: 0;
-    margin-right: 0;
+    margin: -2.4em 0 0;
     width: max-content;
     min-width: min(760px, 184vw);
+    transform: translateY(-2em);
   }
 
   .kana-glyph {
@@ -6368,6 +6368,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   .gate-problem-card:has(.mobile-problem-fit-toggle input:checked) .kana-board {
     width: 100%;
     min-width: 100%;
+    transform: none;
   }
 
   .gate-problem-card:has(.mobile-problem-fit-toggle input:checked) .kana-glyph {
