@@ -926,7 +926,6 @@ function renderKanaBoard() {
   const active = new Set(Array.isArray(state.kanaBoardActive) ? state.kanaBoardActive : []);
   return `
     <div class="kana-board" aria-label="文字盤">
-      <img class="kana-board-image" src="./assets/stage01-kana-board-crop.png" alt="文字盤">
       ${stage1KanaBoardRows
         .map(
           (line, rowIndex) => `
