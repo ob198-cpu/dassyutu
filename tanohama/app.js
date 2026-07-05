@@ -311,7 +311,7 @@ function loadState() {
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
         problemFit: saved.problemFit !== false,
-        pathPanelMode: saved.pathPanelMode === "problem" ? "problem" : "spell",
+        pathPanelMode: ["problem", "spell", "closed"].includes(saved.pathPanelMode) ? saved.pathPanelMode : "spell",
         stage2Memo: normalizeStage2Memo(saved.stage2Memo),
         memoActive: saved.memoActive && typeof saved.memoActive === "object" ? saved.memoActive : { row: 0, col: 0 },
         memoPickerOpen: Boolean(saved.memoPickerOpen),
@@ -343,6 +343,24 @@ function hideProblemOnStageEntry(stage) {
   state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
   state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
   state.gatePanelMode = "spell";
+}
+
+function closeStagePanelsOnEntry(stage) {
+  state.slotPickerOpen = false;
+  state.memoPickerOpen = false;
+  state.learnedSpellViewerOpen = false;
+  if (stage?.id === "gate") {
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: isStageCleared("gate") };
+    state.gatePanelMode = "spell";
+    return;
+  }
+  state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+  state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
+  state.gatePanelMode = "spell";
+  if (stage?.id === "path") {
+    state.pathPanelMode = isStageCleared("path") ? "closed" : "spell";
+  }
 }
 
 function normalizeAnswer(value) {
@@ -387,15 +405,8 @@ function openStage(index) {
   state.isClear = false;
   state.stageIndex = index;
   state.feedback = null;
-  state.slotPickerOpen = false;
-  state.learnedSpellViewerOpen = false;
-  if (stage.id !== "gate") {
-    state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
-    state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
-    state.gatePanelMode = "spell";
-  }
+  closeStagePanelsOnEntry(stage);
   resetStageInput();
-  hideProblemOnStageEntry(stage);
   render();
   return true;
 }
@@ -486,6 +497,7 @@ function renderIntro(stage) {
 function renderPathStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const panelClosed = done && state.pathPanelMode === "closed";
   const problemMode = !done && state.pathPanelMode === "problem";
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
@@ -498,7 +510,7 @@ function renderPathStage(stage) {
         <img class="stage-bg-art" src="./assets/stage02-bg.webp" alt="${stage.number} ${stage.title}" loading="eager">
         <div class="art-vignette"></div>
       </div>
-      ${problemMode ? renderPathProblemCard(stage) : `
+      ${panelClosed ? "" : problemMode ? renderPathProblemCard(stage) : `
       <section class="spell-device path-spell-device ${done ? "is-clear-compact" : ""} ${pickerOpen ? "has-picker" : ""}" aria-label="${done ? "クリア" : "呪文入力"}">
         ${done
           ? `
@@ -1026,7 +1038,7 @@ function renderGateStage(stage) {
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
 
-      ${done ? `<div class="gate-clear-actions">
+      ${done && !spellHidden ? `<div class="gate-clear-actions">
         <button class="primary-button" id="nextButton" type="button">${stage.id === "gate" ? "はい" : "次へ進む"}</button>
       </div>` : ""}
     </section>
