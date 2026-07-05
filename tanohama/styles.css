@@ -6550,3 +6550,178 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     font-size: 24px;
   }
 }
+
+/* ラスボス戦 タイムライン */
+.boss-rule {
+  margin: 4px 0 0;
+  color: #ffb3bb;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.boss-spell-list {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 232, 121, 0.34);
+  border-radius: 10px;
+  background: rgba(8, 12, 18, 0.72);
+}
+
+.boss-spell-list summary {
+  cursor: pointer;
+  color: #ffe879;
+  font-weight: 950;
+}
+
+.boss-spell-list ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 6px 14px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.boss-spell-list li {
+  color: #dce9f4;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.boss-spell-list li strong {
+  color: #fff1a9;
+}
+
+.boss-spell-list-sub {
+  margin: 12px 0 0;
+  color: #9fb3c8;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.boss-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.boss-step {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 232, 121, 0.3);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(12, 17, 24, 0.92), rgba(5, 9, 14, 0.95));
+}
+
+.boss-step.is-locked {
+  opacity: 0.5;
+}
+
+.boss-step.is-active {
+  border-color: rgba(255, 232, 121, 0.72);
+  box-shadow: 0 0 22px rgba(255, 232, 121, 0.12);
+}
+
+.boss-step.is-solved {
+  border-color: rgba(96, 240, 186, 0.4);
+}
+
+.boss-step-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.boss-step-label {
+  color: #fff1a9;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.boss-step-done {
+  color: #9ff5cd;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.boss-step-now {
+  color: #ffe879;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.boss-slate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.boss-slate .premium-slot {
+  flex: 0 0 clamp(30px, 8vw, 52px);
+  width: clamp(30px, 8vw, 52px);
+  aspect-ratio: 1;
+  min-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(16px, 4.4vw, 24px);
+}
+
+.boss-slot-static {
+  pointer-events: none;
+}
+
+.boss-step.is-solved .premium-slot {
+  border-color: rgba(96, 240, 186, 0.5);
+  background: rgba(96, 240, 186, 0.08);
+  color: #c9ffe4;
+}
+
+.boss-step .slot-choice-popover {
+  margin-top: 10px;
+}
+
+.boss-step .slot-choice-grid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.boss-step .slot-choice-button {
+  min-height: 40px;
+  font-size: 19px;
+}
+
+.boss-step .cast-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+}
+
+.boss-step .result-message {
+  margin-top: 10px;
+}
+
+.boss-action {
+  margin: 0;
+  padding: 2px 8px;
+  color: #cfe0ee;
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.boss-final-words {
+  margin: 6px 0 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 232, 121, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 232, 121, 0.24);
+  color: #fff3c2;
+  font-weight: 850;
+  line-height: 1.7;
+}
+
+.boss-butterfly {
+  margin-left: 8px;
+}
