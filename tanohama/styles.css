@@ -7319,3 +7319,477 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     font-size: 17px !important;
   }
 }
+
+/* ===== 演出強化: 環境・ボタン・入力・成功/失敗・遷移 ===== */
+
+/* 漂う金色の光の粒(2層・シームレスループ) */
+.ember-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ember-layer::before,
+.ember-layer::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: calc(100% + 480px);
+  background-repeat: repeat;
+  will-change: transform;
+}
+
+.ember-layer::before {
+  background-image: radial-gradient(circle, rgba(255, 232, 121, 0.55) 0 1.6px, transparent 3px);
+  background-size: 240px 240px;
+  opacity: 0.4;
+  animation: emberRiseSlow 30s linear infinite;
+}
+
+.ember-layer::after {
+  background-image: radial-gradient(circle, rgba(170, 220, 255, 0.4) 0 1.2px, transparent 2.4px);
+  background-size: 160px 160px;
+  background-position: 70px 40px;
+  opacity: 0.3;
+  animation: emberRiseSlow 18s linear infinite;
+}
+
+@keyframes emberRiseSlow {
+  from { transform: translateY(0); }
+  to { transform: translateY(-480px); }
+}
+
+/* ボタン: 光沢スイープ + ホバー/押下 */
+.primary-button,
+.cast-button {
+  position: relative;
+  overflow: hidden;
+  transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
+}
+
+.primary-button::after,
+.cast-button::after {
+  content: "";
+  position: absolute;
+  top: -130%;
+  bottom: -130%;
+  left: -60%;
+  width: 34%;
+  transform: skewX(-24deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: goldShine 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes goldShine {
+  0%, 58% { left: -60%; }
+  88%, 100% { left: 150%; }
+}
+
+.primary-button:hover,
+.cast-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.34),
+    0 0 34px rgba(255, 232, 121, 0.4);
+}
+
+.primary-button:active,
+.cast-button:active {
+  transform: translateY(1px) scale(0.98);
+  filter: brightness(1.15);
+}
+
+.cast-button {
+  animation: castIdlePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes castIdlePulse {
+  0%, 100% { box-shadow: 0 0 16px rgba(255, 232, 121, 0.22); }
+  50% { box-shadow: 0 0 34px rgba(255, 232, 121, 0.5); }
+}
+
+.secondary-button,
+.ghost-button,
+.side-menu-button,
+.text-button {
+  transition: transform 130ms ease, filter 130ms ease, box-shadow 200ms ease;
+}
+
+.secondary-button:hover,
+.ghost-button:hover,
+.side-menu-button:hover,
+.text-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.14);
+}
+
+/* 入力パーツ: ホバー・押下・記入ポップ */
+.premium-slot,
+.slot-choice-button,
+.memo-cell,
+.tile,
+.item-card,
+.kana-glyph,
+.stage-dot {
+  transition: transform 120ms ease, box-shadow 200ms ease, filter 200ms ease;
+}
+
+.slot-choice-button:hover,
+.memo-cell:hover,
+.premium-slot:not(:disabled):hover,
+.tile:hover,
+.kana-glyph:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.18);
+}
+
+.slot-choice-button:active,
+.memo-cell:active,
+.tile:active,
+.kana-glyph:active {
+  transform: scale(0.93);
+}
+
+.item-card:not(:disabled):hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4), 0 0 26px rgba(255, 232, 121, 0.25);
+}
+
+.slot-pop {
+  animation: slotPopIn 340ms cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+@keyframes slotPopIn {
+  0% {
+    transform: scale(1.4);
+    filter: brightness(2) drop-shadow(0 0 16px rgba(255, 232, 121, 0.9));
+  }
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+.premium-slot.is-selected,
+.memo-cell.is-selected {
+  animation: selectedSlotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes selectedSlotPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px rgba(255, 232, 121, 0.3),
+      0 0 16px rgba(255, 232, 121, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(255, 245, 178, 0.6),
+      0 0 30px rgba(255, 232, 121, 0.5);
+  }
+}
+
+/* ステージ遷移 */
+.stage-enter {
+  animation: stageEnterIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes stageEnterIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 失敗: パネルシェイク(fixed配置のパネル自体を揺らす) */
+.premium-stage.is-fail .spell-device {
+  animation: spellShake 420ms ease;
+}
+
+@keyframes spellShake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-6px); }
+  40%, 60% { transform: translateX(6px); }
+}
+
+/* 成功バースト: 金の粒 + 広がるリング */
+.spell-burst {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 8px;
+  height: 8px;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.spell-burst::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255, 245, 178, 0.9);
+  animation: burstDots 780ms ease-out forwards;
+}
+
+@keyframes burstDots {
+  0% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 0 rgba(255, 232, 121, 0.95),
+      0 0 0 0 rgba(255, 232, 121, 0.9),
+      0 0 0 0 rgba(255, 245, 178, 0.9),
+      0 0 0 0 rgba(255, 232, 121, 0.85),
+      0 0 0 0 rgba(255, 245, 178, 0.85),
+      0 0 0 0 rgba(255, 232, 121, 0.9),
+      0 0 0 0 rgba(255, 245, 178, 0.9),
+      0 0 0 0 rgba(255, 232, 121, 0.85);
+  }
+  100% {
+    opacity: 0;
+    box-shadow:
+      74px -30px 2px 1px rgba(255, 232, 121, 0),
+      -68px -44px 2px 1px rgba(255, 232, 121, 0),
+      40px -78px 2px 2px rgba(255, 245, 178, 0),
+      -34px 66px 2px 1px rgba(255, 232, 121, 0),
+      82px 34px 2px 2px rgba(255, 245, 178, 0),
+      -88px 8px 2px 1px rgba(255, 232, 121, 0),
+      8px -92px 2px 2px rgba(255, 245, 178, 0),
+      -12px 84px 2px 1px rgba(255, 232, 121, 0);
+  }
+}
+
+.spell-burst::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border: 2px solid rgba(255, 232, 121, 0.85);
+  border-radius: 50%;
+  animation: burstRing 700ms ease-out forwards;
+}
+
+@keyframes burstRing {
+  from {
+    opacity: 1;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: scale(12);
+  }
+}
+
+/* 岩: 着地の砂煙 + 衝撃シェイク */
+.rock-impact {
+  position: absolute;
+  z-index: 5;
+  aspect-ratio: 3 / 1;
+  transform: translate(-50%, -30%) scale(0.2);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(214, 196, 158, 0.6), rgba(214, 196, 158, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+  animation: rockDust 900ms ease-out 780ms forwards;
+}
+
+@keyframes rockDust {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30%) scale(0.2);
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(1.7);
+  }
+}
+
+.gate-play-visual.is-impact-shake .stage-bg-art {
+  animation: impactQuake 520ms ease 800ms;
+}
+
+@keyframes impactQuake {
+  0%, 100% { transform: none; }
+  15% { transform: translate(4px, 5px); }
+  35% { transform: translate(-5px, -4px); }
+  55% { transform: translate(4px, -3px); }
+  75% { transform: translate(-3px, 3px); }
+}
+
+/* ボス戦 */
+.boss-step.is-active {
+  animation: bossStepGlow 2s ease-in-out infinite;
+}
+
+@keyframes bossStepGlow {
+  0%, 100% { box-shadow: 0 0 14px rgba(255, 232, 121, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(255, 232, 121, 0.3); }
+}
+
+.boss-step.just-solved {
+  animation: bossStepSolved 750ms ease-out;
+}
+
+@keyframes bossStepSolved {
+  0% {
+    box-shadow:
+      0 0 0 3px rgba(96, 240, 186, 0.9),
+      0 0 46px rgba(96, 240, 186, 0.6);
+    filter: brightness(1.6);
+  }
+  100% {
+    filter: none;
+  }
+}
+
+.boss-step:has(.result-message.is-fail) {
+  animation: spellShake 420ms ease;
+}
+
+.boss-attack-name {
+  color: #ff9d9d;
+  font-weight: 950;
+  text-shadow: 0 0 12px rgba(255, 90, 90, 0.5);
+}
+
+.boss-final-words {
+  position: relative;
+  overflow: hidden;
+}
+
+.boss-final-words::after {
+  content: "";
+  position: absolute;
+  top: -130%;
+  bottom: -130%;
+  left: -60%;
+  width: 30%;
+  transform: skewX(-22deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 245, 178, 0.16), transparent);
+  animation: goldShine 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.boss-butterfly {
+  display: inline-block;
+  animation: butterflySway 3.2s ease-in-out infinite;
+}
+
+@keyframes butterflySway {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-7px) rotate(10deg); }
+}
+
+/* クリア画面 */
+.clear-screen {
+  position: relative;
+  overflow: hidden;
+}
+
+.clear-screen::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: 0;
+  background: repeating-conic-gradient(
+    rgba(255, 232, 121, 0.12) 0deg 9deg,
+    transparent 9deg 24deg
+  );
+  animation: clearRays 26s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes clearRays {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.clear-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+.clear-screen h2 {
+  animation: clearTitle 2.4s ease-in-out infinite;
+  letter-spacing: 0.14em;
+}
+
+@keyframes clearTitle {
+  0%, 100% { text-shadow: 0 0 18px rgba(255, 232, 121, 0.4); }
+  50% { text-shadow: 0 0 42px rgba(255, 245, 178, 0.9), 0 0 12px rgba(255, 232, 121, 0.8); }
+}
+
+.clear-screen .spell-chip {
+  animation: chipBob 3s ease-in-out infinite;
+}
+
+.clear-screen .spell-chip:nth-child(2n) { animation-delay: 0.4s; }
+.clear-screen .spell-chip:nth-child(3n) { animation-delay: 0.9s; }
+
+@keyframes chipBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* 導入・ナビ */
+.intro-opening-image {
+  animation: introBreath 5.5s ease-in-out infinite;
+}
+
+@keyframes introBreath {
+  0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 8px 26px rgba(0, 0, 0, 0.5)); }
+  50% { transform: translateY(-8px) scale(1.006); filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.55)); }
+}
+
+.stage-dot.is-current {
+  animation: dotBeacon 1.8s ease-in-out infinite;
+}
+
+@keyframes dotBeacon {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 232, 121, 0.5); }
+  50% { box-shadow: 0 0 0 5px rgba(255, 232, 121, 0.12), 0 0 16px rgba(255, 232, 121, 0.45); }
+}
+
+/* アクセシビリティ: 動きを減らす設定を尊重 */
+@media (prefers-reduced-motion: reduce) {
+  .ember-layer {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 画像上の白丸メモにも同じ演出を適用 */
+.stage2-memo-spot {
+  transition: transform 120ms ease, box-shadow 200ms ease, filter 200ms ease;
+}
+
+.stage2-memo-spot:hover {
+  filter: brightness(1.2);
+}
+
+.stage2-memo-spot:active {
+  transform: scale(0.93);
+}
+
+.stage2-memo-spot.is-selected {
+  animation: selectedSlotPulse 1.4s ease-in-out infinite;
+}

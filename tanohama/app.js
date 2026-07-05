@@ -406,6 +406,26 @@ function resetStageInput() {
   state.slotPickerOpen = false;
 }
 
+let lastStageKey = null;
+
+// 直後の再描画で1回だけ再生する演出用クラス付与
+function popOnce(selector, className = "slot-pop") {
+  requestAnimationFrame(() => document.querySelector(selector)?.classList.add(className));
+}
+
+// 成功時の金色バースト(粒+リング)を一度だけ差し込む
+function burstOnce(selector) {
+  requestAnimationFrame(() => {
+    const host = document.querySelector(selector);
+    if (!host) return;
+    const burst = document.createElement("div");
+    burst.className = "spell-burst";
+    burst.setAttribute("aria-hidden", "true");
+    host.appendChild(burst);
+    window.setTimeout(() => burst.remove(), 1000);
+  });
+}
+
 function render() {
   if (!state.isClear) {
     const maxOpen = getUnlockedStageIndex();
@@ -436,6 +456,11 @@ function render() {
     renderPathStage(stage);
   } else {
     renderStage(stage);
+  }
+  const stageKey = state.isClear ? "clear" : `stage:${state.stageIndex}`;
+  if (stageKey !== lastStageKey) {
+    elements.game.firstElementChild?.classList.add("stage-enter");
+    lastStageKey = stageKey;
   }
   saveState();
 }
@@ -581,6 +606,7 @@ function wirePathProblem(stage) {
       state.stage2Memo = memo;
       state.memoActive = { row, col: Math.min(col + 1, stage2MemoCols - 1) };
       render();
+      popOnce(`[data-memo="${row}:${col}"]`);
     });
   });
   document.querySelector("#clearMemoCell")?.addEventListener("click", () => {
@@ -630,6 +656,7 @@ function wirePathStage(stage, done) {
       state.slotPickerOpen = false;
       state.feedback = null;
       render();
+      popOnce(`.premium-slot[data-slot="${slot}"]`);
     });
   });
   document.querySelector("#clearActiveSlot")?.addEventListener("click", () => {
@@ -653,6 +680,7 @@ function wirePathStage(stage, done) {
     state.feedback = null;
     resetStageInput();
     render();
+    burstOnce(".path-spell-device");
   });
 }
 
@@ -1285,6 +1313,7 @@ function wireGateStage(stage, done) {
       state.slotPickerOpen = false;
       state.feedback = null;
       render();
+      popOnce(`.premium-slot[data-slot="${slot}"]`);
     });
   });
 
@@ -1321,6 +1350,7 @@ function wireGateStage(stage, done) {
     addUnique(state.spells, stage.reward);
     state.feedback = { stageId: stage.id, type: "success", phase: "prompt1" };
     render();
+    burstOnce(".gate-choice-card");
   });
 
   document.querySelectorAll("[data-gate-choice]").forEach((button) => {
@@ -1384,6 +1414,15 @@ function positionFallingRock() {
   rock.style.top = `${offY + h * 0.58}px`;
   rock.style.width = `${(w * 0.31) / 0.8}px`;
   rock.style.maxWidth = "none";
+  // 着地の砂煙と画面シェイク
+  const impact = document.createElement("div");
+  impact.className = "rock-impact";
+  impact.setAttribute("aria-hidden", "true");
+  impact.style.left = rock.style.left;
+  impact.style.top = `${offY + h * 0.66}px`;
+  impact.style.width = `${w * 0.4}px`;
+  world.appendChild(impact);
+  world.classList.add("is-impact-shake");
 }
 
 function beginGateDescent(stage) {
@@ -1576,7 +1615,8 @@ function renderBoss(stage) {
   const rows = bossBattle
     .map((step, index) => {
       const slate = renderBossSlate(step, index, index < solvedCount, index === solvedCount);
-      const action = step.after ? `<p class="boss-action">↓　${step.after}</p>` : "";
+      const actionText = step.after ? step.after.replace(/『[^』]+』/g, (m) => `<span class="boss-attack-name">${m}</span>`) : "";
+      const action = step.after ? `<p class="boss-action">↓　${actionText}</p>` : "";
       return `${slate}${action}`;
     })
     .join("");
@@ -1673,6 +1713,7 @@ function wireBoss() {
       state.slotPickerOpen = false;
       state.feedback = null;
       render();
+      popOnce(`.boss-step.is-active .premium-slot[data-slot="${slot}"]`);
     });
   });
   document.querySelector("#clearActiveSlot")?.addEventListener("click", () => {
@@ -1704,6 +1745,10 @@ function castBossSpell(step) {
       state.isClear = true;
     }
     render();
+    requestAnimationFrame(() => {
+      const solved = document.querySelectorAll(".boss-step.is-solved");
+      solved[solved.length - 1]?.classList.add("just-solved");
+    });
     return;
   }
   const used = state.bossInput.map((spell) => normalizeAnswer(spell));
