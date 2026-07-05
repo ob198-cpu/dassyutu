@@ -7142,6 +7142,30 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     object-fit: contain !important;
   }
 
+  .gate-problem-card .kana-board,
+  .kana-board {
+    width: min(92%, 760px) !important;
+    min-width: 0 !important;
+    max-width: 760px !important;
+    margin: 4px auto 0 !important;
+    padding: 6px 10px !important;
+    gap: 5px !important;
+    transform: none !important;
+  }
+
+  .kana-board-row {
+    gap: 2px !important;
+  }
+
+  .kana-glyph {
+    min-width: 0 !important;
+    min-height: 22px !important;
+    padding: 0 !important;
+    font-size: clamp(12px, 1.75vw, 17px) !important;
+    line-height: 1.15 !important;
+    white-space: nowrap;
+  }
+
   .magic-slots .premium-slot {
     min-height: 38px !important;
     font-size: 18px !important;
