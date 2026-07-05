@@ -227,6 +227,19 @@ const spellActivationText = "問題を解くと呪文が現れるかも…<br>�
 
 const storeKey = "tanohamaEscapeStateV4";
 
+// ステージ2 とちゅうメモ: ①〜④の各ステップで読み取った文字を書き留める空欄
+const stage2MemoRows = 4;
+const stage2MemoCols = 12;
+const stage2MemoTiles = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", "○"];
+
+function normalizeStage2Memo(value) {
+  const rows = Array.isArray(value) ? value : [];
+  return Array.from({ length: stage2MemoRows }, (_, r) => {
+    const row = Array.isArray(rows[r]) ? rows[r] : [];
+    return Array.from({ length: stage2MemoCols }, (_, c) => (typeof row[c] === "string" ? row[c] : ""));
+  });
+}
+
 const elements = {
   game: document.querySelector("#game"),
   nav: document.querySelector("#stageNav"),
@@ -287,12 +300,16 @@ function loadState() {
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
         problemFit: saved.problemFit !== false,
+        pathPanelMode: saved.pathPanelMode === "problem" ? "problem" : "spell",
+        stage2Memo: normalizeStage2Memo(saved.stage2Memo),
+        memoActive: saved.memoActive && typeof saved.memoActive === "object" ? saved.memoActive : { row: 0, col: 0 },
+        memoPickerOpen: Boolean(saved.memoPickerOpen),
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false };
 }
 
 function saveState() {
@@ -433,17 +450,19 @@ function renderIntro(stage) {
 function renderPathStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const problemMode = !done && state.pathPanelMode === "problem";
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
     : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
   const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
-  const pickerOpen = !done && state.slotPickerOpen === true;
+  const pickerOpen = !done && !problemMode && state.slotPickerOpen === true;
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage path-stage-background-only ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world">
         <img class="stage-bg-art" src="./assets/ステージ２　背景.png" alt="${stage.number} ${stage.title}" loading="eager">
         <div class="art-vignette"></div>
       </div>
+      ${problemMode ? renderPathProblemCard(stage) : `
       <section class="spell-device path-spell-device ${done ? "is-clear-compact" : ""} ${pickerOpen ? "has-picker" : ""}" aria-label="${done ? "クリア" : "呪文入力"}">
         ${done
           ? `
@@ -455,7 +474,7 @@ function renderPathStage(stage) {
           : `
             <div class="path-device-head">
               <span class="path-device-title">石板 ${stage.slots}文字</span>
-              <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 問題">問題を見る</button>
+              <button class="secondary-button" id="pathToProblem" type="button">問題とメモ</button>
             </div>
             <div class="device-main-row">
               <div class="premium-slot-row magic-slots">
@@ -468,14 +487,121 @@ function renderPathStage(stage) {
             ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
             ${feedback?.type === "fail" ? `<p class="result-message is-fail">${stage.failMessage}</p>` : ""}
           `}
-      </section>
+      </section>`}
     </section>
   `;
-  wirePathStage(stage, done);
+  if (problemMode) {
+    wirePathProblem(stage);
+  } else {
+    wirePathStage(stage, done);
+  }
+}
+
+function renderPathProblemCard(stage) {
+  const memo = normalizeStage2Memo(state.stage2Memo);
+  const active = state.memoActive && Number.isInteger(state.memoActive.row) && Number.isInteger(state.memoActive.col)
+    ? { row: Math.min(Math.max(state.memoActive.row, 0), stage2MemoRows - 1), col: Math.min(Math.max(state.memoActive.col, 0), stage2MemoCols - 1) }
+    : { row: 0, col: 0 };
+  const pickerOpen = state.memoPickerOpen === true;
+  const rowLabels = ["①", "②", "③", "④"];
+  return `
+    <section class="spell-device path-spell-device path-problem-card" aria-label="問題とメモ">
+      <div class="path-device-head">
+        <span class="path-device-title">問題とメモ</span>
+        <div class="path-device-actions">
+          <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 問題">拡大</button>
+          <button class="secondary-button" id="pathToSpell" type="button">石板へ</button>
+        </div>
+      </div>
+      <button class="path-problem-image" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 問題">
+        <img src="./assets/${stage.sourceProblemImage}" alt="${stage.number} ${stage.title} 問題" loading="eager" />
+      </button>
+      <div class="memo-board" aria-label="とちゅうメモ">
+        <p class="memo-board-title">とちゅうメモ(自由に書き込める)</p>
+        ${memo
+          .map(
+            (row, r) => `
+              <div class="memo-row">
+                <span class="memo-row-label">${rowLabels[r]}</span>
+                <div class="memo-cells">
+                  ${row
+                    .map(
+                      (char, c) =>
+                        `<button class="memo-cell ${pickerOpen && active.row === r && active.col === c ? "is-selected" : ""}" type="button" data-memo="${r}:${c}">${char}</button>`,
+                    )
+                    .join("")}
+                </div>
+              </div>
+            `,
+          )
+          .join("")}
+        ${pickerOpen
+          ? `
+            <div class="slot-choice-popover memo-picker" aria-label="メモの候補">
+              <div class="slot-choice-head">
+                <span>${rowLabels[active.row]} の ${active.col + 1}マス目</span>
+                <div class="memo-picker-actions">
+                  <button class="slot-choice-clear" id="clearMemoCell" type="button">空にする</button>
+                  <button class="slot-choice-clear" id="closeMemoPicker" type="button">閉じる</button>
+                </div>
+              </div>
+              <div class="slot-choice-grid memo-picker-grid">
+                ${stage2MemoTiles.map((tile) => `<button class="slot-choice-button" type="button" data-memo-tile="${tile}">${tile}</button>`).join("")}
+              </div>
+            </div>
+          `
+          : ""}
+      </div>
+    </section>
+  `;
+}
+
+function wirePathProblem(stage) {
+  wireProblems();
+  document.querySelector("#pathToSpell")?.addEventListener("click", () => {
+    state.pathPanelMode = "spell";
+    state.memoPickerOpen = false;
+    render();
+  });
+  document.querySelectorAll("[data-memo]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const [row, col] = (button.dataset.memo || "0:0").split(":").map(Number);
+      state.memoActive = { row, col };
+      state.memoPickerOpen = true;
+      render();
+      requestAnimationFrame(() => document.querySelector(".memo-picker")?.scrollIntoView({ block: "nearest" }));
+    });
+  });
+  document.querySelectorAll("[data-memo-tile]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const memo = normalizeStage2Memo(state.stage2Memo);
+      const { row, col } = state.memoActive;
+      memo[row][col] = button.dataset.memoTile || "";
+      state.stage2Memo = memo;
+      state.memoActive = { row, col: Math.min(col + 1, stage2MemoCols - 1) };
+      render();
+    });
+  });
+  document.querySelector("#clearMemoCell")?.addEventListener("click", () => {
+    const memo = normalizeStage2Memo(state.stage2Memo);
+    const { row, col } = state.memoActive;
+    memo[row][col] = "";
+    state.stage2Memo = memo;
+    render();
+  });
+  document.querySelector("#closeMemoPicker")?.addEventListener("click", () => {
+    state.memoPickerOpen = false;
+    render();
+  });
 }
 
 function wirePathStage(stage, done) {
   wireProblems();
+  document.querySelector("#pathToProblem")?.addEventListener("click", () => {
+    state.pathPanelMode = "problem";
+    state.slotPickerOpen = false;
+    render();
+  });
   if (!done && state.slotPickerOpen) {
     requestAnimationFrame(() => document.querySelector(".slot-choice-popover")?.scrollIntoView({ block: "nearest" }));
   }
@@ -1627,6 +1753,10 @@ function resetGame() {
   state.feedback = null;
   state.isClear = false;
   state.problemFit = true;
+  state.pathPanelMode = "spell";
+  state.stage2Memo = normalizeStage2Memo(null);
+  state.memoActive = { row: 0, col: 0 };
+  state.memoPickerOpen = false;
   saveState();
   render();
 }
@@ -1660,6 +1790,13 @@ function focusCurrentProblem() {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
     state.gatePanelMode = "problem";
+    state.slotPickerOpen = false;
+    render();
+    return;
+  }
+
+  if (stage.id === "path" && !isStageCleared("path")) {
+    state.pathPanelMode = "problem";
     state.slotPickerOpen = false;
     render();
     return;
@@ -1707,6 +1844,12 @@ function focusCurrentMagic() {
       }
     });
     return;
+  }
+
+  if (stage.id === "path" && state.pathPanelMode === "problem") {
+    state.pathPanelMode = "spell";
+    state.memoPickerOpen = false;
+    render();
   }
 
   const magic = document.querySelector(".boss-step.is-active, .spell-device, .spell-workbench, .spell-grid, .slot-row, .stone-panel");
