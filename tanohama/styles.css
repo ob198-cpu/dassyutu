@@ -6480,3 +6480,68 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     display: none !important;
   }
 }
+
+/* ステージ2 呪文パネル */
+.spell-device.path-spell-device {
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  transform: none;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spell-device.path-spell-device.is-clear-compact {
+  width: auto;
+  max-width: 620px;
+}
+
+.path-device-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.path-device-title {
+  color: #fff1a9;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+}
+
+.path-device-head .secondary-button {
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+.path-spell-device .premium-slot-row {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-bottom: 0;
+}
+
+.path-spell-device .slot-choice-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.path-spell-device .stage-actions {
+  margin: 0;
+}
+
+@media (max-width: 680px) {
+  .spell-device.path-spell-device {
+    padding: 10px;
+  }
+
+  .path-spell-device .premium-slot-row {
+    gap: 6px;
+  }
+
+  .path-spell-device .magic-slots .premium-slot {
+    min-height: 52px;
+    font-size: 24px;
+  }
+}

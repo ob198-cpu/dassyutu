@@ -69,6 +69,13 @@ const stages = [
     slots: 6,
     tiles: ["サ", "ゴ", "キ", "ロ", "ア", "マ", "ウ", "ン", "ク", "イ", "オ", "リ"],
     correct: "ゴクロウサマ",
+    successMessage: "「　」内の色が消え、扉が現実になって開いた！呪文「ゴクロウサマ」を習得した。",
+    failMessage: "何も起こらない。",
+    hints: [
+      "ヒント①「壁の色が違う紙に、①②③④の矢印の順で答えを重ねていくんじゃ」",
+      "ヒント②「色のついたマスと白丸の文字をたどるのじゃぞ」",
+      "ヒント③「最後に残るのは、通り抜けた者へかける、ねぎらいの六文字じゃ」",
+    ],
     scene: "corridor",
     sceneCaption: "壁の色マスが見えない扉の位置を示している。光の順路を読み取る。",
     briefing: "青い矢印の順に読む。最後に残るのは、通り抜けた者へ向けた六音の言葉。",
@@ -413,15 +420,99 @@ function renderIntro(stage) {
 }
 
 function renderPathStage(stage) {
+  const done = isStageCleared(stage.id);
+  const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const selected = done
+    ? [...stage.correct].slice(0, stage.slots)
+    : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+  const pickerOpen = !done && state.slotPickerOpen === true;
   elements.game.innerHTML = `
-    <section class="stage-panel premium-stage path-stage-background-only" aria-label="${stage.number} / ${stage.title}">
+    <section class="stage-panel premium-stage path-stage-background-only ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world">
         <img class="stage-bg-art" src="./assets/ステージ２　背景.png" alt="${stage.number} ${stage.title}" loading="eager">
         <div class="art-vignette"></div>
       </div>
+      <section class="spell-device path-spell-device ${done ? "is-clear-compact" : ""}" aria-label="${done ? "クリア" : "呪文入力"}">
+        ${done
+          ? `
+            <p class="result-message is-success">${stage.successMessage}</p>
+            <div class="stage-actions">
+              <button class="primary-button" id="nextButton" type="button">次へ進む</button>
+            </div>
+          `
+          : `
+            <div class="path-device-head">
+              <span class="path-device-title">石板 ${stage.slots}文字</span>
+              <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 問題">問題を見る</button>
+            </div>
+            <div class="device-main-row">
+              <div class="premium-slot-row magic-slots">
+                ${Array.from({ length: stage.slots })
+                  .map((_, i) => `<button class="premium-slot ${i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${i === activeSlot}">${selected[i] || ""}</button>`)
+                  .join("")}
+              </div>
+              <button class="primary-button cast-button" id="activateStage" type="button">呪文を唱える</button>
+            </div>
+            ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
+            ${feedback?.type === "fail" ? `<p class="result-message is-fail">${stage.failMessage}</p>` : ""}
+          `}
+      </section>
     </section>
   `;
+  wirePathStage(stage, done);
+}
+
+function wirePathStage(stage, done) {
   wireProblems();
+  document.querySelector("#nextButton")?.addEventListener("click", () => {
+    state.stageIndex = Math.min(state.stageIndex + 1, stages.length - 1);
+    state.feedback = null;
+    resetStageInput();
+    render();
+  });
+  if (done) return;
+  document.querySelectorAll(".premium-slot").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.activeSlot = Number(button.dataset.slot);
+      state.slotPickerOpen = true;
+      state.feedback = null;
+      render();
+    });
+  });
+  document.querySelectorAll(".slot-choice-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+      state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+      state.slotInput[slot] = button.dataset.tile;
+      state.activeSlot = Math.min(slot + 1, stage.slots - 1);
+      state.slotPickerOpen = false;
+      state.feedback = null;
+      render();
+    });
+  });
+  document.querySelector("#clearActiveSlot")?.addEventListener("click", () => {
+    const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+    state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+    state.slotInput[slot] = "";
+    state.slotPickerOpen = false;
+    state.feedback = null;
+    render();
+  });
+  document.querySelector("#activateStage")?.addEventListener("click", () => {
+    const answer = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "").join("");
+    state.slotPickerOpen = false;
+    if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
+      state.feedback = { stageId: stage.id, type: "fail" };
+      render();
+      return;
+    }
+    addUnique(state.cleared, stage.id);
+    addUnique(state.spells, stage.reward);
+    state.feedback = null;
+    resetStageInput();
+    render();
+  });
 }
 
 function renderNav() {
@@ -1478,20 +1569,7 @@ function focusCurrentMagic() {
     return;
   }
 
-  if (stage.id === "path") {
-    state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
-    state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
-    state.gatePanelMode = "spell";
-    state.slotPickerOpen = false;
-    state.learnedSpellViewerOpen = false;
-    render();
-    requestAnimationFrame(() => {
-      showMenuMessage("呪文", "このステージでは、まだ呪文を使う場所はありません。");
-    });
-    return;
-  }
-
-  const magic = document.querySelector(".spell-workbench, .spell-grid, .slot-row, .stone-panel");
+  const magic = document.querySelector(".spell-device, .spell-workbench, .spell-grid, .slot-row, .stone-panel");
   if (magic) {
     magic.scrollIntoView({ behavior: "smooth", block: "center" });
     magic.classList.remove("is-menu-focus");
