@@ -7046,3 +7046,71 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     grid-template-columns: repeat(7, minmax(0, 1fr));
   }
 }
+
+/* Smartphone landscape: keep the side menu compact so the puzzle area remains visible. */
+@media (orientation: landscape) and (max-height: 560px) and (pointer: coarse) {
+  :root {
+    --side-menu-w: clamp(132px, 18vw, 170px);
+  }
+
+  .side-menu {
+    width: var(--side-menu-w) !important;
+    gap: 6px !important;
+    padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom)) !important;
+    grid-template-rows: auto auto auto auto 1fr;
+  }
+
+  .side-menu-button,
+  .side-menu-command {
+    min-height: 40px !important;
+    padding: 5px 6px !important;
+    border-radius: 7px !important;
+    font-size: 13px !important;
+    line-height: 1.05 !important;
+  }
+
+  .side-menu-command {
+    min-height: 46px !important;
+  }
+
+  .side-stage-nav {
+    gap: 6px !important;
+    padding-top: 0 !important;
+  }
+
+  .side-stage-button {
+    min-height: 42px !important;
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    gap: 6px !important;
+    padding: 5px 6px !important;
+    border-radius: 7px !important;
+    font-size: 12px !important;
+  }
+
+  .side-stage-number {
+    min-height: 28px !important;
+    font-size: 12px !important;
+  }
+
+  .side-stage-title {
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+  }
+
+  body.stage-one-mode .phone-shell,
+  body.stage-path-mode .phone-shell,
+  body.stage-intro-mode .phone-shell,
+  .phone-shell {
+    width: calc(100vw - var(--side-menu-w)) !important;
+    margin-left: var(--side-menu-w) !important;
+    padding-bottom: 0 !important;
+  }
+
+  body.stage-one-mode .game-card,
+  body.stage-path-mode .game-card,
+  body.stage-intro-mode .game-card,
+  .game-card {
+    width: calc(100vw - var(--side-menu-w)) !important;
+    max-width: calc(100vw - var(--side-menu-w)) !important;
+  }
+}
