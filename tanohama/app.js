@@ -304,14 +304,16 @@ function saveState() {
 }
 
 function forceGateProblemClosedOnStartup() {
+  // 起動時は問題ウィンドウは閉じるが、呪文入力パネルは必ず見える状態にする
   state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
+  state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: false };
   if (state.gatePanelMode === "problem") state.gatePanelMode = "spell";
 }
 
 function hideProblemOnStageEntry(stage) {
   if (stage?.id !== "gate") return;
   state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
-  state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
+  state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
   state.gatePanelMode = "spell";
 }
 
@@ -864,6 +866,8 @@ function renderGateStage(stage) {
           ${renderGateResult(stage, done, feedback)}
         </section>`}
 
+      ${!successAnimating && !done && backgroundOnly ? `<button class="primary-button gate-reopen-spell" id="reopenSpellWindow" type="button">石板をひらく</button>` : ""}
+
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
 
@@ -1069,6 +1073,7 @@ function renderGateResult(stage, done, feedback) {
 
 function wireGateStage(stage, done) {
   const rockDropping = state.feedback?.stageId === stage.id && state.feedback?.type === "success" && state.feedback?.phase === "rock";
+  if (rockDropping) positionFallingRock();
   const successAnimating = state.feedback?.stageId === stage.id && state.feedback?.type === "success" && state.feedback?.phase !== "done";
   const locked = done || rockDropping || successAnimating;
 
@@ -1083,6 +1088,13 @@ function wireGateStage(stage, done) {
   document.querySelector(".mobile-problem-fit-toggle input")?.addEventListener("change", (event) => {
     state.problemFit = event.target.checked;
     saveState();
+  });
+
+  document.querySelector("#reopenSpellWindow")?.addEventListener("click", () => {
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+    state.gatePanelMode = "spell";
+    state.slotPickerOpen = false;
+    render();
   });
 
   document.querySelector("#mobileProblemToSpell")?.addEventListener("click", () => {
@@ -1218,6 +1230,32 @@ function wireGateStage(stage, done) {
     resetStageInput();
     render();
   });
+}
+
+// 落下する岩を、クリア背景に描かれた岩と同じ位置・大きさに着地させる。
+// クリア画像(1672x941)内の岩: 中心(49%, 58%)・幅31%。岩画像は透明余白込みなので幅を割り戻す。
+function positionFallingRock() {
+  const world = document.querySelector(".gate-play-visual");
+  const rock = document.querySelector(".falling-rock");
+  if (!world || !rock) return;
+  const rect = world.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const clearRatio = 1672 / 941;
+  let w = rect.width;
+  let h = rect.height;
+  let offX = 0;
+  let offY = 0;
+  if (rect.width / rect.height > clearRatio) {
+    w = rect.height * clearRatio;
+    offX = (rect.width - w) / 2;
+  } else {
+    h = rect.width / clearRatio;
+    offY = (rect.height - h) / 2;
+  }
+  rock.style.left = `${offX + w * 0.49}px`;
+  rock.style.top = `${offY + h * 0.58}px`;
+  rock.style.width = `${(w * 0.31) / 0.8}px`;
+  rock.style.maxWidth = "none";
 }
 
 function beginGateDescent(stage) {

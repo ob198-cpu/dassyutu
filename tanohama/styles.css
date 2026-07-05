@@ -6725,3 +6725,210 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .boss-butterfly {
   margin-left: 8px;
 }
+
+/* ===== 横持ち(ランドスケープ)対応 ===== */
+
+/* 縦持ちのスマホには回転を促す(タッチ端末のみ) */
+.rotate-guard {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 840px) and (pointer: coarse) {
+  .rotate-guard {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: #02050a;
+    text-align: center;
+  }
+
+  .rotate-guard-inner {
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+  }
+
+  .rotate-guard .rotate-icon {
+    font-size: 58px;
+    animation: rotateHint 1.8s ease-in-out infinite;
+  }
+
+  .rotate-guard strong {
+    color: #ffe879;
+    font-size: 20px;
+    font-weight: 950;
+  }
+
+  .rotate-guard p {
+    margin: 0;
+    color: #dce9f4;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+}
+
+@keyframes rotateHint {
+  0%, 18% { transform: rotate(0deg); }
+  55%, 100% { transform: rotate(90deg); }
+}
+
+/* 横持ちスマホ(高さの低い画面)向けの調整 */
+@media (orientation: landscape) and (max-height: 560px) {
+  :root {
+    --mobile-nav-h: 48px;
+  }
+
+  /* パネルは必ず画面内に収め、あふれた分は内部スクロール */
+  .spell-device {
+    max-height: calc(100dvh - var(--mobile-nav-h, 0px) - 20px) !important;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .spell-device.has-picker {
+    max-height: calc(100dvh - var(--mobile-nav-h, 0px) - 20px) !important;
+  }
+
+  .spell-open-screen .open-screen-art {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 24dvh;
+    margin: 0 auto;
+    object-fit: contain;
+  }
+
+  .magic-slots .premium-slot {
+    min-height: 44px;
+    font-size: 22px;
+  }
+
+  .spell-device .cast-button,
+  .cast-button {
+    min-height: 44px;
+  }
+
+  .slot-choice-button {
+    min-height: 36px;
+    font-size: 18px;
+  }
+
+  .learned-spell-toolbar {
+    margin-top: 0;
+    margin-right: 0;
+  }
+
+  .gate-clear-actions .primary-button {
+    min-height: 46px;
+    font-size: 17px;
+  }
+
+  /* 導入画像は画面内に収める */
+  .intro-opening-image {
+    width: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - 96px);
+    object-fit: contain;
+  }
+
+  /* 問題ウィンドウは常に全体表示(横なら十分読める) */
+  .gate-problem-card .problem-art-shell {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .gate-problem-card .problem-art-image-crop,
+  .gate-problem-card .kana-board {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .kana-glyph {
+    min-width: 0;
+    min-height: 26px;
+    font-size: clamp(12px, 2.6vw, 22px);
+  }
+
+  .mobile-problem-fit-toggle {
+    display: none !important;
+  }
+
+  .spell-device.is-problem-mode .source-problem-card,
+  .gate-problem-card {
+    overflow: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  /* 問題ウィンドウから呪文入力へ戻るボタンを常設 */
+  .mobile-problem-spell-button {
+    position: fixed;
+    z-index: 31;
+    right: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid rgba(255, 237, 142, 0.92);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.42), transparent 68%),
+      linear-gradient(180deg, #fff3a8 0%, #e7bd36 58%, #b98217 100%);
+    color: #130d04;
+    font-size: 15px;
+    font-weight: 950;
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  }
+}
+
+/* ステージ1: パネルを全部閉じた時の復帰ボタン */
+.gate-reopen-spell {
+  position: absolute;
+  z-index: 11;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  min-height: 50px;
+  padding: 0 26px;
+}
+
+/* 横持ち: ステージ1・2の舞台を1画面に収める(縦スクロール禁止) */
+@media (orientation: landscape) and (max-height: 560px) {
+  .stage-one-redesign,
+  .path-stage-background-only {
+    min-height: 0 !important;
+    height: 100dvh !important;
+    overflow: hidden;
+  }
+
+  .stage-one-redesign .stage-world,
+  .path-stage-background-only .stage-world,
+  .gate-play-visual {
+    min-height: 0 !important;
+    height: 100dvh !important;
+  }
+
+  body.stage-one-mode .game-card,
+  body.stage-path-mode .game-card,
+  body.stage-intro-mode .game-card {
+    min-height: 0 !important;
+  }
+
+  .intro-stage {
+    min-height: 0;
+    height: 100dvh;
+  }
+}
