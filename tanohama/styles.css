@@ -6946,6 +6946,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 }
 
 .path-problem-image {
+  position: relative;
   display: block;
   flex: 0 0 auto;
   padding: 0;
@@ -6953,7 +6954,6 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   border-radius: 8px;
   overflow: hidden;
   background: #05080c;
-  cursor: zoom-in;
 }
 
 .path-problem-image img {
@@ -6962,10 +6962,54 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   height: auto;
 }
 
+.stage2-memo-spots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.stage2-memo-spot {
+  position: absolute;
+  left: var(--spot-x);
+  top: var(--spot-y);
+  width: clamp(24px, 3.4vw, 44px);
+  height: clamp(24px, 3.4vw, 44px);
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.94);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #060606;
+  font-size: clamp(16px, 2.4vw, 30px);
+  font-weight: 950;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.stage2-memo-spot.has-value {
+  border-color: rgba(255, 245, 178, 0.98);
+  background: rgba(255, 244, 188, 0.98);
+}
+
+.stage2-memo-spot.is-selected {
+  color: #d71818;
+  box-shadow:
+    0 0 0 3px rgba(215, 24, 24, 0.4),
+    0 5px 16px rgba(0, 0, 0, 0.36);
+}
+
 .memo-board {
   flex: 0 0 auto;
   display: grid;
   gap: 6px;
+}
+
+.memo-board-inline-only {
+  margin-top: 2px;
 }
 
 .memo-board-title {

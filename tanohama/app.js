@@ -231,6 +231,17 @@ const storeKey = "tanohamaEscapeStateV4";
 const stage2MemoRows = 4;
 const stage2MemoCols = 12;
 const stage2MemoTiles = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", "○"];
+const stage2MemoSpots = [
+  { row: 0, col: 0, x: 6.3, y: 23.5 },
+  { row: 0, col: 1, x: 12.2, y: 23.5 },
+  { row: 0, col: 2, x: 18.1, y: 23.5 },
+  { row: 0, col: 3, x: 24.2, y: 23.5 },
+  { row: 0, col: 4, x: 30.9, y: 23.5 },
+  { row: 0, col: 5, x: 36.7, y: 23.5 },
+  { row: 0, col: 6, x: 55.2, y: 34.3 },
+  { row: 0, col: 7, x: 47.6, y: 43.2 },
+  { row: 0, col: 8, x: 42.8, y: 85.2 },
+];
 
 function normalizeStage2Memo(value) {
   const rows = Array.isArray(value) ? value : [];
@@ -503,7 +514,6 @@ function renderPathProblemCard(stage) {
     ? { row: Math.min(Math.max(state.memoActive.row, 0), stage2MemoRows - 1), col: Math.min(Math.max(state.memoActive.col, 0), stage2MemoCols - 1) }
     : { row: 0, col: 0 };
   const pickerOpen = state.memoPickerOpen === true;
-  const rowLabels = ["①", "②", "③", "④"];
   return `
     <section class="spell-device path-spell-device path-problem-card" aria-label="問題とメモ">
       <div class="path-device-head">
@@ -513,33 +523,24 @@ function renderPathProblemCard(stage) {
           <button class="secondary-button" id="pathToSpell" type="button">石板へ</button>
         </div>
       </div>
-      <button class="path-problem-image" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 問題">
+      <div class="path-problem-image stage2-inline-memo">
         <img src="./assets/${stage.sourceProblemImage}" alt="${stage.number} ${stage.title} 問題" loading="eager" />
-      </button>
-      <div class="memo-board" aria-label="とちゅうメモ">
-        <p class="memo-board-title">とちゅうメモ(自由に書き込める)</p>
-        ${memo
-          .map(
-            (row, r) => `
-              <div class="memo-row">
-                <span class="memo-row-label">${rowLabels[r]}</span>
-                <div class="memo-cells">
-                  ${row
-                    .map(
-                      (char, c) =>
-                        `<button class="memo-cell ${pickerOpen && active.row === r && active.col === c ? "is-selected" : ""}" type="button" data-memo="${r}:${c}">${char}</button>`,
-                    )
-                    .join("")}
-                </div>
-              </div>
-            `,
-          )
-          .join("")}
+        <div class="stage2-memo-spots" aria-label="画像内の白丸メモ">
+          ${stage2MemoSpots
+            .map((spot) => {
+              const char = memo[spot.row]?.[spot.col] || "";
+              const selectedSpot = pickerOpen && active.row === spot.row && active.col === spot.col;
+              return `<button class="stage2-memo-spot ${selectedSpot ? "is-selected" : ""} ${char ? "has-value" : ""}" style="--spot-x:${spot.x}%;--spot-y:${spot.y}%;" type="button" data-memo="${spot.row}:${spot.col}" aria-label="白丸 ${spot.col + 1}">${char}</button>`;
+            })
+            .join("")}
+        </div>
+      </div>
+      <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
             <div class="slot-choice-popover memo-picker" aria-label="メモの候補">
               <div class="slot-choice-head">
-                <span>${rowLabels[active.row]} の ${active.col + 1}マス目</span>
+                <span>白丸 ${active.col + 1}</span>
                 <div class="memo-picker-actions">
                   <button class="slot-choice-clear" id="clearMemoCell" type="button">空にする</button>
                   <button class="slot-choice-clear" id="closeMemoPicker" type="button">閉じる</button>
