@@ -6536,6 +6536,11 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     padding: 10px;
   }
 
+  /* 文字ピッカー展開中はパネルを高くして候補を隠さない */
+  .spell-device.has-picker {
+    max-height: min(64dvh, 480px);
+  }
+
   .path-spell-device .premium-slot-row {
     gap: 6px;
   }

@@ -253,6 +253,10 @@ const state = loadState();
 forceGateProblemClosedOnStartup();
 let gateSuccessTimers = [];
 
+// 岩落下演出の画像を先読みして、発動時に確実に表示されるようにする
+const fallingRockPreload = new Image();
+fallingRockPreload.src = "./assets/stage01-rock-small.webp";
+
 function loadState() {
   try {
     const raw = localStorage.getItem(storeKey);
@@ -278,12 +282,13 @@ function loadState() {
         learnedSpellStage: saved.learnedSpellStage || "gate",
         feedback: saved.feedback && typeof saved.feedback === "object" ? saved.feedback : null,
         isClear: Boolean(saved.isClear),
+        problemFit: saved.problemFit !== false,
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true };
 }
 
 function saveState() {
@@ -433,7 +438,7 @@ function renderPathStage(stage) {
         <img class="stage-bg-art" src="./assets/ステージ２　背景.png" alt="${stage.number} ${stage.title}" loading="eager">
         <div class="art-vignette"></div>
       </div>
-      <section class="spell-device path-spell-device ${done ? "is-clear-compact" : ""}" aria-label="${done ? "クリア" : "呪文入力"}">
+      <section class="spell-device path-spell-device ${done ? "is-clear-compact" : ""} ${pickerOpen ? "has-picker" : ""}" aria-label="${done ? "クリア" : "呪文入力"}">
         ${done
           ? `
             <p class="result-message is-success">${stage.successMessage}</p>
@@ -465,6 +470,9 @@ function renderPathStage(stage) {
 
 function wirePathStage(stage, done) {
   wireProblems();
+  if (!done && state.slotPickerOpen) {
+    requestAnimationFrame(() => document.querySelector(".slot-choice-popover")?.scrollIntoView({ block: "nearest" }));
+  }
   document.querySelector("#nextButton")?.addEventListener("click", () => {
     state.stageIndex = Math.min(state.stageIndex + 1, stages.length - 1);
     state.feedback = null;
@@ -828,7 +836,7 @@ function renderGateStage(stage) {
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback, backgroundOnly)}
 
-      ${successAnimating || spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
+      ${successAnimating || spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} ${pickerOpen ? "has-picker" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="${gatePanelMode === "problem" ? "問題ウィンドウを閉じる" : "呪文ウィンドウを閉じる"}">×</button>
         ${gatePanelMode === "problem"
           ? gateProblemInscription(stage, done, false)
@@ -994,7 +1002,7 @@ function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
-      ${rockDropping ? `<img class="falling-rock" src="./assets/ステージ１　iwa.png" alt="" aria-hidden="true" />` : ""}
+      ${rockDropping ? `<img class="falling-rock" src="./assets/stage01-rock-small.webp" alt="" aria-hidden="true" />` : ""}
     </div>
   `;
 }
@@ -1006,7 +1014,7 @@ function gateProblemInscription(stage, done, hidden = false) {
     <section class="device-problem source-problem-card open-screen-card gate-problem-card ${done ? "is-solved" : ""}" aria-label="問題文">
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
       <label class="mobile-problem-fit-toggle">
-        <input type="checkbox" />
+        <input type="checkbox" ${state.problemFit === false ? "" : "checked"} />
         <span>全体表示</span>
       </label>
       <button class="mobile-problem-spell-button" id="mobileProblemToSpell" type="button">呪文へ</button>
@@ -1066,6 +1074,11 @@ function wireGateStage(stage, done) {
     state.gatePanelMode = "spell";
     state.slotPickerOpen = false;
     render();
+  });
+
+  document.querySelector(".mobile-problem-fit-toggle input")?.addEventListener("change", (event) => {
+    state.problemFit = event.target.checked;
+    saveState();
   });
 
   document.querySelector("#mobileProblemToSpell")?.addEventListener("click", () => {
@@ -1184,6 +1197,10 @@ function wireGateStage(stage, done) {
       }
     });
   });
+
+  if (!locked && state.slotPickerOpen) {
+    requestAnimationFrame(() => document.querySelector(".slot-choice-popover")?.scrollIntoView({ block: "nearest" }));
+  }
 
   document.querySelector("#nextButton")?.addEventListener("click", () => {
     state.stageIndex = Math.min(state.stageIndex + 1, stages.length - 1);
@@ -1487,6 +1504,7 @@ function resetGame() {
   state.learnedSpellStage = "gate";
   state.feedback = null;
   state.isClear = false;
+  state.problemFit = true;
   saveState();
   render();
 }
