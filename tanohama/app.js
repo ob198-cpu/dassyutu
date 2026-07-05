@@ -1167,6 +1167,7 @@ function renderKanaBoard() {
   const active = new Set(Array.isArray(state.kanaBoardActive) ? state.kanaBoardActive : []);
   return `
     <div class="kana-board" aria-label="文字盤">
+      <p class="kana-board-guide">文字を押すと赤くなる</p>
       ${stage1KanaBoardRows
         .map(
           (line, rowIndex) => `

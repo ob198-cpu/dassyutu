@@ -3326,6 +3326,15 @@ body.stage-path-mode .game-card::before {
   display: none;
 }
 
+.kana-board-guide {
+  margin: 0 0 2px;
+  color: #3f2300;
+  font-size: clamp(11px, 1.2vw, 16px);
+  font-weight: 950;
+  line-height: 1.1;
+  text-align: center;
+}
+
 .kana-board-row {
   display: grid;
   grid-template-columns: repeat(23, minmax(0, 1fr));
@@ -7199,6 +7208,12 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 
   .kana-board-row {
     gap: 2px !important;
+  }
+
+  .kana-board-guide {
+    margin-bottom: 2px !important;
+    font-size: clamp(10px, 1.65vw, 14px) !important;
+    line-height: 1 !important;
   }
 
   .kana-glyph {
