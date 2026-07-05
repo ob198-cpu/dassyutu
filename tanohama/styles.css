@@ -7113,4 +7113,46 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     width: calc(100vw - var(--side-menu-w)) !important;
     max-width: calc(100vw - var(--side-menu-w)) !important;
   }
+
+  .spell-device {
+    left: calc(var(--side-menu-w) + 8px) !important;
+    right: 8px !important;
+    top: 8px !important;
+    bottom: 8px !important;
+    width: auto !important;
+    max-height: none !important;
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+
+  .spell-device.has-picker {
+    max-height: none !important;
+  }
+
+  .spell-open-screen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .spell-open-screen .open-screen-art {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 52dvh !important;
+    object-fit: contain !important;
+  }
+
+  .magic-slots .premium-slot {
+    min-height: 38px !important;
+    font-size: 18px !important;
+  }
+
+  .spell-device .cast-button,
+  .cast-button {
+    min-height: 40px !important;
+  }
+
+  .learned-spell-toolbar {
+    margin-top: 0 !important;
+  }
 }
