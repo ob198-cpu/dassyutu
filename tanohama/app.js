@@ -45,8 +45,8 @@ const stages = [
     scene: "gate",
     sceneCaption: "左の足場から右の足場へ進みたいが、中央の穴で止まっている。",
     briefing: "赤い木札には「漬物石」。床の音片は、意味のある4音だけが反応する。",
-    problems: [{ file: "ステージ１　問題 VER2.png", title: "ステージ1 原問題" }],
-    sourceProblemImage: "ステージ１　問題 VER2.png",
+    problems: [{ file: "stage01-problem-ver2.webp", title: "ステージ1 原問題" }],
+    sourceProblemImage: "stage01-problem-ver2.webp",
     solutionImage: "stage01-02-solution.png",
     textProblem: {
       title: "ステージ1",
@@ -79,8 +79,8 @@ const stages = [
     scene: "corridor",
     sceneCaption: "壁の色マスが見えない扉の位置を示している。光の順路を読み取る。",
     briefing: "青い矢印の順に読む。最後に残るのは、通り抜けた者へ向けた六音の言葉。",
-    problems: [{ file: "stage02-problem-clean.png", title: "ステージ2 原問題" }],
-    sourceProblemImage: "stage02-problem-clean.png",
+    problems: [{ file: "stage02-problem-clean.webp", title: "ステージ2 原問題" }],
+    sourceProblemImage: "stage02-problem-clean.webp",
     solutionImage: "stage01-02-solution.png",
     textProblem: {
       title: "ステージ2",
@@ -104,8 +104,8 @@ const stages = [
     scene: "ice",
     sceneCaption: "凍った足場を渡るには、氷に効くアイテムを選ぶ必要がある。",
     briefing: "式が指す番号は3。3番の棚には、口から火を出す道具が置かれている。",
-    problems: [{ file: "stage03-problem-clean.png", title: "ステージ3 原問題" }],
-    sourceProblemImage: "stage03-problem-clean.png",
+    problems: [{ file: "stage03-problem-clean.webp", title: "ステージ3 原問題" }],
+    sourceProblemImage: "stage03-problem-clean.webp",
     solutionImage: "stage03-solution-clean.png",
     textProblem: {
       title: "ステージ3",
@@ -140,8 +140,8 @@ const stages = [
     scene: "time",
     sceneCaption: "三つの色ランプと計器がずれている。時差を消す装置名を探す。",
     briefing: "青、緑、黄の順に読んで得た六音。時を移動する装置の名前を入力する。",
-    problems: [{ file: "stage04-problem-clean.png", title: "ステージ4 原問題" }],
-    sourceProblemImage: "stage04-problem-clean.png",
+    problems: [{ file: "stage04-problem-clean.webp", title: "ステージ4 原問題" }],
+    sourceProblemImage: "stage04-problem-clean.webp",
     solutionImage: "stage04-solution-clean.png",
     textProblem: {
       title: "ステージ4",
@@ -168,8 +168,8 @@ const stages = [
       "ヒント②「獣の技をよく読むのじゃ。空中には届かぬ技もあれば、目が合わねば効かぬ技もあるぞ」",
       "ヒント③「最後の石板は10文字。☆の一覧にある10文字の呪文はフェイクじゃ。ワシのエールと、紙の隅にとまった蝶を思い出すのじゃ」",
     ],
-    problems: [{ file: "stage05-problem-clean.png", title: "ラスボス 原問題" }],
-    sourceProblemImage: "stage05-problem-clean.png",
+    problems: [{ file: "stage05-problem-clean.webp", title: "ラスボス 原問題" }],
+    sourceProblemImage: "stage05-problem-clean.webp",
   },
 ];
 
@@ -443,7 +443,7 @@ function render() {
 function renderIntro(stage) {
   elements.game.innerHTML = `
     <section class="intro-stage intro-image-stage" aria-label="異世界へ！？">
-      <img class="intro-opening-image" src="./assets/intro-current-isekai.png" alt="現在異空間からの脱出">
+      <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
       <button class="primary-button intro-start-button" id="introStartButton" type="button">つぎへ</button>
     </section>
   `;
@@ -470,7 +470,7 @@ function renderPathStage(stage) {
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage path-stage-background-only ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world">
-        <img class="stage-bg-art" src="./assets/ステージ２　背景.png" alt="${stage.number} ${stage.title}" loading="eager">
+        <img class="stage-bg-art" src="./assets/stage02-bg.webp" alt="${stage.number} ${stage.title}" loading="eager">
         <div class="art-vignette"></div>
       </div>
       ${problemMode ? renderPathProblemCard(stage) : `
@@ -901,7 +901,7 @@ function corridorScene(stage) {
   if (stage?.id === "path") {
     return `
       <div class="stage-two-background-only" aria-hidden="true">
-        <img src="./assets/ステージ２　背景.png" alt="" loading="eager" />
+        <img src="./assets/stage02-bg.webp" alt="" loading="eager" />
       </div>
     `;
   }
@@ -1009,7 +1009,7 @@ function renderGateStage(stage) {
 function renderSpellRuleNotice() {
   return `
     <section class="spell-open-screen open-screen-card" aria-label="ステージ1の画面">
-      <img class="open-screen-art" src="./assets/ステージ１　呪文.png" alt="ステージ1の呪文">
+      <img class="open-screen-art" src="./assets/stage01-spell.webp" alt="ステージ1の呪文">
     </section>
   `;
 }
@@ -1071,8 +1071,8 @@ function renderLearnedSpellViewer() {
 function renderLearnedStageOneSpells() {
   return `
     <div class="learned-spell-images">
-      <img src="./assets/ステージ１　呪文.png" alt="ステージ1 呪文">
-      <img src="./assets/ステージ１　クリア2.png" alt="ステージ1 クリア資料">
+      <img src="./assets/stage01-spell.webp" alt="ステージ1 呪文">
+      <img src="./assets/stage01-clear2.webp" alt="ステージ1 クリア資料">
     </div>
   `;
 }
@@ -1083,8 +1083,8 @@ function renderGateSuccessOverlay(phase) {
       <section class="gate-success-sequence is-prompt1" aria-label="ステージ1 続行確認">
         <div class="gate-choice-card">
           <div class="gate-choice-media">
-            <img src="./assets/ステージ１　呪文.png" alt="ステージ1の呪文" loading="eager" />
-            <img src="./assets/ステージ１　クリア2.png" alt="ステージ1 クリア2" loading="eager" />
+            <img src="./assets/stage01-spell.webp" alt="ステージ1の呪文" loading="eager" />
+            <img src="./assets/stage01-clear2.webp" alt="ステージ1 クリア2" loading="eager" />
           </div>
           <p class="gate-choice-question">進みますか？</p>
           <div class="gate-choice-actions">
@@ -1130,7 +1130,7 @@ function renderSlotPicker(stage, activeSlot) {
 function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
   const successPhase = feedback?.type === "success" ? feedback.phase : null;
   const rockDropping = successPhase === "rock";
-  const background = done || successPhase === "prompt2" ? "ステージ１　クリア.png" : "ステージ１　背景.png";
+  const background = done || successPhase === "prompt2" ? "stage01-clear.webp" : "stage01-bg.webp";
   return `
     <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${rockDropping ? "is-rock-dropping" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/${background}" alt="" loading="eager" />
@@ -1155,7 +1155,7 @@ function gateProblemInscription(stage, done, hidden = false) {
       <button class="mobile-problem-spell-button" id="mobileProblemToSpell" type="button">呪文へ</button>
       <div class="problem-art-shell">
         <div class="problem-art-image-crop">
-          <img class="open-screen-art stage-problem-art" src="./assets/ステージ１　問題 VER2.png" alt="ステージ1 問題">
+          <img class="open-screen-art stage-problem-art" src="./assets/stage01-problem-ver2.webp" alt="ステージ1 問題">
         </div>
         ${stage.id === "gate" ? renderKanaBoard() : ""}
       </div>

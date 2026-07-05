@@ -6456,11 +6456,11 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   }
 
   body.stage-one-mode .stage-one-redesign .stage-world::before {
-    background-image: url("./assets/ステージ１　背景.png");
+    background-image: url("./assets/stage01-bg.webp");
   }
 
   body.stage-path-mode .path-stage-background-only .stage-world::before {
-    background-image: url("./assets/ステージ２　背景.png");
+    background-image: url("./assets/stage02-bg.webp");
   }
 
   body.stage-one-mode .stage-one-redesign .stage-bg-art,
