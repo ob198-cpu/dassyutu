@@ -865,6 +865,17 @@ function renderScene(stage) {
 }
 
 function renderProblems(stage, done = false) {
+  if (stage.id === "shop" || stage.id === "time") {
+    return `
+      <section class="problem-section sheet-problem">
+        <div class="section-head">
+          <strong>問題</strong>
+          <button class="text-button sheet-source-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本を見る</button>
+        </div>
+        ${stage.id === "shop" ? renderStage3Sheet() : renderStage4Sheet()}
+      </section>
+    `;
+  }
   if (stage.id === "path" && stage.textProblem) {
     const problem = stage.textProblem;
     return `
@@ -1294,11 +1305,160 @@ function gateProblemInscription(stage, done, hidden = false) {
       <button class="mobile-problem-spell-button" id="mobileProblemToSpell" type="button">呪文へ</button>
       <div class="problem-art-shell">
         <div class="problem-art-image-crop">
-          <img class="open-screen-art stage-problem-art" src="./assets/stage01-problem-ver2.webp" alt="ステージ1 問題">
+          ${renderStage1Sheet()}
         </div>
         ${stage.id === "gate" ? renderKanaBoard() : ""}
       </div>
     </section>
+  `;
+}
+
+// ステージ1 問題シート(原本をHTMLで再構成)
+function renderStage1Sheet() {
+  return `
+    <div class="sheet stage1-sheet stage-problem-art" role="img" aria-label="ステージ1 問題">
+      <div class="sheet-head-row">
+        <h3 class="sheet-title">ステージ1</h3>
+        <button class="text-button sheet-source-button" type="button" data-problem="ステージ１　問題 VER2.png" data-title="ステージ1 原本">原本</button>
+      </div>
+      <div class="stage1-cols">
+        <div class="stage1-q stage1-q1">
+          <span class="sheet-qnum">①</span>
+          <div class="stage1-natto" aria-label="納豆が短気になる図">
+            <div class="stage1-natto-col stage1-red-col"><span>納</span><span class="stage1-natto-arrow">↓</span><span>短</span></div>
+            <div class="stage1-natto-col"><span>豆</span><span class="stage1-natto-arrow">&nbsp;</span><span>気</span></div>
+          </div>
+          <p class="stage1-inst"><em class="red-word">赤枠内</em>の漢字を変えて<br>上から下へ粘り強さを<br>移動させて下さい。<br><em class="red-word">赤枠内</em>に現れる<br><strong class="veg-word">野菜</strong>は?</p>
+        </div>
+        <div class="stage1-q stage1-q2">
+          <span class="sheet-qnum">②</span>
+          <p class="stage1-q2-text">給料日の曜日が無くなると現れる<br><strong class="veg-word">野菜</strong>は?</p>
+        </div>
+      </div>
+      <p class="stage1-footer">①、②が解けたら次は「<u>つかった①、②の答え</u>」の下のカタカナを読むのじゃ!</p>
+    </div>
+  `;
+}
+
+// ステージ3 問題シート(原本をHTMLで再構成)
+function renderStage3Sheet() {
+  const items = [
+    { name: "①メラソード", note: "(切ったものが燃える)", ico: "🗡️🔥" },
+    { name: "②ソラブーツ", note: "(装備すると素早くなる)", ico: "🥾" },
+    { name: "③ドラブレス", note: "(口から火が出せる)", ico: "🐉" },
+    { name: "④マジホウキ", note: "(飛べる、掃除もできる)", ico: "🧹" },
+  ];
+  return `
+    <div class="sheet stage3-sheet" role="img" aria-label="ステージ3 問題">
+      <div class="sheet-head-row">
+        <h3 class="sheet-title">ステージ3</h3>
+        <span class="stage3-answer-slot">解答番号→<span class="stage3-answer-box" aria-hidden="true"></span></span>
+      </div>
+      <div class="stage3-cols">
+        <div class="stage3-left">
+          <p class="stage3-cipher">下のカッコ71の、け134きから3ちびき出3れる数字8,ひらが7二文字で4めます。それ2最も関係するものをア1テ68の7かから5解109だ31。</p>
+          <div class="stage3-target-wrap"><p class="stage3-target">「24まき2めがね8くじ7」</p></div>
+          <p class="sheet-elder">🚶「計算で出た数字とアイテムはどれも一見関係ありそうじゃが、他より多く合致しているのはどれかのう」</p>
+        </div>
+        <div class="stage3-right">
+          <h4 class="stage3-shop-title">アイテム屋</h4>
+          <ul class="stage3-items">
+            ${items.map((item) => `<li><span class="stage3-item-main"><strong>${item.name}</strong><small>${item.note}</small></span><span class="stage3-item-ico" aria-hidden="true">${item.ico}</span></li>`).join("")}
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ステージ4 問題シート(原本をHTMLで再構成。④の図のみ原本から切り出し)
+const stage4Scatter = [
+  ["A", 8.5, 33], ["い", 40, 33], ["ち", 61, 32.5], ["ん", 79, 33],
+  ["う", 49, 42.5], ["か", 73, 43], ["た", 93, 43],
+  ["G", 3, 50], ["す", 30, 51], ["F", 64, 50], ["E", 92, 50],
+  ["じ", 2, 60], ["ど", 30, 60.5], ["さ", 63, 59.5], ["げ", 84, 60],
+  ["の", 13, 73], ["に", 48, 72.5], ["う", 67, 72],
+  ["ろ", 37, 79],
+  ["お", 22, 86], ["C", 46, 86], ["D", 79, 86],
+];
+
+const stage4Numbers = [
+  { label: "①", boxes: [[["3", "b"], ["7", "g"], ["2", "y"], ["10", "y"]], [["8", "b"], ["3", "y"]], [["2", "b"], ["2", "g"], ["13", "y"]]] },
+  { label: "②", boxes: [[["7", "b"], ["4", "g"], ["1", "y"]], [], [], [["14", "y"]]] },
+  { label: "③", boxes: [[["8", "y"]], [["6", "b"], ["3", "g"], ["9", "y"]], [["4", "b"], ["1", "g"], ["11", "y"]], [["5", "y"]], [["6", "y"]]] },
+  { label: "④", boxes: [[["1", "b"], ["7", "y"]], [["9", "b"], ["6", "g"], ["15", "y"]], [["5", "b"], ["12", "y"]], [["5", "g"], ["4", "y"]]] },
+];
+
+function renderStage4Sheet() {
+  const numberRow = (group) => `
+    <div class="s4-num-row">
+      <span class="s4-num-label">${group.label}</span>
+      ${group.boxes
+        .map(
+          (box) => `<span class="s4-num-box">${box.map(([n, c], i) => `${i ? "<i>,</i>" : ""}<b class="n-${c}">${n}</b>`).join("")}</span>`,
+        )
+        .join("")}
+    </div>
+  `;
+  return `
+    <div class="sheet stage4-sheet" role="img" aria-label="ステージ4 問題">
+      <div class="sheet-head-row">
+        <h3 class="sheet-title">ステージ4</h3>
+      </div>
+      <p class="s4-header">時空が歪んで、時差が発生した、①〜④の謎を解いて、時差を無くす為の手段を見つけろ</p>
+      <div class="s4-panels">
+        <div class="s4-panel">
+          <p class="s4-panel-title"><span class="sheet-qnum">①</span><em class="red-word">おじさん</em>の<br>間にあるのは?</p>
+          <div class="s4-scatter">
+            ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch}</span>`).join("")}
+          </div>
+        </div>
+        <div class="s4-panel">
+          <p class="s4-panel-title"><span class="sheet-qnum">②</span>?の中に<br>はいる言葉は、なに</p>
+          <div class="s4-week-rows">
+            <p><span class="s4-day">TUE</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">かそく</span></p>
+            <p><span class="s4-day">SAT</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">どそく</span></p>
+            <p><span class="s4-day s4-day-red">THU</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">?</span></p>
+          </div>
+        </div>
+        <div class="s4-panel">
+          <p class="s4-panel-note">?に言葉を入れ、四角で囲まれた文字のみ繋げて読む</p>
+          <div class="s4-this-grid">
+            <span></span><span class="s4-boxed s4-red">THIS</span><span class="s4-red">WEEK</span>
+            <span></span><span class="s4-plus">+</span><span></span>
+            <span>うえ</span><span class="s4-boxed">?</span><span>した</span>
+            <span></span><span></span><span class="s4-ge">GE</span>
+            <span></span><span class="s4-eq">‖</span><span></span>
+            <span></span><span class="s4-answer-of">③のこたえ</span><span></span>
+          </div>
+        </div>
+        <div class="s4-panel">
+          <p class="s4-panel-note">④投げられた球が、放物線の<em class="red-word">頂点</em>で真下へ落下する時、球が通る言葉を繋いで読め</p>
+          <img class="s4-art" src="./assets/stage04-art.webp" alt="放物線と散らばった文字の図(原本)" loading="lazy" />
+        </div>
+      </div>
+      <div class="s4-numbers">
+        <div class="s4-num-col">
+          ${numberRow(stage4Numbers[0])}
+          ${numberRow(stage4Numbers[2])}
+        </div>
+        <div class="s4-num-col">
+          ${numberRow(stage4Numbers[1])}
+          ${numberRow(stage4Numbers[3])}
+        </div>
+        <p class="s4-read-order"><b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め<br>答えは、それが差ししめす先にある。</p>
+      </div>
+      <p class="sheet-elder">🚶時差を隠す時に使うのじゃ→[ きじのくうきあしょうのみさきよらいのじさめ ]</p>
+      <div class="s4-final-row">
+        <span class="s4-final-label"><small class="s4-final-ruby">ファイナル アンサー</small>FINAL ANSWER:</span>
+        <span class="s4-final-boxes">${Array.from({ length: 6 }).map(() => `<span></span>`).join("")}</span>
+        <svg class="s4-clocks" viewBox="0 0 120 40" aria-hidden="true">
+          <g stroke="#3f9b3f" fill="none" stroke-width="3"><circle cx="20" cy="20" r="14"/><path d="M20 20 L20 10 M20 20 L27 24"/></g>
+          <g stroke="#2f66c4" fill="none" stroke-width="3"><circle cx="60" cy="20" r="14"/><path d="M60 20 L60 10 M60 20 L53 26"/></g>
+          <g stroke="#e0b31e" fill="none" stroke-width="3"><circle cx="100" cy="20" r="14"/><path d="M100 20 L100 11 M100 20 L108 20"/></g>
+        </svg>
+      </div>
+    </div>
   `;
 }
 
@@ -1339,6 +1499,7 @@ function renderGateResult(stage, done, feedback) {
 }
 
 function wireGateStage(stage, done) {
+  wireProblems();
   const rockDropping = state.feedback?.stageId === stage.id && state.feedback?.type === "success" && state.feedback?.phase === "rock";
   if (rockDropping) positionFallingRock();
   const successAnimating = state.feedback?.stageId === stage.id && state.feedback?.type === "success" && state.feedback?.phase !== "done";

@@ -7849,3 +7849,435 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   font-weight: 900;
   letter-spacing: 0.04em;
 }
+
+/* ===== 問題シートのHTML再構成(共通) ===== */
+.sheet {
+  border-radius: 8px;
+  padding: 14px 16px;
+  line-height: 1.6;
+}
+
+.sheet-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.sheet-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+}
+
+.sheet-qnum {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.sheet-elder {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+.sheet-source-button {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.red-word { color: #c0392b; font-style: normal; font-weight: 900; }
+.veg-word { color: #2e7d32; font-weight: 950; }
+
+/* ===== ステージ1(羊皮紙) ===== */
+.stage1-sheet {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(120, 80, 20, 0.18), transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(120, 80, 20, 0.2), transparent 45%),
+    linear-gradient(160deg, #e2c47f, #d3ab60 60%, #c89c50);
+  color: #241a0c;
+  border: 3px solid #3a2a12;
+  box-shadow: inset 0 0 26px rgba(58, 42, 18, 0.35);
+}
+
+.stage1-sheet .sheet-title { color: #241a0c; }
+
+.stage1-cols {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 12px;
+  border-top: 2px solid #3a2a12;
+  border-bottom: 2px solid #3a2a12;
+  padding: 12px 0;
+}
+
+.stage1-q { position: relative; }
+
+.stage1-q1 {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 12px;
+  align-items: center;
+  border-right: 2px solid #3a2a12;
+  padding-right: 12px;
+}
+
+.stage1-natto {
+  display: flex;
+  gap: 2px;
+  font-size: clamp(30px, 4.6vw, 44px);
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.stage1-natto-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 6px;
+}
+
+.stage1-red-col {
+  border: 3px solid #b03024;
+  border-radius: 3px;
+}
+
+.stage1-natto-arrow {
+  font-size: 0.7em;
+  line-height: 1.4;
+}
+
+.stage1-inst {
+  margin: 0;
+  font-size: clamp(12px, 1.8vw, 15px);
+  font-weight: 800;
+}
+
+.stage1-q2-text {
+  margin: 8px 0 0;
+  font-size: clamp(14px, 2.2vw, 19px);
+  font-weight: 900;
+  text-align: center;
+}
+
+.stage1-footer {
+  margin: 10px 0 0;
+  font-size: clamp(13px, 2vw, 16px);
+  font-weight: 900;
+}
+
+/* ===== ステージ3(カーキの店構え) ===== */
+.stage3-sheet {
+  background: #f4f3e2;
+  color: #17150c;
+  border: 3px solid #1c1a10;
+}
+
+.stage3-answer-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.stage3-answer-box {
+  display: inline-block;
+  width: 56px;
+  height: 34px;
+  border: 2px solid #1c1a10;
+  background: #fff;
+}
+
+.stage3-cols {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 0;
+  border: 2px solid #1c1a10;
+}
+
+.stage3-left {
+  border-right: 2px solid #1c1a10;
+  display: flex;
+  flex-direction: column;
+}
+
+.stage3-cipher {
+  margin: 0;
+  padding: 10px 12px;
+  background: #c9c6a0;
+  border-bottom: 2px solid #1c1a10;
+  font-size: clamp(13px, 1.9vw, 16px);
+  font-weight: 900;
+  text-align: center;
+}
+
+.stage3-target-wrap {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  background: #fdfdf6;
+  padding: 18px 10px;
+}
+
+.stage3-target {
+  margin: 0;
+  font-size: clamp(20px, 3.6vw, 34px);
+  font-weight: 950;
+  letter-spacing: 0.02em;
+}
+
+.stage3-left .sheet-elder {
+  margin: 0;
+  padding: 8px 10px;
+  background: #c9c6a0;
+  border-top: 2px solid #1c1a10;
+  font-size: 11.5px;
+}
+
+.stage3-shop-title {
+  margin: 0;
+  padding: 8px 10px;
+  background: #c9c6a0;
+  border-bottom: 2px solid #1c1a10;
+  font-size: clamp(18px, 2.6vw, 24px);
+  font-weight: 950;
+  text-align: center;
+  letter-spacing: 0.2em;
+}
+
+.stage3-items {
+  margin: 0;
+  padding: 10px 12px;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  background: #fdfdf6;
+}
+
+.stage3-items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stage3-item-main { display: grid; }
+.stage3-items strong { font-size: clamp(14px, 2vw, 18px); font-weight: 950; }
+.stage3-items small { font-size: clamp(10px, 1.5vw, 12px); font-weight: 700; color: #333; }
+.stage3-item-ico { font-size: clamp(18px, 3vw, 28px); }
+
+/* ===== ステージ4(水色の計器室) ===== */
+.stage4-sheet {
+  background: #eef6f9;
+  color: #10202a;
+  border: 3px solid #14242e;
+}
+
+.s4-header {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  background: #d3e9f2;
+  border: 2px solid #14242e;
+  font-size: clamp(12.5px, 1.9vw, 16px);
+  font-weight: 950;
+  text-align: center;
+}
+
+.s4-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 8px;
+}
+
+.s4-panel {
+  border: 2px solid #14242e;
+  background: #fdfefe;
+  padding: 8px;
+  min-height: 230px;
+  position: relative;
+}
+
+.s4-panel-title {
+  margin: 0 0 6px;
+  font-size: clamp(13px, 1.9vw, 16px);
+  font-weight: 950;
+}
+
+.s4-panel-note {
+  margin: 0 0 6px;
+  font-size: clamp(11px, 1.6vw, 13.5px);
+  font-weight: 900;
+  line-height: 1.55;
+}
+
+.s4-scatter {
+  position: relative;
+  height: 175px;
+  font-weight: 900;
+  font-size: clamp(13px, 1.9vw, 17px);
+}
+
+.s4-scatter span {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.s4-week-rows p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0;
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: 950;
+}
+
+.s4-day-red { color: #c0392b; }
+
+.s4-hatch {
+  display: inline-block;
+  width: 30px;
+  height: 26px;
+  border: 2px solid #14242e;
+  background: repeating-linear-gradient(135deg, transparent 0 4px, #7d8c94 4px 6px);
+}
+
+.s4-mini-box {
+  display: inline-block;
+  min-width: 74px;
+  padding: 2px 8px;
+  border: 2px solid #14242e;
+  background: #fff;
+  text-align: center;
+}
+
+.s4-this-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px 10px;
+  align-items: center;
+  justify-items: center;
+  font-size: clamp(13px, 1.9vw, 17px);
+  font-weight: 950;
+}
+
+.s4-boxed {
+  border: 3px solid #14242e;
+  background: #fff;
+  padding: 3px 14px;
+}
+
+.s4-red { color: #c0392b; }
+.s4-plus { font-size: 1.3em; }
+.s4-ge { justify-self: start; }
+.s4-eq { font-size: 1.2em; }
+.s4-answer-of { font-size: 0.85em; }
+
+.s4-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #9db3bd;
+}
+
+.s4-numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 6px 14px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+.s4-num-col { display: grid; gap: 6px; }
+
+.s4-num-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.s4-num-label {
+  align-self: center;
+  margin-right: 6px;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.s4-num-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  min-height: 34px;
+  padding: 2px 6px;
+  border: 2px solid #14242e;
+  background: #fdfefe;
+  font-size: clamp(12px, 1.8vw, 15px);
+  font-weight: 950;
+}
+
+.s4-num-box + .s4-num-box { border-left: 0; }
+.s4-num-box i { font-style: normal; color: #555; margin: 0 1px; }
+
+.n-b { color: #2f66c4; }
+.n-g { color: #3f9b3f; }
+.n-y { color: #d8a413; }
+
+.s4-read-order {
+  margin: 0;
+  font-size: clamp(12px, 1.8vw, 14.5px);
+  font-weight: 950;
+  line-height: 1.7;
+}
+
+.s4-final-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.s4-final-label {
+  position: relative;
+  font-size: clamp(16px, 2.4vw, 21px);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+}
+
+.s4-final-ruby {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.s4-final-boxes { display: inline-flex; }
+
+.s4-final-boxes span {
+  width: clamp(30px, 4.6vw, 44px);
+  height: clamp(34px, 5vw, 48px);
+  border: 2px solid #14242e;
+  background: #fff;
+}
+
+.s4-final-boxes span + span { border-left: 0; }
+
+.s4-clocks { width: 96px; height: 32px; }
+
+/* シート内の問題セクション */
+.sheet-problem .sheet { margin-top: 2px; }
+
+@media (max-width: 680px) {
+  .stage1-cols { grid-template-columns: 1fr; }
+  .stage1-q1 { border-right: 0; padding-right: 0; }
+  .stage3-cols { grid-template-columns: 1fr; }
+  .stage3-left { border-right: 0; border-bottom: 2px solid #1c1a10; }
+  .s4-numbers { grid-template-columns: 1fr; }
+}
