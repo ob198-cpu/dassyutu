@@ -8281,3 +8281,81 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   .stage3-left { border-right: 0; border-bottom: 2px solid #1c1a10; }
   .s4-numbers { grid-template-columns: 1fr; }
 }
+
+/* ===== 横持ちの重なり修正 ===== */
+
+/* 広めの横持ち(タブレット/大きめスマホ): 左メニューをコンパクトにし、
+   ステージ1・導入の画面もメニュー分だけ右へ寄せる */
+@media (orientation: landscape) and (max-height: 560px) and (min-width: 681px) {
+  :root {
+    --side-menu-w: 128px;
+  }
+
+  .side-menu {
+    width: var(--side-menu-w);
+    padding: 8px 6px;
+    gap: 6px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .side-menu-button {
+    min-height: 34px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .side-stage-button {
+    min-height: 34px;
+  }
+
+  .side-stage-number {
+    font-size: 10px;
+  }
+
+  .side-stage-title {
+    font-size: 11px;
+  }
+
+  body.stage-one-mode .phone-shell,
+  body.stage-intro-mode .phone-shell {
+    width: calc(100% - var(--side-menu-w)) !important;
+    max-width: none !important;
+    margin-left: var(--side-menu-w) !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* 覚えた呪文ボタンが×ボタンと重ならないよう左寄せ */
+@media (max-width: 680px), (orientation: landscape) and (max-height: 560px) {
+  .learned-spell-toolbar {
+    justify-self: start;
+    align-self: flex-start;
+    margin: 0;
+  }
+
+  .learned-spell-open {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+}
+
+/* 問題ウィンドウの「呪文へ」ボタンは下部ナビの上に置く */
+@media (orientation: landscape) and (max-height: 560px) and (max-width: 680px) {
+  .mobile-problem-spell-button {
+    bottom: calc(var(--mobile-nav-h, 48px) + var(--mobile-safe-bottom, 0px) + 10px);
+  }
+}
+
+/* ステージ1シートの「原本」ボタンがパネルの×と重ならないよう余白を確保 */
+.gate-problem-card .stage1-sheet .sheet-head-row {
+  padding-right: 52px;
+}
+
+/* 下部ナビに「呪文」ボタンがあるため、浮遊の「呪文へ」は重なりの原因になる横持ち狭幅では出さない */
+@media (orientation: landscape) and (max-height: 560px) and (max-width: 680px) {
+  .mobile-problem-spell-button {
+    display: none !important;
+  }
+}
