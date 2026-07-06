@@ -243,12 +243,101 @@ const stage2MemoSpots = [
   { row: 0, col: 8, x: 42.8, y: 85.2 },
 ];
 
+const stage2Board = {"upper":{"cols":9,"rows":4,"x":[33,114,189,264,338,413,488,563,638,713],"y":[124,196,269,341,413],"h":[[{"black":-2},{"black":-2},{"yellow":-2},{"black":-2},{"black":-2},{"blue":-2},{"blue":-2},{"blue":-2},{"yellow":-2}],[{"white":-1},{"blue":-1},{"yellow":-1},{"red":-1},{"white":-1},{"blue":-1},{"blue":-1},{"red":-2},{"yellow":-2}],[{"blue":-2},{"black":-2},{"red":-2},{"blue":-1},{"red":-2},{"red":-2},{"red":-2},{"red":-2},{"blue":-2}],[{"red":-1},{"red":-1},{"white":-1},{"yellow":-2},{"yellow":-2},{"yellow":-2},{"blue":-2},{"blue":-1},{"yellow":-2}],[{"black":-1},{"black":-1},{"blue":0},{"blue":0},{"black":-2},{"yellow":-1},{"white":-1},{"red":-2},{"blue":0}]],"v":[[{"blue":-7,"black":4},{"blue":-7,"black":4},{"blue":-7,"black":5},{"blue":-7,"black":5}],[{"blue":-2},{"yellow":-2},{"red":-2},{"red":-2}],[{"blue":-2},{"blue":-2},{"black":-1},{"black":-1}],[{"black":-3},{"black":-2},{"black":-2},{"black":-2}],[{"blue":-2},{"red":-2},{"blue":-1},{"blue":-1}],[{"black":-2},{"black":-1},{"black":-1},{"black":-1}],[{"blue":-2},{"blue":-2},{"yellow":-2},{"yellow":-2}],[{"blue":-2},{"red":-2},{"white":-1},{"white":-1}],[{"blue":-2},{"blue":-2},{"red":-2},{"red":-2}],[{"white":-1},{"yellow":0},{"white":-1},{"blue":0}]],"cells":[{"r":0,"c":0,"circle":true,"memo":0},{"r":0,"c":1,"circle":true,"memo":1},{"r":0,"c":2,"circle":true,"memo":2},{"r":0,"c":3,"circle":true,"memo":3},{"r":0,"c":4,"circle":true,"memo":4},{"r":0,"c":5,"circle":true,"memo":5},{"r":0,"c":6,"char":"K","color":"black"},{"r":0,"c":7,"char":"K","color":"black"},{"r":0,"c":8,"char":"K","color":"yellow"},{"r":1,"c":0,"char":"I","color":"white"},{"r":1,"c":1,"char":"O","color":"blue"},{"r":1,"c":2,"char":"I","color":"yellow"},{"r":1,"c":3,"char":"K","color":"red"},{"r":1,"c":4,"char":"I","color":"white"},{"r":1,"c":5,"char":"O","color":"blue"},{"r":1,"c":6,"char":"U","color":"black"},{"r":1,"c":7,"char":"O","color":"black"},{"r":1,"c":8,"circle":true,"memo":6},{"r":2,"c":0,"char":"R","color":"white"},{"r":2,"c":3,"char":"A","color":"red"},{"r":2,"c":4,"char":"R","color":"white"},{"r":2,"c":6,"char":"R","color":"black"},{"r":2,"c":7,"circle":true,"memo":7},{"r":3,"c":0,"char":"O","color":"white"},{"r":3,"c":4,"char":"O","color":"white"},{"r":3,"c":6,"char":"O","color":"black"}]},"lower":{"cols":10,"rows":2,"x":[33,114,190,264,339,414,488,563,638,714,789],"y":[486,559,631],"h":[[{"blue":-1},{"red":-1},{"blue":-2},{"red":1},{"black":-2},{"yellow":-1},{"blue":-2},{"red":-2},{"yellow":-2},{"black":-2}],[{"red":-2},{"red":-2},{"red":-2},{"red":-2},{"black":-2},{"blue":-1},{"yellow":-2},{"yellow":-2},{"white":-2},{"black":-3}],[{"black":-2},{"black":-2},{"yellow":-2},{"blue":-1},{"blue":-2},{"blue":-2},{"blue":-2},{"red":-2},{"red":-2},{"blue":-2}]],"v":[[{"blue":-7,"black":5},{"blue":-7,"black":5}],[{"red":-1},{"yellow":-2}],[{"black":-2},{"black":-2}],[{"red":-2},{"red":-2}],[{"black":-1},{"black":-1}],[{"black":-2},{"black":-2}],[{"yellow":-2},{"yellow":-1}],[{"red":-2},{"blue":-1}],[{"yellow":-2},{"red":-2}],[{"black":-2},{"black":-2}],[{"black":-2,"blue":7},{"black":-2}]],"cells":[{"r":0,"c":0,"char":"o","color":"white"},{"r":0,"c":1,"char":"I","color":"red"},{"r":0,"c":2,"char":"I","color":"blue"},{"r":0,"c":3,"char":"s","color":"black"},{"r":0,"c":4,"char":"I","color":"red"},{"r":0,"c":5,"char":"N","color":"blue"},{"r":0,"c":6,"char":"「I」","color":"red"},{"r":0,"c":7,"char":"o","color":"red"},{"r":0,"c":8,"char":"M","color":"black"},{"r":1,"c":0,"char":"N","color":"blue"},{"r":1,"c":1,"char":"I","color":"white"},{"r":1,"c":2,"char":"o","color":"blue"},{"r":1,"c":3,"char":"q","color":"red"},{"r":1,"c":4,"char":"o","color":"blue"},{"r":1,"c":5,"char":"N","color":"red"},{"r":1,"c":6,"circle":true,"memo":8}]}};
+
 function normalizeStage2Memo(value) {
   const rows = Array.isArray(value) ? value : [];
   return Array.from({ length: stage2MemoRows }, (_, r) => {
     const row = Array.isArray(rows[r]) ? rows[r] : [];
     return Array.from({ length: stage2MemoCols }, (_, c) => (typeof row[c] === "string" ? row[c] : ""));
   });
+}
+
+const stage2BoardPalette = { black: "#1a1a1a", red: "#d61e1e", blue: "#1a46a0", yellow: "#f0c828", white: "#ffffff" };
+
+// 原本PDFから機械抽出+目視確認した盤面をSVGで再構成する。
+// 返り値: { svg, spots } — spots は白丸メモ/文字タップ用のHTMLオーバーレイ。
+function renderStage2Board(memo, active, pickerOpen) {
+  const VBW = 1230;
+  const VBH = 800;
+  const marks = state.stage2CellMarks && typeof state.stage2CellMarks === "object" ? state.stage2CellMarks : {};
+  const pal = stage2BoardPalette;
+  let svg = "";
+  let spots = "";
+
+  const drawBlock = (key, b) => {
+    for (let r = 0; r <= b.rows; r++) {
+      (b.h[r] || []).forEach((seg, c) => {
+        Object.entries(seg).forEach(([color, off]) => {
+          const y = b.y[r] + off;
+          svg += `<line x1="${b.x[c]}" y1="${y}" x2="${b.x[c + 1]}" y2="${y}" stroke="${pal[color]}" stroke-width="5"/>`;
+        });
+      });
+    }
+    for (let c = 0; c <= b.cols; c++) {
+      (b.v[c] || []).forEach((seg, r) => {
+        Object.entries(seg).forEach(([color, off]) => {
+          const x = b.x[c] + off;
+          svg += `<line x1="${x}" y1="${b.y[r]}" x2="${x}" y2="${b.y[r + 1]}" stroke="${pal[color]}" stroke-width="5"/>`;
+        });
+      });
+    }
+    b.cells.forEach((cell) => {
+      const cx = (b.x[cell.c] + b.x[cell.c + 1]) / 2;
+      const cy = (b.y[cell.r] + b.y[cell.r + 1]) / 2;
+      const sx = ((cx / VBW) * 100).toFixed(2);
+      const sy = ((cy / VBH) * 100).toFixed(2);
+      if (cell.circle) {
+        svg += `<circle cx="${cx}" cy="${cy}" r="24" fill="#fbfbfb"/>`;
+        const char = memo[0]?.[cell.memo] || "";
+        const sel = pickerOpen && active.row === 0 && active.col === cell.memo;
+        spots += `<button class="stage2-memo-spot ${sel ? "is-selected" : ""} ${char ? "has-value" : ""}" style="--spot-x:${sx}%;--spot-y:${sy}%;" type="button" data-memo="0:${cell.memo}" aria-label="白丸に書き込む">${char}</button>`;
+      } else {
+        const dimmed = Boolean(marks[`${key}:${cell.r}:${cell.c}`]);
+        svg += `<text x="${cx}" y="${cy + 2}" fill="${pal[cell.color]}" font-size="52" font-weight="900" text-anchor="middle" dominant-baseline="central" opacity="${dimmed ? 0.14 : 1}" font-family="'Hiragino Sans','Segoe UI',sans-serif">${cell.char}</text>`;
+        spots += `<button class="stage2-cell-toggle ${dimmed ? "is-dimmed" : ""}" style="--spot-x:${sx}%;--spot-y:${sy}%;" type="button" data-cell="${key}:${cell.r}:${cell.c}" aria-label="${cell.char} の表示を切り替える"></button>`;
+      }
+    });
+  };
+
+  // 紙とピンクの盤面
+  svg += `<rect x="0" y="0" width="${VBW}" height="${VBH}" fill="#f6f2ea"/>`;
+  svg += `<rect x="18" y="52" width="1194" height="616" fill="#cf9d9d" stroke="#2a56a8" stroke-width="4"/>`;
+  svg += `<text x="30" y="38" fill="#2a56a8" font-size="34" font-weight="900" font-family="'Hiragino Sans','Segoe UI',sans-serif">ステージ2</text>`;
+  // 凡例: ●×10 しろ + 手順
+  for (let i = 0; i < 10; i++) {
+    svg += `<circle cx="${494 + i * 24}" cy="90" r="10.5" fill="#fbfbfb"/>`;
+  }
+  svg += `<text x="732" y="100" fill="#fbfbfb" font-size="26" font-weight="900">しろ</text>`;
+  svg += `<text x="800" y="99" fill="#2a56a8" font-size="24" font-weight="900">①②③④<tspan fill="#d61e1e">の矢印</tspan>の順に解くのじゃ</text>`;
+  drawBlock("u", stage2Board.upper);
+  drawBlock("l", stage2Board.lower);
+  // 矢印(白地+青縁)と番号
+  const arrowShape = "M-70,-20 L14,-20 L14,-42 L72,0 L14,42 L14,20 L-70,20 Z";
+  const arrows = [
+    { x: 330, y: 452, deg: 90, n: "①" },
+    { x: 482, y: 452, deg: -90, n: "②" },
+    { x: 776, y: 252, deg: 0, n: "③" },
+    { x: 788, y: 342, deg: 180, n: "④" },
+    { x: 880, y: 468, deg: 145, n: "④" },
+  ];
+  arrows.forEach((a) => {
+    svg += `<g transform="translate(${a.x},${a.y}) rotate(${a.deg})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#2a56a8" stroke-width="6" stroke-linejoin="round"/></g>`;
+    svg += `<text x="${a.x - (Math.abs(a.deg) === 90 ? 0 : 14)}" y="${a.y + 1}" fill="#2a56a8" font-size="40" font-weight="900" text-anchor="middle" dominant-baseline="central">${a.n}</text>`;
+  });
+  // ③④の書き込み枠
+  svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
+  // こたえ欄とじいさんの一言
+  for (let i = 0; i < 6; i++) {
+    svg += `<rect x="${33 + i * 76}" y="700" width="72" height="62" fill="#ffffff" stroke="#2a56a8" stroke-width="3"/>`;
+  }
+  svg += `<text x="500" y="740" fill="#333" font-size="26" font-weight="800">←こたえ</text>`;
+  svg += `<text x="655" y="742" fill="#333" font-size="21" font-weight="800">「様々な<tspan fill="#d61e1e">色</tspan>がこの紙には書かれとってキレイじゃのう」</text>`;
+
+  return {
+    svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
+    spots,
+  };
 }
 
 const elements = {
@@ -315,12 +404,13 @@ function loadState() {
         stage2Memo: normalizeStage2Memo(saved.stage2Memo),
         memoActive: saved.memoActive && typeof saved.memoActive === "object" ? saved.memoActive : { row: 0, col: 0 },
         memoPickerOpen: Boolean(saved.memoPickerOpen),
+        stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {} };
 }
 
 function saveState() {
@@ -556,22 +646,17 @@ function renderPathProblemCard(stage) {
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions">
-          <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 問題">拡大</button>
+          <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本</button>
           <button class="secondary-button" id="pathToSpell" type="button">石板へ</button>
         </div>
       </div>
-      <div class="path-problem-image stage2-inline-memo">
-        <img src="./assets/${stage.sourceProblemImage}" alt="${stage.number} ${stage.title} 問題" loading="eager" />
-        <div class="stage2-memo-spots" aria-label="画像内の白丸メモ">
-          ${stage2MemoSpots
-            .map((spot) => {
-              const char = memo[spot.row]?.[spot.col] || "";
-              const selectedSpot = pickerOpen && active.row === spot.row && active.col === spot.col;
-              return `<button class="stage2-memo-spot ${selectedSpot ? "is-selected" : ""} ${char ? "has-value" : ""}" style="--spot-x:${spot.x}%;--spot-y:${spot.y}%;" type="button" data-memo="${spot.row}:${spot.col}" aria-label="白丸 ${spot.col + 1}">${char}</button>`;
-            })
-            .join("")}
-        </div>
+      <div class="path-problem-image stage2-inline-memo stage2-board-wrap">
+        ${(() => {
+          const board = renderStage2Board(memo, active, pickerOpen);
+          return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>`;
+        })()}
       </div>
+      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む</p>
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
@@ -608,6 +693,20 @@ function wirePathProblem(stage) {
       state.memoPickerOpen = true;
       render();
       requestAnimationFrame(() => document.querySelector(".memo-picker")?.scrollIntoView({ block: "nearest" }));
+    });
+  });
+  document.querySelectorAll("[data-cell]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.cell;
+      if (!key) return;
+      const marks = { ...(state.stage2CellMarks && typeof state.stage2CellMarks === "object" ? state.stage2CellMarks : {}) };
+      if (marks[key]) {
+        delete marks[key];
+      } else {
+        marks[key] = 1;
+      }
+      state.stage2CellMarks = marks;
+      render();
     });
   });
   document.querySelectorAll("[data-memo-tile]").forEach((button) => {
@@ -1816,6 +1915,7 @@ function resetGame() {
   state.stage2Memo = normalizeStage2Memo(null);
   state.memoActive = { row: 0, col: 0 };
   state.memoPickerOpen = false;
+  state.stage2CellMarks = {};
   saveState();
   render();
 }

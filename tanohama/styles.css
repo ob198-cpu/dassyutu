@@ -7803,3 +7803,49 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .stage2-memo-spot.is-selected {
   animation: selectedSlotPulse 1.4s ease-in-out infinite;
 }
+
+/* ステージ2 盤面のHTML再構成(SVG) */
+.stage2-board-wrap {
+  position: relative;
+  border: 1px solid rgba(255, 232, 121, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f6f2ea;
+}
+
+.stage2-board-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.stage2-cell-toggle {
+  position: absolute;
+  left: var(--spot-x);
+  top: var(--spot-y);
+  transform: translate(-50%, -50%);
+  width: 5.6%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.stage2-cell-toggle:hover {
+  box-shadow: inset 0 0 0 2px rgba(255, 232, 121, 0.75);
+  background: rgba(255, 232, 121, 0.12);
+}
+
+.stage2-cell-toggle.is-dimmed {
+  box-shadow: inset 0 0 0 2px rgba(120, 120, 120, 0.35);
+}
+
+.stage2-board-hint {
+  margin: 6px 0 0;
+  color: #ffe9a6;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
