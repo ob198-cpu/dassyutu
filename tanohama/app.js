@@ -1151,7 +1151,6 @@ function renderGateStage(stage) {
 
       ${!successAnimating && !done && backgroundOnly ? `<div class="gate-reopen-row">
         <button class="primary-button gate-reopen-btn" id="reopenProblemWindow" type="button">問題を開く</button>
-        <button class="secondary-button gate-reopen-btn" id="reopenSpellWindow" type="button">石板を開く</button>
       </div>` : ""}
 
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
