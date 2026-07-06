@@ -332,16 +332,16 @@ function saveState() {
 }
 
 function forceGateProblemClosedOnStartup() {
-  // 起動時は問題ウィンドウは閉じるが、呪文入力パネルは必ず見える状態にする
+  // 起動時とステージ入場直後は、背景だけを見せる。
   state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
-  state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: false };
+  state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
   if (state.gatePanelMode === "problem") state.gatePanelMode = "spell";
 }
 
 function hideProblemOnStageEntry(stage) {
   if (stage?.id !== "gate") return;
   state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
-  state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+  state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
   state.gatePanelMode = "spell";
 }
 
@@ -351,7 +351,7 @@ function closeStagePanelsOnEntry(stage) {
   state.learnedSpellViewerOpen = false;
   if (stage?.id === "gate") {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
-    state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: isStageCleared("gate") };
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
     state.gatePanelMode = "spell";
     return;
   }
@@ -489,7 +489,7 @@ function renderIntro(stage) {
     state.stageIndex = 1;
     state.feedback = null;
     resetStageInput();
-    hideProblemOnStageEntry(stages[state.stageIndex]);
+    closeStagePanelsOnEntry(stages[state.stageIndex]);
     render();
   });
 }

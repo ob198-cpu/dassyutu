@@ -4019,7 +4019,7 @@ body.stage-path-mode .game-card::before {
   width: 100%;
   height: auto;
   max-width: 100%;
-  background: #fff;
+  background: #05070d;
 }
 
 .spell-device.is-problem-mode .problem-window-close {
@@ -4352,7 +4352,7 @@ body.stage-path-mode .game-card::before {
   max-height: min(58dvh, 520px);
   object-fit: contain;
   border-radius: 8px;
-  background: #fff;
+  background: #05070d;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
 }
 
@@ -7236,7 +7236,17 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   }
 
   .learned-spell-toolbar {
-    margin-top: 0 !important;
+    justify-self: end !important;
+    margin: -2px 0 0 !important;
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  .learned-spell-open {
+    min-height: 34px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
   }
 
   .gate-success-sequence.is-prompt1 {
