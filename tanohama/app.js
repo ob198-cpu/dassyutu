@@ -405,12 +405,13 @@ function loadState() {
         memoActive: saved.memoActive && typeof saved.memoActive === "object" ? saved.memoActive : { row: 0, col: 0 },
         memoPickerOpen: Boolean(saved.memoPickerOpen),
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
+        stage2Rotated: Boolean(saved.stage2Rotated),
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {} };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false };
 }
 
 function saveState() {
@@ -646,11 +647,12 @@ function renderPathProblemCard(stage) {
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions">
+          <button class="secondary-button ${state.stage2Rotated ? "is-on" : ""}" id="rotateBoard" type="button" aria-pressed="${state.stage2Rotated}">⟳ 回転</button>
           <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本</button>
           <button class="secondary-button" id="pathToSpell" type="button">石板へ</button>
         </div>
       </div>
-      <div class="path-problem-image stage2-inline-memo stage2-board-wrap">
+      <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
         ${(() => {
           const board = renderStage2Board(memo, active, pickerOpen);
           return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>`;
@@ -684,6 +686,10 @@ function wirePathProblem(stage) {
   document.querySelector("#pathToSpell")?.addEventListener("click", () => {
     state.pathPanelMode = "spell";
     state.memoPickerOpen = false;
+    render();
+  });
+  document.querySelector("#rotateBoard")?.addEventListener("click", () => {
+    state.stage2Rotated = !state.stage2Rotated;
     render();
   });
   document.querySelectorAll("[data-memo]").forEach((button) => {
@@ -1143,7 +1149,10 @@ function renderGateStage(stage) {
           ${renderGateResult(stage, done, feedback)}
         </section>`}
 
-      ${!successAnimating && !done && backgroundOnly ? `<button class="primary-button gate-reopen-spell" id="reopenSpellWindow" type="button">石板をひらく</button>` : ""}
+      ${!successAnimating && !done && backgroundOnly ? `<div class="gate-reopen-row">
+        <button class="primary-button gate-reopen-btn" id="reopenProblemWindow" type="button">問題を開く</button>
+        <button class="secondary-button gate-reopen-btn" id="reopenSpellWindow" type="button">石板を開く</button>
+      </div>` : ""}
 
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
@@ -1296,17 +1305,11 @@ function gateProblemInscription(stage, done, hidden = false) {
   const problem = stage.textProblem;
   if (!problem || hidden) return "";
   return `
-    <section class="device-problem source-problem-card open-screen-card gate-problem-card ${done ? "is-solved" : ""}" aria-label="問題文">
+    <section class="device-problem gate-problem-card gate-sheet-panel ${done ? "is-solved" : ""}" aria-label="問題文">
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-      <label class="mobile-problem-fit-toggle">
-        <input type="checkbox" ${state.problemFit === false ? "" : "checked"} />
-        <span>全体表示</span>
-      </label>
-      <button class="mobile-problem-spell-button" id="mobileProblemToSpell" type="button">呪文へ</button>
-      <div class="problem-art-shell">
-        <div class="problem-art-image-crop">
-          ${renderStage1Sheet()}
-        </div>
+      <button class="secondary-button gate-sheet-to-spell" id="mobileProblemToSpell" type="button">石板へ</button>
+      <div class="gate-sheet-scroll">
+        ${renderStage1Sheet()}
         ${stage.id === "gate" ? renderKanaBoard() : ""}
       </div>
     </section>
@@ -1316,7 +1319,7 @@ function gateProblemInscription(stage, done, hidden = false) {
 // ステージ1 問題シート(原本をHTMLで再構成)
 function renderStage1Sheet() {
   return `
-    <div class="sheet stage1-sheet stage-problem-art" role="img" aria-label="ステージ1 問題">
+    <div class="sheet stage1-sheet" role="img" aria-label="ステージ1 問題">
       <div class="sheet-head-row">
         <h3 class="sheet-title">ステージ1</h3>
         <button class="text-button sheet-source-button" type="button" data-problem="ステージ１　問題 VER2.png" data-title="ステージ1 原本">原本</button>
@@ -1520,7 +1523,16 @@ function wireGateStage(stage, done) {
 
   document.querySelector("#reopenSpellWindow")?.addEventListener("click", () => {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
     state.gatePanelMode = "spell";
+    state.slotPickerOpen = false;
+    render();
+  });
+
+  document.querySelector("#reopenProblemWindow")?.addEventListener("click", () => {
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+    state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
+    state.gatePanelMode = "problem";
     state.slotPickerOpen = false;
     render();
   });
@@ -2077,6 +2089,7 @@ function resetGame() {
   state.memoActive = { row: 0, col: 0 };
   state.memoPickerOpen = false;
   state.stage2CellMarks = {};
+  state.stage2Rotated = false;
   saveState();
   render();
 }

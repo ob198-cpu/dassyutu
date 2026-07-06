@@ -8359,3 +8359,75 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     display: none !important;
   }
 }
+
+/* ===== ステージ1 問題パネル(HTMLシートを不透明で読みやすく) ===== */
+.gate-sheet-panel {
+  position: fixed;
+  z-index: 25;
+  inset: 8px 8px auto 8px;
+  max-height: calc(100dvh - 16px);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 12px 12px;
+  border: 1px solid rgba(255, 232, 121, 0.4);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(6, 10, 16, 0.97), rgba(2, 6, 12, 0.98));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+}
+
+.gate-sheet-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: grid;
+  gap: 10px;
+}
+
+.gate-sheet-panel .problem-window-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 3;
+}
+
+.gate-sheet-to-spell {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  z-index: 3;
+  min-height: 34px;
+  padding: 0 14px;
+}
+
+/* 横持ちでは左メニュー分だけ右に寄せて重ならないように */
+@media (orientation: landscape) and (max-height: 560px) and (min-width: 681px) {
+  .gate-sheet-panel {
+    left: calc(var(--side-menu-w, 128px) + 8px);
+  }
+}
+
+/* ===== ステージ2 盤面の180°回転 ===== */
+.stage2-board-wrap.is-rotated {
+  transform: rotate(180deg);
+}
+
+/* トグルON状態のボタン */
+.secondary-button.is-on {
+  border-color: rgba(255, 245, 178, 0.95);
+  background: linear-gradient(180deg, rgba(255, 232, 121, 0.28), rgba(20, 20, 14, 0.9));
+  color: #fff6d0;
+  box-shadow: 0 0 0 2px rgba(255, 232, 121, 0.3), 0 0 18px rgba(255, 232, 121, 0.3);
+}
+
+/* 問題モードでは内側の gate-sheet-panel が自前の閉じる×と石板へボタンを持つため、
+   外側 spell-device の重複クロームを消す */
+.spell-device.is-problem-mode {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 0 !important;
+}
+
+.spell-device.is-problem-mode > .spell-window-close {
+  display: none !important;
+}
