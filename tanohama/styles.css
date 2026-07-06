@@ -8431,3 +8431,63 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .spell-device.is-problem-mode > .spell-window-close {
   display: none !important;
 }
+
+/* ===== 文字盤(カタカナ盤)を新パネル内でクリーンに(全幅共通) ===== */
+/* 旧・画像オーバーレイ時代の負マージン/transform/超過幅を無効化 */
+.gate-sheet-scroll .kana-board {
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin: 8px 0 0 !important;
+  padding: 8px 10px !important;
+  transform: none !important;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, #ffe58f, #d99a2e) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.gate-sheet-scroll .kana-board-guide {
+  color: #3f2300 !important;
+}
+
+.gate-sheet-scroll .kana-board-row {
+  display: grid !important;
+  grid-template-columns: repeat(23, minmax(0, 1fr));
+  gap: 2px;
+  align-items: stretch;
+}
+
+/* 各文字はセル内に必ず収める(隣とにじまない) */
+.gate-sheet-scroll .kana-glyph {
+  min-width: 0 !important;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #120a00 !important;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  font-size: clamp(12px, 2.4vw, 24px) !important;
+  padding: 3px 0 !important;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gate-sheet-scroll .kana-glyph.is-active {
+  color: #c00 !important;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* 「ツ」など複数文字セルは字を縮めて必ず1マスに収める */
+.gate-sheet-scroll .kana-glyph.is-composite {
+  font-size: clamp(8px, 1.7vw, 16px) !important;
+  letter-spacing: -0.04em;
+}
+
+.gate-sheet-scroll .kana-glyph.is-arrow {
+  justify-self: stretch;
+}
