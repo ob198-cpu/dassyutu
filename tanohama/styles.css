@@ -8364,7 +8364,10 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .gate-sheet-panel {
   position: fixed;
   z-index: 25;
-  inset: 8px 8px auto 8px;
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  left: calc(var(--side-menu-w, 0px) + 8px);
   max-height: calc(100dvh - 16px);
   display: flex;
   flex-direction: column;
@@ -8376,9 +8379,12 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 }
 
 .gate-sheet-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   display: grid;
+  align-content: start;
   gap: 10px;
 }
 
@@ -8419,17 +8425,33 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 }
 
 /* 問題モードでは内側の gate-sheet-panel が自前の閉じる×と石板へボタンを持つため、
-   外側 spell-device の重複クロームを消す */
+   外側 spell-device の重複クロームを消す。
+   位置決めは外側(左メニューを避けた fixed)に任せ、内側パネルは親いっぱいに敷く。 */
 .spell-device.is-problem-mode {
+  position: fixed !important;
+  top: 8px !important;
+  right: 8px !important;
+  bottom: 8px !important;
+  left: calc(var(--side-menu-w, 0px) + 8px) !important;
+  width: auto !important;
+  max-height: none !important;
   background: none !important;
   border: 0 !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
   padding: 0 !important;
+  transform: none !important;
 }
 
 .spell-device.is-problem-mode > .spell-window-close {
   display: none !important;
+}
+
+.gate-sheet-panel {
+  position: absolute !important;
+  inset: 0 !important;
+  left: 0 !important;
+  max-height: none !important;
 }
 
 /* ===== 文字盤(カタカナ盤)を新パネル内でクリーンに(全幅共通) ===== */
@@ -8490,4 +8512,81 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 
 .gate-sheet-scroll .kana-glyph.is-arrow {
   justify-self: stretch;
+}
+
+/* ===== 呪文パネルをスマホ横持ちでクリーンな縦積みに(重なり根絶) ===== */
+@media (orientation: landscape) and (max-height: 620px), (max-width: 820px) {
+  .spell-device.is-spell-mode {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    grid-template-areas: none !important;
+    grid-template-columns: none !important;
+    left: calc(var(--side-menu-w, 0px) + 8px) !important;
+    right: 8px !important;
+    width: auto !important;
+    padding: 44px 12px 12px !important;
+    max-height: calc(100dvh - 16px) !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: linear-gradient(180deg, rgba(6, 10, 16, 0.98), rgba(2, 6, 12, 0.99)) !important;
+    backdrop-filter: none !important;
+  }
+
+  /* 背景の情景と重複する大きな画像は消す */
+  .spell-device.is-spell-mode .spell-open-screen {
+    display: none !important;
+  }
+
+  /* 覚えた呪文ボタンは独立した1行として下に */
+  .spell-device.is-spell-mode .learned-spell-toolbar {
+    grid-area: auto !important;
+    position: static !important;
+    justify-self: stretch !important;
+    align-self: stretch !important;
+    margin: 0 !important;
+    order: 3;
+  }
+
+  .spell-device.is-spell-mode .learned-spell-open {
+    width: 100%;
+  }
+
+  /* スロット+唱えるボタンの行 */
+  .spell-device.is-spell-mode .device-main-row {
+    grid-area: auto !important;
+    order: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .spell-device.is-spell-mode .magic-slots {
+    margin: 0 !important;
+  }
+
+  .spell-device.is-spell-mode .cast-button {
+    grid-area: auto !important;
+    align-self: stretch;
+    min-width: 120px;
+  }
+
+  /* 文字ピッカーはスロットの直下に */
+  .spell-device.is-spell-mode .slot-choice-popover {
+    grid-area: auto !important;
+    order: 2;
+  }
+
+  .spell-device.is-spell-mode .result-message {
+    grid-area: auto !important;
+    order: 4;
+  }
+
+  /* ×は常に右上の余白内に */
+  .spell-device.is-spell-mode > .spell-window-close {
+    top: 8px;
+    right: 10px;
+  }
 }
