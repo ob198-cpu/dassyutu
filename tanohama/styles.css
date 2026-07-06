@@ -8590,3 +8590,146 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     right: 10px;
   }
 }
+
+/* ===== 成功プロンプト刷新(白余白廃止・ツケモノを大きく・質問控えめ) ===== */
+.gate-success-sequence.is-prompt1 {
+  background: rgba(0, 0, 0, 0.7);
+  place-items: center;
+  padding: 8px !important;
+  padding-bottom: calc(var(--mobile-nav-h, 0px) + 8px) !important;
+  padding-left: calc(var(--side-menu-w, 0px) + 8px) !important;
+}
+
+.gate-success-sequence.is-prompt1 .gate-choice-card {
+  width: min(94vw, 640px) !important;
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  gap: 12px !important;
+  padding: 14px 16px !important;
+  grid-template-columns: none !important;
+}
+
+.reward-card {
+  border: 2px solid rgba(255, 232, 121, 0.7);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fffdf4, #f2e6c4);
+  color: #241a0c;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.reward-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.reward-badge {
+  background: #c0392b;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 950;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.reward-name {
+  font-size: clamp(20px, 3.4vw, 28px);
+  font-weight: 950;
+  color: #8a6410;
+}
+
+.reward-desc {
+  margin: 8px 0 0;
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.reward-desc b {
+  color: #b8420f;
+}
+
+.reward-note {
+  margin: 7px 0 0;
+  font-size: clamp(12px, 1.7vw, 15px);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.reward-stone {
+  width: 22px;
+  height: 15px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #8f8f8f, #4a4a4a);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  display: inline-block;
+}
+
+.reward-hint {
+  margin: 9px 0 0;
+  font-size: 12.5px;
+  font-weight: 900;
+  color: #a5560a;
+}
+
+.gate-choice-foot {
+  display: grid;
+  gap: 10px;
+}
+
+.gate-success-sequence.is-prompt1 .gate-choice-question {
+  margin: 0;
+  font-size: clamp(16px, 2.6vw, 22px) !important;
+  text-align: center;
+}
+
+.gate-success-sequence.is-prompt1 .gate-choice-actions {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 10px;
+}
+
+.gate-success-sequence.is-prompt1 .gate-choice-button {
+  min-height: 48px;
+}
+
+/* prompt2 = 下部の細いバー(クリア後の情景を隠さない) */
+.gate-success-sequence.is-prompt2 {
+  background: transparent !important;
+  place-items: end center !important;
+  padding: 0 8px calc(var(--mobile-nav-h, 0px) + max(10px, env(safe-area-inset-bottom))) !important;
+  padding-left: calc(var(--side-menu-w, 0px) + 8px) !important;
+}
+
+.gate-choice-bar {
+  pointer-events: auto;
+  width: min(100%, 760px);
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(242, 213, 107, 0.6);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(8, 12, 18, 0.92), rgba(2, 6, 12, 0.95));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.gate-choice-bar .gate-choice-question {
+  margin: 0;
+  font-size: clamp(14px, 2.2vw, 18px);
+  text-align: center;
+}
+
+.gate-choice-bar .gate-choice-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.gate-choice-bar .gate-choice-button {
+  min-height: 44px;
+}

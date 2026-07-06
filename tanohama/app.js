@@ -1240,14 +1240,21 @@ function renderGateSuccessOverlay(phase) {
     return `
       <section class="gate-success-sequence is-prompt1" aria-label="ステージ1 続行確認">
         <div class="gate-choice-card">
-          <div class="gate-choice-media">
-            <img src="./assets/stage01-spell.webp" alt="ステージ1の呪文" loading="eager" />
-            <img src="./assets/stage01-clear2.webp" alt="ステージ1 クリア2" loading="eager" />
+          <div class="reward-card" aria-label="習得した呪文">
+            <div class="reward-head">
+              <span class="reward-badge">呪文を習得！</span>
+              <strong class="reward-name">☆ ツケモノ</strong>
+            </div>
+            <p class="reward-desc">遺物石だろうか？ <b>謎の四角を1個生成できる！</b></p>
+            <p class="reward-note"><span class="reward-stone" aria-hidden="true"></span>← この土台の上にのみ生成可能</p>
+            <p class="reward-hint">※この呪文は後のステージで使います</p>
           </div>
-          <p class="gate-choice-question">進みますか？</p>
-          <div class="gate-choice-actions">
-            <button class="primary-button gate-choice-button" type="button" data-gate-choice="yes">はい</button>
-            <button class="ghost-button gate-choice-button" type="button" data-gate-choice="no">いいえ</button>
+          <div class="gate-choice-foot">
+            <p class="gate-choice-question">進みますか？</p>
+            <div class="gate-choice-actions">
+              <button class="primary-button gate-choice-button" type="button" data-gate-choice="yes">はい</button>
+              <button class="ghost-button gate-choice-button" type="button" data-gate-choice="no">いいえ</button>
+            </div>
           </div>
         </div>
       </section>
@@ -1256,8 +1263,8 @@ function renderGateSuccessOverlay(phase) {
   if (phase === "prompt2") {
     return `
       <section class="gate-success-sequence is-prompt2" aria-label="ステージ2へ進む確認">
-        <div class="gate-choice-card gate-choice-card--compact">
-          <p class="gate-choice-question">ステージ2に進みますか？</p>
+        <div class="gate-choice-bar">
+          <p class="gate-choice-question">床がふさがった！ ステージ2に進みますか？</p>
           <div class="gate-choice-actions">
             <button class="primary-button gate-choice-button" type="button" data-gate-choice="yes">はい</button>
             <button class="ghost-button gate-choice-button" type="button" data-gate-choice="no">いいえ</button>
