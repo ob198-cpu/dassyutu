@@ -406,12 +406,13 @@ function loadState() {
         memoPickerOpen: Boolean(saved.memoPickerOpen),
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
+        revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, revealed: {} };
 }
 
 function saveState() {
@@ -452,6 +453,36 @@ function closeStagePanelsOnEntry(stage) {
   if (stage?.id === "path") {
     state.pathPanelMode = isStageCleared("path") ? "closed" : "spell";
   }
+  // 入場時は背景だけ見せる(未クリアの本編ステージのみ)
+  if (stage && stage.id !== "gate" && stage.id !== "intro" && !isStageCleared(stage.id)) {
+    state.revealed = { ...(state.revealed || {}), [stage.id]: false };
+  }
+}
+
+function isStageRevealed(stage) {
+  if (!stage || stage.id === "gate" || stage.id === "intro") return true;
+  if (isStageCleared(stage.id)) return true;
+  return state.revealed?.[stage.id] === true;
+}
+
+function renderStageIntro(stage) {
+  elements.game.innerHTML = `
+    <section class="stage-panel stage-reveal-gate" aria-label="${stage.number} ${stage.title}">
+      ${renderScene(stage)}
+      <div class="stage-reveal-overlay">
+        <div class="stage-reveal-copy">
+          <span class="stage-reveal-num">STAGE ${stage.number}</span>
+          <h2 class="stage-reveal-title">${stage.title}</h2>
+        </div>
+        <button class="primary-button stage-reveal-start" id="revealStage" type="button">はじめる</button>
+      </div>
+    </section>
+  `;
+  wireProblems();
+  document.querySelector("#revealStage")?.addEventListener("click", () => {
+    state.revealed = { ...(state.revealed || {}), [stage.id]: true };
+    render();
+  });
 }
 
 function normalizeAnswer(value) {
@@ -550,6 +581,8 @@ function render() {
     renderClear();
   } else if (stage.type === "intro") {
     renderIntro(stage);
+  } else if (!isStageRevealed(stage)) {
+    renderStageIntro(stage);
   } else if (stage.type === "boss") {
     renderBoss(stage);
   } else if (stage.id === "gate") {
@@ -2096,6 +2129,7 @@ function resetGame() {
   state.memoPickerOpen = false;
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
+  state.revealed = {};
   saveState();
   render();
 }
@@ -2125,6 +2159,10 @@ function showMenuMessage(title, message) {
 function focusCurrentProblem() {
   closeInfoDialogs();
   const stage = stages[state.stageIndex] || stages[0];
+  if (!isStageRevealed(stage)) {
+    state.revealed = { ...(state.revealed || {}), [stage.id]: true };
+    render();
+  }
   if (stage.id === "gate") {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
@@ -2168,6 +2206,10 @@ function focusCurrentProblem() {
 function focusCurrentMagic() {
   closeInfoDialogs();
   const stage = stages[state.stageIndex] || stages[0];
+  if (!isStageRevealed(stage)) {
+    state.revealed = { ...(state.revealed || {}), [stage.id]: true };
+    render();
+  }
   if (stage.id === "gate") {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
