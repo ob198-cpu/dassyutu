@@ -6456,7 +6456,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   }
 
   body.stage-one-mode .stage-one-redesign .stage-world::before {
-    background-image: url("./assets/stage01-bg.webp");
+    background-image: url("./assets/stage01-bg-clean.webp");
   }
 
   body.stage-path-mode .path-stage-background-only .stage-world::before {
@@ -9199,6 +9199,58 @@ body {
 .art-vignette {
   pointer-events: none;
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 22%, transparent 78%, rgba(0, 0, 0, 0.12));
+}
+
+/* The stage-one problem owns its close control; keep it visible above every responsive override. */
+.spell-device.is-problem-mode .problem-window-close {
+  display: grid !important;
+  position: fixed !important;
+  top: 14px !important;
+  right: 16px !important;
+  z-index: 100 !important;
+}
+
+.spell-stage-scene {
+  position: relative;
+  overflow: hidden;
+  background: #05080d;
+}
+
+.spell-stage-scene .open-screen-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.spell-stage-caption {
+  position: absolute;
+  left: clamp(10px, 2vw, 24px);
+  bottom: clamp(8px, 1.6vw, 18px);
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border-left: 3px solid #f0ce62;
+  background: rgba(2, 6, 12, 0.78);
+  color: #fff4c2;
+  text-shadow: 0 2px 8px #000;
+}
+
+.spell-stage-caption strong {
+  font-size: clamp(13px, 1.8vw, 22px);
+}
+
+.spell-stage-caption span {
+  font-size: clamp(10px, 1.25vw, 15px);
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .spell-stage-caption {
+    left: 8px;
+    bottom: 7px;
+    padding: 5px 8px;
+  }
 }
 
 .stage-corner-label {

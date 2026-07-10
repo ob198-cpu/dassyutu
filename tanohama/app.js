@@ -694,7 +694,7 @@ function renderPathProblemCard(stage) {
         <div class="path-device-actions">
           <button class="secondary-button ${state.stage2Rotated ? "is-on" : ""}" id="rotateBoard" type="button" aria-pressed="${state.stage2Rotated}">⟳ 回転</button>
           <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本</button>
-          <button class="secondary-button" id="pathToSpell" type="button">石板へ</button>
+          <button class="secondary-button" id="pathToSpell" type="button">呪文へ</button>
         </div>
       </div>
       <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
@@ -1223,8 +1223,12 @@ function renderGateStage(stage) {
 
 function renderSpellRuleNotice() {
   return `
-    <section class="spell-open-screen open-screen-card" aria-label="ステージ1の画面">
-      <img class="open-screen-art" src="./assets/stage01-spell.webp" alt="ステージ1の呪文">
+    <section class="spell-open-screen open-screen-card spell-stage-scene" aria-label="ステージ1の呪文入力">
+      <img class="open-screen-art" src="./assets/stage01-bg-clean.webp" alt="大きな穴で道を塞がれた石造りの通路">
+      <div class="spell-stage-caption">
+        <strong>01 / 崩れた足場</strong>
+        <span>穴を越える呪文を石板に刻め</span>
+      </div>
     </section>
   `;
 }
@@ -1360,7 +1364,7 @@ function renderSlotPicker(stage, activeSlot) {
 function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
   const successPhase = feedback?.type === "success" ? feedback.phase : null;
   const rockDropping = successPhase === "rock";
-  const background = done || successPhase === "prompt2" ? "stage01-clear.webp" : "stage01-bg.webp";
+  const background = done || successPhase === "prompt2" ? "stage01-clear.webp" : "stage01-bg-clean.webp";
   return `
     <div class="gate-play-visual stage-world ${done ? "is-open" : ""} ${rockDropping ? "is-rock-dropping" : ""} ${feedback?.type === "fail" ? "is-void-pulse" : ""}">
       <img class="stage-bg-art" src="./assets/${background}" alt="" loading="eager" />
@@ -1378,7 +1382,7 @@ function gateProblemInscription(stage, done, hidden = false) {
   return `
     <section class="device-problem gate-problem-card gate-sheet-panel ${done ? "is-solved" : ""}" aria-label="問題文">
       <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-      <button class="secondary-button gate-sheet-to-spell" id="mobileProblemToSpell" type="button">石板へ</button>
+      <button class="secondary-button gate-sheet-to-spell" id="mobileProblemToSpell" type="button">呪文へ</button>
       <div class="gate-sheet-scroll">
         ${renderStage1Sheet()}
         ${stage.id === "gate" ? renderKanaBoard() : ""}
