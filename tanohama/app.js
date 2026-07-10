@@ -368,6 +368,8 @@ const stage1KanaBoardRows = [
 
 const state = loadState();
 forceGateProblemClosedOnStartup();
+state.feedback = null;
+closeStagePanelsOnEntry(stages[state.stageIndex] || stages[0]);
 let gateSuccessTimers = [];
 
 // 岩落下演出の画像を先読みして、発動時に確実に表示されるようにする
@@ -451,7 +453,7 @@ function closeStagePanelsOnEntry(stage) {
   state.hiddenSpells = { ...(state.hiddenSpells || {}), gate: true };
   state.gatePanelMode = "spell";
   if (stage?.id === "path") {
-    state.pathPanelMode = isStageCleared("path") ? "closed" : "spell";
+    state.pathPanelMode = "closed";
   }
   // 入場時は背景だけ見せる(未クリアの本編ステージのみ)
   if (stage && stage.id !== "gate" && stage.id !== "intro" && !isStageCleared(stage.id)) {
@@ -621,7 +623,7 @@ function renderIntro(stage) {
 function renderPathStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
-  const panelClosed = done && state.pathPanelMode === "closed";
+  const panelClosed = state.pathPanelMode === "closed";
   const problemMode = !done && state.pathPanelMode === "problem";
   const selected = done
     ? [...stage.correct].slice(0, stage.slots)
@@ -1181,10 +1183,6 @@ function renderGateStage(stage) {
 
           ${renderGateResult(stage, done, feedback)}
         </section>`}
-
-      ${!successAnimating && !done && backgroundOnly ? `<div class="gate-reopen-row">
-        <button class="primary-button gate-reopen-btn" id="reopenProblemWindow" type="button">問題を開く</button>
-      </div>` : ""}
 
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
@@ -2231,6 +2229,31 @@ function focusCurrentMagic() {
     state.pathPanelMode = "spell";
     state.memoPickerOpen = false;
     render();
+    requestAnimationFrame(() => {
+      const magic = document.querySelector(".spell-device");
+      if (magic) {
+        magic.scrollIntoView({ behavior: "smooth", block: "center" });
+        magic.classList.remove("is-menu-focus");
+        requestAnimationFrame(() => magic.classList.add("is-menu-focus"));
+      }
+    });
+    return;
+  }
+
+  if (stage.id === "path" && state.pathPanelMode === "closed") {
+    state.pathPanelMode = "spell";
+    state.memoPickerOpen = false;
+    state.slotPickerOpen = false;
+    render();
+    requestAnimationFrame(() => {
+      const magic = document.querySelector(".spell-device");
+      if (magic) {
+        magic.scrollIntoView({ behavior: "smooth", block: "center" });
+        magic.classList.remove("is-menu-focus");
+        requestAnimationFrame(() => magic.classList.add("is-menu-focus"));
+      }
+    });
+    return;
   }
 
   const magic = document.querySelector(".boss-step.is-active, .spell-device, .spell-workbench, .spell-grid, .slot-row, .stone-panel");

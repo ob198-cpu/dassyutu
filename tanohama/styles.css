@@ -8834,3 +8834,298 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   padding: 0 48px;
   font-size: clamp(17px, 2.6vw, 21px);
 }
+
+/* Final layout guardrails: keep mobile landscape playable and stop stale panels from overlapping. */
+.learned-spell-viewer {
+  position: fixed !important;
+  z-index: 60 !important;
+  left: calc(var(--side-menu-w, 0px) + 18px) !important;
+  right: 18px !important;
+  top: 18px !important;
+  bottom: 18px !important;
+  width: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: none !important;
+  overflow: auto !important;
+}
+
+.learned-spell-images {
+  align-items: start !important;
+}
+
+.learned-spell-images img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: min(54dvh, 430px) !important;
+  object-fit: contain !important;
+  background: transparent !important;
+}
+
+.spell-open-screen .open-screen-art,
+.spell-device.is-problem-mode .open-screen-art {
+  background: transparent !important;
+}
+
+.path-stage-background-only .stage-world,
+.stage-one-redesign .gate-play-visual {
+  isolation: isolate;
+}
+
+@media (orientation: landscape) and (pointer: coarse), (orientation: landscape) and (max-height: 620px) {
+  :root {
+    --side-menu-w: clamp(116px, 17vw, 148px);
+  }
+
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  .side-menu {
+    width: var(--side-menu-w) !important;
+    gap: 5px !important;
+    padding: max(5px, env(safe-area-inset-top)) 5px max(5px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .side-menu-button,
+  .side-menu-command {
+    min-height: 34px !important;
+    padding: 4px 5px !important;
+    border-radius: 7px !important;
+    font-size: clamp(10px, 1.7vw, 13px) !important;
+    line-height: 1.05 !important;
+  }
+
+  .side-menu-command {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    gap: 5px !important;
+  }
+
+  .stage-shortcut-number {
+    min-height: 26px !important;
+    font-size: 11px !important;
+  }
+
+  .stage-shortcut-title {
+    font-size: clamp(10px, 1.65vw, 12px) !important;
+    line-height: 1.08 !important;
+    white-space: normal !important;
+  }
+
+  .game-shell,
+  .game-stage,
+  .stage-panel,
+  .premium-stage,
+  .intro-stage {
+    width: calc(100vw - var(--side-menu-w)) !important;
+    max-width: calc(100vw - var(--side-menu-w)) !important;
+    margin-left: var(--side-menu-w) !important;
+    margin-right: 0 !important;
+    min-height: 100dvh !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  .stage-world,
+  .gate-play-visual {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .stage-bg-art {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    filter: none !important;
+  }
+
+  .spell-device.is-problem-mode {
+    position: fixed !important;
+    left: calc(var(--side-menu-w) + 6px) !important;
+    right: 6px !important;
+    top: 6px !important;
+    bottom: 6px !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: auto !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+    background: rgba(2, 6, 12, 0.96) !important;
+  }
+
+  .gate-sheet-panel,
+  .spell-device.is-problem-mode .source-problem-card,
+  .path-problem-card {
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 42px 8px 8px !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .gate-sheet-scroll {
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .stage1-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    transform: scale(0.84) !important;
+    transform-origin: top center !important;
+    margin-bottom: -46px !important;
+  }
+
+  .gate-sheet-scroll .kana-board {
+    width: min(96%, 820px) !important;
+    max-width: 100% !important;
+    margin: 2px auto 0 !important;
+    padding: 4px 7px !important;
+    gap: 2px !important;
+  }
+
+  .gate-sheet-scroll .kana-board-guide {
+    margin-bottom: 2px !important;
+    font-size: clamp(9px, 1.5vw, 12px) !important;
+    line-height: 1.15 !important;
+  }
+
+  .gate-sheet-scroll .kana-board-row {
+    gap: 1px !important;
+  }
+
+  .gate-sheet-scroll .kana-glyph {
+    min-height: 17px !important;
+    padding: 0 !important;
+    font-size: clamp(9px, 1.38vw, 13px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .spell-device.is-spell-mode {
+    position: fixed !important;
+    left: calc(var(--side-menu-w) + 8px) !important;
+    right: 8px !important;
+    top: 8px !important;
+    bottom: 8px !important;
+    width: auto !important;
+    max-height: none !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "rule rule"
+      "main main"
+      "tiles tiles"
+      "result result"
+      "learned learned" !important;
+    align-content: end !important;
+    gap: 7px !important;
+    padding: 38px 10px 10px !important;
+    overflow: auto !important;
+    background: linear-gradient(180deg, rgba(4, 8, 14, 0.9), rgba(2, 5, 10, 0.96)) !important;
+  }
+
+  .spell-device.is-spell-mode .spell-open-screen {
+    display: block !important;
+    grid-area: rule !important;
+    width: 100% !important;
+    max-height: 38dvh !important;
+    overflow: hidden !important;
+  }
+
+  .spell-device.is-spell-mode .open-screen-art {
+    width: 100% !important;
+    max-height: 38dvh !important;
+    object-fit: contain !important;
+  }
+
+  .spell-device.is-spell-mode .device-main-row {
+    grid-area: main !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(118px, 22vw) !important;
+    gap: 7px !important;
+    align-items: stretch !important;
+  }
+
+  .spell-device.is-spell-mode .magic-slots {
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  .spell-device.is-spell-mode .cast-button {
+    min-height: 38px !important;
+    min-width: 0 !important;
+    font-size: clamp(12px, 1.8vw, 15px) !important;
+  }
+
+  .spell-device.is-spell-mode .learned-spell-toolbar {
+    grid-area: learned !important;
+    justify-self: end !important;
+    margin: 0 !important;
+  }
+
+  .spell-device.is-spell-mode .learned-spell-open {
+    min-height: 32px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+  }
+
+  .learned-spell-viewer {
+    left: calc(var(--side-menu-w) + 8px) !important;
+    right: 8px !important;
+    top: 8px !important;
+    bottom: 8px !important;
+    padding: 10px !important;
+  }
+
+  .learned-spell-images {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .learned-spell-images img {
+    max-height: 42dvh !important;
+  }
+
+  .gate-success-sequence.is-prompt1,
+  .gate-success-sequence.is-prompt2 {
+    left: var(--side-menu-w) !important;
+    width: calc(100vw - var(--side-menu-w)) !important;
+    padding-left: 8px !important;
+  }
+
+  .gate-success-sequence.is-prompt1 .gate-choice-card,
+  .gate-choice-bar {
+    width: min(92%, 720px) !important;
+    max-height: calc(100dvh - 20px) !important;
+  }
+
+  .spell-device.path-spell-device.is-clear-compact {
+    left: calc(var(--side-menu-w) + 8px) !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    top: auto !important;
+    width: auto !important;
+    max-height: 30dvh !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    padding: 8px !important;
+  }
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  .learned-spell-viewer {
+    left: 8px !important;
+    right: 8px !important;
+    top: 8px !important;
+    bottom: calc(var(--mobile-nav-h, 64px) + 8px) !important;
+  }
+}
