@@ -1250,29 +1250,6 @@ function renderGateStage(stage) {
   wireGateStage(stage, done);
 }
 
-function renderSpellRuleNotice() {
-  return `
-    <section class="spell-open-screen open-screen-card spell-stage-scene" aria-label="ステージ1の呪文入力">
-      <img class="open-screen-art" src="./assets/stage01-bg-clean.webp" alt="大きな穴で道を塞がれた石造りの通路">
-      <div class="spell-stage-caption">
-        <strong>01 / 崩れた足場</strong>
-        <span>穴を越える呪文を石板に刻め</span>
-      </div>
-    </section>
-  `;
-}
-
-function renderLearnedSpellButton() {
-  if (!["gate", "path", "shop", "time"].some((id) => isStageCleared(id))) return "";
-  return `
-    <div class="learned-spell-toolbar">
-      <button class="secondary-button learned-spell-open" id="toggleLearnedSpellViewer" type="button">
-        覚えた呪文を見る
-      </button>
-    </div>
-  `;
-}
-
 function renderLearnedSpellViewer() {
   const stageTabs = [
     { id: "gate", label: "ステージ1" },
@@ -1981,27 +1958,6 @@ function renderGenericProblemPanel(stage, done) {
           ${stage.type === "shop" ? shopPuzzle(stage, done) : ""}
           ${stage.type === "console" ? consolePuzzle(stage, done) : ""}
         </div>
-      </div>
-    </section>
-  `;
-}
-
-function renderGenericPlayPanel(stage, done) {
-  return `
-    <section class="immersive-panel generic-play-panel ${done ? "is-solved" : ""}" aria-label="${stage.number} 解答">
-      <div class="immersive-panel-head">
-        <div><span>STAGE ${stage.number}</span><strong>${stage.title} / 解答</strong></div>
-        <button class="panel-close-button" id="genericClosePanel" type="button" aria-label="解答画面を閉じる">×</button>
-      </div>
-      <p class="generic-mission">${stage.mission}</p>
-      <div class="generic-play-content">
-        ${stage.type === "tiles" ? tilePuzzle(stage, done) : ""}
-        ${stage.type === "shop" ? shopPuzzle(stage, done) : ""}
-        ${stage.type === "console" ? consolePuzzle(stage, done) : ""}
-      </div>
-      <div class="generic-panel-footer">
-        <button class="secondary-button" id="genericToProblem" type="button">問題を確認</button>
-        ${renderLearnedSpellButton()}
       </div>
     </section>
   `;
