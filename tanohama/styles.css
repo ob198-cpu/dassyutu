@@ -11166,34 +11166,11 @@ body {
   height: 100% !important;
 }
 
-.stage2-box-note,
 .stage2-final-cell-note {
   position: absolute;
   z-index: 4;
   pointer-events: auto;
 }
-
-.stage2-box-note {
-  left: 71.8%;
-  width: 16.6%;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 4px;
-  color: #173e85;
-  font-size: clamp(9px, 1.25vw, 18px);
-  font-weight: 950;
-}
-
-.stage2-box-note-3 {
-  top: 31.5%;
-}
-
-.stage2-box-note-4 {
-  top: 44.5%;
-}
-
-.stage2-box-note input,
 .stage2-final-cell-note input {
   box-sizing: border-box;
   min-width: 0;
@@ -11210,12 +11187,6 @@ body {
   outline: none;
 }
 
-.stage2-box-note input {
-  height: clamp(24px, 4.2vw, 46px);
-  padding: 2px 5px;
-}
-
-.stage2-box-note input:focus,
 .stage2-final-cell-note input:focus {
   border-color: #b77700;
   box-shadow: 0 0 0 3px rgba(255, 220, 96, 0.52);

@@ -367,17 +367,10 @@ function renderStage2Board(memo, active, pickerOpen) {
     svg += `<g transform="translate(${a.x},${a.y}) rotate(${a.deg})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#2a56a8" stroke-width="6" stroke-linejoin="round"/></g>`;
     svg += `<text x="${a.x - (Math.abs(a.deg) === 90 ? 0 : 14)}" y="${a.y + 1}" fill="#2a56a8" font-size="40" font-weight="900" text-anchor="middle" dominant-baseline="central">${a.n}</text>`;
   });
-  // ③④の書き込み枠
+  // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
+  svg += `<image href="./assets/stage02-right-clue.png" x="868" y="170" width="238" height="238" preserveAspectRatio="none"/>`;
   spots += `
-    <label class="stage2-box-note stage2-box-note-3">
-      <span>③</span>
-      <input type="text" maxlength="12" value="${escapeAttribute((memo[1] || []).join(""))}" data-stage2-note="1" aria-label="③の途中回答">
-    </label>
-    <label class="stage2-box-note stage2-box-note-4">
-      <span>④</span>
-      <input type="text" maxlength="12" value="${escapeAttribute((memo[2] || []).join(""))}" data-stage2-note="2" aria-label="④の途中回答">
-    </label>
     <label class="stage2-final-cell-note">
       <input type="text" maxlength="1" value="${escapeAttribute((memo[3] || []).join(""))}" data-stage2-note="3" aria-label="右端の空欄に書き込む">
     </label>`;
@@ -751,7 +744,7 @@ function renderPathProblemCard(stage) {
           return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>`;
         })()}
       </div>
-      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む / 右の欄=途中回答を直接入力</p>
+      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む / Mの右の空欄=1文字を直接入力</p>
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
