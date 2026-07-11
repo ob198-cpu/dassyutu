@@ -10067,6 +10067,27 @@ body {
   line-height: 1.5;
 }
 
+.boss-spell-explanation {
+  margin-top: 7px !important;
+  padding-top: 7px;
+  border-top: 1px solid rgba(240, 203, 91, 0.18);
+  color: #e8d9a5 !important;
+  font-size: 12px !important;
+  line-height: 1.55;
+}
+
+.boss-spell-explanation b {
+  color: #ffe89a;
+}
+
+.boss-inline-spell-explanation {
+  display: block;
+  margin-top: 3px;
+  color: #d9c985;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 @media (max-width: 680px) {
   .boss-spell-book-grid {
     grid-template-columns: 1fr;

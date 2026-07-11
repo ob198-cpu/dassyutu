@@ -216,7 +216,11 @@ const bossLearnedSpells = [
   { name: "ツケモノ", effect: "謎の四角を1個生成できる。" },
   { name: "ゴクロウサマ", effect: "「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。" },
   { name: "ドラブレス", effect: "炎でどんな氷も溶かす事ができる。" },
-  { name: "タイムマシン", effect: "一時的に未来空間へと移動する！その空間からまだ習得していない呪文を1つ唱える事ができる！[カタカナ]…[効果]！の形式をしていれば呪文とみなし、☆が付いていないものでも唱える事が可能。効果は現在異空間で発動し、発動と同時に自らも現在異空間へ戻る。" },
+  {
+    name: "タイムマシン",
+    effect: "一時的に未来空間へ移動する。",
+    explanation: "未来空間では、まだ習得していない呪文を1つ唱えられる。「カタカナ」＋「効果！」の形式なら呪文とみなされ、未習得でも発動できる。効果は現在異空間で発動し、発動と同時に自分も現在異空間へ戻る。",
+  },
 ];
 
 // 石板入力用の文字盤(登場する全呪文の文字を五十音順で)
@@ -2251,7 +2255,7 @@ function renderBoss(stage) {
             <summary>使用できる呪文一覧</summary>
             <ul>${bossNewSpells.map((spell) => `<li>☆<strong>${spell.name}</strong>…${spell.effect}</li>`).join("")}</ul>
             <p class="boss-spell-list-sub">これまでに習得した呪文</p>
-            <ul>${bossLearnedSpells.map((spell) => `<li>☆<strong>${spell.name}</strong>…${spell.effect}</li>`).join("")}</ul>
+            <ul>${bossLearnedSpells.map((spell) => `<li>☆<strong>${spell.name}</strong>…${spell.effect}${spell.explanation ? `<small class="boss-inline-spell-explanation">解説: ${spell.explanation}</small>` : ""}</li>`).join("")}</ul>
           </details>
           <section class="boss-timeline" aria-label="攻撃の流れ">
             ${rows}
@@ -2276,7 +2280,7 @@ function renderBossSpellBookPanel(stage) {
         <section class="boss-spell-book-section">
           <h3>過去の呪文</h3>
           <div class="boss-spell-book-grid">
-            ${bossLearnedSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+            ${bossLearnedSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p>${spell.explanation ? `<p class="boss-spell-explanation"><b>解説</b> ${spell.explanation}</p>` : ""}</article>`).join("")}
           </div>
         </section>
         <section class="boss-spell-book-section">
