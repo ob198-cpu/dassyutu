@@ -11383,45 +11383,6 @@ body {
   height: 100% !important;
 }
 
-.stage2-final-cell-note {
-  position: absolute;
-  z-index: 4;
-  pointer-events: auto;
-}
-.stage2-final-cell-note input {
-  box-sizing: border-box;
-  min-width: 0;
-  width: 100%;
-  border: 1px solid rgba(29, 67, 142, 0.68);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #111;
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
-  font-size: clamp(10px, 1.35vw, 20px);
-  font-weight: 800;
-  letter-spacing: 0;
-  text-align: center;
-  outline: none;
-}
-
-.stage2-final-cell-note input:focus {
-  border-color: #b77700;
-  box-shadow: 0 0 0 3px rgba(255, 220, 96, 0.52);
-}
-
-.stage2-final-cell-note {
-  left: 58.55%;
-  top: 72.1%;
-  width: 5.35%;
-  height: 10.2%;
-}
-
-.stage2-final-cell-note input {
-  height: 100%;
-  padding: 0;
-  font-size: clamp(16px, 3vw, 38px);
-}
-
 .path-problem-card .stage2-board-hint {
   flex: 0 0 auto;
   margin: 2px 0 0 !important;
@@ -11439,7 +11400,7 @@ body {
 
 /* Stage 02: the SVG draws the circles and entered text; buttons are hit targets only. */
 .stage2-board-wrap .stage2-memo-spot {
-  width: 5.2% !important;
+  width: 3.9% !important;
   height: auto !important;
   aspect-ratio: 1;
   border: 0 !important;
@@ -11447,11 +11408,12 @@ body {
   color: transparent !important;
   box-shadow: none !important;
   filter: none !important;
+  outline: none;
 }
 
 .stage2-board-wrap .stage2-memo-spot.is-selected {
-  outline: 3px solid rgba(215, 24, 24, 0.72);
-  outline-offset: -3px;
+  outline: 2px solid rgba(42, 86, 168, 0.92);
+  outline-offset: -2px;
 }
 
 /* Stage 04: each puzzle owns its color-number answer row. */

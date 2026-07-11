@@ -374,10 +374,6 @@ function renderStage2Board(memo, active, pickerOpen) {
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
   svg += `<image href="./assets/stage02-right-clue.png" x="868" y="170" width="238" height="238" preserveAspectRatio="none"/>`;
-  spots += `
-    <label class="stage2-final-cell-note">
-      <input type="text" maxlength="1" value="${escapeAttribute((memo[3] || []).join(""))}" data-stage2-note="3" aria-label="右端の空欄に書き込む">
-    </label>`;
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -755,7 +751,7 @@ function renderPathProblemCard(stage) {
           return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>`;
         })()}
       </div>
-      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む / Mの右の空欄=1文字を直接入力</p>
+      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む</p>
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
@@ -812,17 +808,6 @@ function wirePathProblem(stage) {
       render();
     });
   });
-  document.querySelectorAll("[data-stage2-note]").forEach((input) => {
-    input.addEventListener("input", () => {
-      const row = Number(input.dataset.stage2Note);
-      if (!Number.isInteger(row) || row < 1 || row >= stage2MemoRows) return;
-      const memo = normalizeStage2Memo(state.stage2Memo);
-      const chars = Array.from(input.value || "").slice(0, stage2MemoCols);
-      memo[row] = Array.from({ length: stage2MemoCols }, (_, index) => chars[index] || "");
-      state.stage2Memo = memo;
-      saveState();
-    });
-  });
   document.querySelectorAll("[data-memo-tile]").forEach((button) => {
     button.addEventListener("click", () => {
       const memo = normalizeStage2Memo(state.stage2Memo);
@@ -830,6 +815,7 @@ function wirePathProblem(stage) {
       memo[row][col] = button.dataset.memoTile || "";
       state.stage2Memo = memo;
       state.memoActive = { row, col: Math.min(col + 1, stage2MemoCols - 1) };
+      state.memoPickerOpen = false;
       render();
       popOnce(`[data-memo="${row}:${col}"]`);
     });
