@@ -457,6 +457,7 @@ function loadState() {
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
+        shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "play", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : "closed",
         bossPanelMode: ["closed", "problem", "play"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
@@ -465,7 +466,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed" };
 }
 
 function saveState() {
@@ -592,6 +593,7 @@ function resetStageInput() {
   state.slotInput = [];
   state.activeSlot = 0;
   state.slotPickerOpen = false;
+  state.shopPendingItem = "";
 }
 
 let lastStageKey = null;
@@ -2035,13 +2037,14 @@ function tilePuzzle(stage, done) {
 
 function shopPuzzle(stage, done) {
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const pending = stage.items.find((item) => item.name === state.shopPendingItem) || null;
   return `
     <section class="play-box">
       <div class="item-grid">
         ${stage.items
           .map(
             (item, i) => `
-              <button class="item-card" type="button" data-item="${item.name}" ${done ? "disabled" : ""}>
+              <button class="item-card ${pending?.name === item.name ? "is-pending" : ""}" type="button" data-item="${item.name}" aria-pressed="${pending?.name === item.name}" ${done ? "disabled" : ""}>
                 <span class="item-icon icon-${item.icon}"></span>
                 <strong>${i + 1}. ${item.name}</strong>
                 <small>${item.detail}</small>
@@ -2050,6 +2053,15 @@ function shopPuzzle(stage, done) {
           )
           .join("")}
       </div>
+      ${pending && !done ? `
+        <div class="shop-confirmation" role="group" aria-label="呪文の確認">
+          <p>「${pending.name}」で本当にいい？</p>
+          <div class="shop-confirmation-actions">
+            <button class="primary-button" id="confirmShopItem" type="button">これで発動する</button>
+            <button class="secondary-button" id="cancelShopItem" type="button">選び直す</button>
+          </div>
+        </div>
+      ` : ""}
       <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "違うようだ。問題の数字と、道具の効果を見直そう。" : "氷を直接溶かせるアイテムを選ぶ。"}</p>
     </section>
   `;
@@ -2120,7 +2132,21 @@ function wireStage(stage, done) {
   }
   if (stage.type === "shop") {
     document.querySelectorAll(".item-card").forEach((button) => {
-      button.addEventListener("click", () => checkStage(stage, button.dataset.item));
+      button.addEventListener("click", () => {
+        if (done) return;
+        state.shopPendingItem = button.dataset.item || "";
+        state.feedback = null;
+        render();
+      });
+    });
+    document.querySelector("#cancelShopItem")?.addEventListener("click", () => {
+      state.shopPendingItem = "";
+      render();
+    });
+    document.querySelector("#confirmShopItem")?.addEventListener("click", () => {
+      const selected = state.shopPendingItem;
+      state.shopPendingItem = "";
+      checkStage(stage, selected);
     });
   }
   if (stage.type === "console") {
@@ -2458,6 +2484,7 @@ function resetGame() {
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
   state.stage4Memo = normalizeStage4Memo(null);
+  state.shopPendingItem = "";
   state.revealed = {};
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
