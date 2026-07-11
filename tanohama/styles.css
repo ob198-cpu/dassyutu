@@ -10878,3 +10878,187 @@ body {
     max-height: 52dvh;
   }
 }
+
+/* ===== Stage 02: erase the red word, then remove the door ===== */
+.path-stage-title {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 50%;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  transform: translate(-50%, -50%);
+  padding: 12px 22px 15px;
+  border: 1px solid rgba(238, 209, 116, 0.66);
+  border-radius: 7px;
+  background: rgba(3, 6, 8, 0.82);
+  color: #fff2bf;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(30px, 4.5vw, 70px);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-align: center;
+  text-shadow: 0 3px 2px #000, 0 0 18px rgba(255, 221, 117, 0.35);
+  box-shadow: 0 16px 52px rgba(0, 0, 0, 0.58), inset 0 0 22px rgba(231, 191, 77, 0.08);
+}
+
+.path-red-word {
+  color: #ff493f;
+  text-shadow: 0 0 16px rgba(255, 48, 40, 0.72);
+}
+
+.path-stage-title.is-erasing .path-red-word {
+  display: inline-block;
+  animation: path-red-erase 1.25s ease-in forwards;
+}
+
+.path-stage-background-only.is-path-casting .stage-bg-art {
+  animation: path-door-cast 1.4s ease-in-out both;
+}
+
+.path-stage-background-only.is-path-open .stage-bg-art {
+  animation: path-open-reveal 0.7s ease-out both;
+}
+
+.path-cast-effect {
+  position: fixed;
+  z-index: 88;
+  left: var(--side-menu-w);
+  right: 0;
+  bottom: 5vh;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  pointer-events: none;
+  color: #fff6cf;
+  text-align: center;
+  text-shadow: 0 2px 4px #000;
+}
+
+.path-cast-effect p {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: clamp(22px, 3.2vw, 44px);
+  font-weight: 950;
+}
+
+.path-cast-effect p strong {
+  color: #ffe36f;
+}
+
+.path-cast-effect > span {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(13px, 1.7vw, 21px);
+  font-weight: 900;
+}
+
+.path-cast-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(60vw, 660px);
+  aspect-ratio: 1;
+  border: 4px solid rgba(255, 226, 103, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.12);
+  box-shadow: 0 0 42px #fff1a6, inset 0 0 42px #fff1a6;
+  animation: path-cast-ring 1.35s ease-out forwards;
+}
+
+.path-clear-overlay {
+  place-items: end center !important;
+  padding: 12px !important;
+  background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.72)) !important;
+  pointer-events: none;
+}
+
+.path-clear-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 25%);
+  align-items: center;
+  gap: 16px;
+  width: min(980px, calc(100% - 16px)) !important;
+  padding: 14px 16px !important;
+  text-align: left !important;
+  pointer-events: auto;
+}
+
+.path-clear-card h2 {
+  margin: 2px 0 5px;
+  font-size: clamp(22px, 3vw, 36px);
+}
+
+.path-clear-card p {
+  margin: 0;
+  color: #f8f3df;
+  font-size: clamp(14px, 1.6vw, 19px);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.path-clear-card .primary-button {
+  width: 100%;
+  min-height: 54px;
+}
+
+@keyframes path-red-erase {
+  0%, 28% { opacity: 1; filter: blur(0); transform: scale(1); }
+  70% { opacity: 0.48; filter: blur(2px); transform: scale(1.18); }
+  100% { opacity: 0; filter: blur(8px); transform: scale(0.72); }
+}
+
+@keyframes path-door-cast {
+  0%, 35% { filter: brightness(1) contrast(1); transform: scale(1); }
+  58% { filter: brightness(1.7) contrast(0.82); transform: scale(1.012); }
+  100% { filter: brightness(2.25) contrast(0.6); transform: scale(1.025); }
+}
+
+@keyframes path-open-reveal {
+  from { opacity: 0.25; filter: brightness(1.8); transform: scale(1.025); }
+  to { opacity: 1; filter: brightness(1) contrast(1.03); transform: scale(1); }
+}
+
+@keyframes path-cast-ring {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.12); }
+  30% { opacity: 0.95; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.12); }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .path-stage-title {
+    padding: 8px 16px 10px;
+    font-size: clamp(26px, 5.5vh, 48px);
+  }
+
+  .path-cast-effect {
+    bottom: 4vh;
+  }
+
+  .path-clear-card {
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 22%);
+    gap: 10px;
+    padding: 9px 12px !important;
+  }
+
+  .path-clear-card h2 {
+    font-size: 22px;
+  }
+
+  .path-clear-card p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 680px) and (orientation: portrait) {
+  .path-stage-title {
+    width: calc(100% - 24px);
+    font-size: clamp(24px, 8vw, 38px);
+  }
+
+  .path-clear-card {
+    grid-template-columns: 1fr;
+  }
+}
