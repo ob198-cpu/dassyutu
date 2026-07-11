@@ -440,6 +440,7 @@ function loadState() {
         hiddenProblems: saved.hiddenProblems && typeof saved.hiddenProblems === "object" ? saved.hiddenProblems : {},
         hiddenSpells: saved.hiddenSpells && typeof saved.hiddenSpells === "object" ? saved.hiddenSpells : {},
         gatePanelMode: saved.gatePanelMode === "problem" ? "problem" : "spell",
+        gateAnswerOpen: Boolean(saved.gateAnswerOpen),
         hintLevels: saved.hintLevels && typeof saved.hintLevels === "object" ? saved.hintLevels : {},
         kanaBoardActive: Array.isArray(saved.kanaBoardActive) ? saved.kanaBoardActive : [],
         learnedSpellViewerOpen: Boolean(saved.learnedSpellViewerOpen),
@@ -466,7 +467,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -493,6 +494,7 @@ function hideProblemOnStageEntry(stage) {
 
 function closeStagePanelsOnEntry(stage) {
   state.slotPickerOpen = false;
+  state.gateAnswerOpen = false;
   state.memoPickerOpen = false;
   state.learnedSpellViewerOpen = false;
   if (stage?.id === "gate") {
@@ -1229,14 +1231,16 @@ function renderGateStage(stage) {
   const spellHidden = state.hiddenSpells?.[stage.id] === true;
   const backgroundOnly = problemHidden && spellHidden;
   const gatePanelMode = state.gatePanelMode === "problem" ? "problem" : "spell";
+  const answerOpen = state.gateAnswerOpen === true;
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback, backgroundOnly)}
 
       ${successAnimating || gatePanelMode !== "problem" ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} ${state.slotPickerOpen ? "has-picker" : ""} is-problem-mode" aria-label="問題と回答">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
+        <button class="gate-answer-toggle" id="gateAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "問題を広く見る" : "回答する"}</button>
         ${gateProblemInscription(stage, done, false)}
-        ${renderGateAnswerControls(stage, done, feedback)}
+        ${answerOpen ? renderGateAnswerControls(stage, done, feedback) : ""}
       </section>`}
 
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
@@ -1753,7 +1757,15 @@ function wireGateStage(stage, done) {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
     state.gatePanelMode = "spell";
     state.slotPickerOpen = false;
+    state.gateAnswerOpen = false;
     state.learnedSpellViewerOpen = false;
+    render();
+  });
+
+  document.querySelector("#gateAnswerToggle")?.addEventListener("click", () => {
+    state.gateAnswerOpen = !state.gateAnswerOpen;
+    state.slotPickerOpen = false;
+    state.feedback = null;
     render();
   });
 
@@ -2556,6 +2568,7 @@ function resetGame() {
   state.hiddenProblems = {};
   state.hiddenSpells = {};
   state.gatePanelMode = "spell";
+  state.gateAnswerOpen = false;
   state.hintLevels = {};
   state.kanaBoardActive = [];
   state.learnedSpellViewerOpen = false;
@@ -2612,6 +2625,7 @@ function focusCurrentProblem() {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
     state.gatePanelMode = "problem";
+    state.gateAnswerOpen = false;
     state.learnedSpellViewerOpen = false;
     state.slotPickerOpen = false;
     render();

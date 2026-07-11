@@ -11528,22 +11528,54 @@ body.late-stage-mode .phone-shell {
 .spell-device.is-problem-mode {
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
-  padding: 44px 10px 10px !important;
+  gap: 6px !important;
+  padding: 0 8px 8px !important;
 }
 
 .spell-device.is-problem-mode .gate-sheet-panel {
-  flex: 1 1 auto !important;
+  flex: 0 1 auto !important;
   width: 100% !important;
   height: auto !important;
   min-height: 0 !important;
   max-height: none !important;
+  padding: 44px 6px 6px !important;
 }
 
 .spell-device.is-problem-mode .gate-problem-answer {
   flex: 0 0 auto !important;
   width: 100% !important;
   margin: 0 !important;
+}
+
+.spell-device.is-problem-mode .gate-answer-toggle {
+  position: absolute;
+  z-index: 45;
+  top: 8px;
+  right: 66px;
+  min-height: 34px;
+  padding: 4px 16px;
+  border: 1px solid rgba(255, 232, 121, 0.72);
+  border-radius: 7px;
+  background: linear-gradient(180deg, #fff1a1, #d7a51f);
+  color: #161006;
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .spell-device.is-problem-mode .gate-problem-answer {
+    padding: 7px 9px;
+  }
+
+  .spell-device.is-problem-mode .gate-problem-answer-head {
+    margin-bottom: 5px;
+  }
+
+  .spell-device.is-problem-mode .gate-problem-answer .premium-slot,
+  .spell-device.is-problem-mode .gate-problem-answer .cast-button {
+    min-height: 42px;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 620px) {
@@ -12160,15 +12192,48 @@ body.late-stage-mode .phone-shell {
     --mobile-nav-h: 116px;
   }
 
+  body.stage-one-mode .side-menu,
   body.late-stage-mode .side-menu {
     inset: 0 0 auto 0 !important;
     width: 100% !important;
     height: var(--mobile-nav-h) !important;
   }
 
+  body.stage-one-mode .phone-shell,
   body.late-stage-mode .phone-shell {
     width: 100% !important;
     margin: 0 !important;
+  }
+
+  body.stage-one-mode {
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-one-mode .phone-shell {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode {
+    top: calc(var(--mobile-nav-h) + var(--panel-edge)) !important;
+    right: var(--panel-edge) !important;
+    bottom: var(--panel-edge) !important;
+    left: var(--panel-edge) !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer {
+    padding: 6px 8px !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer-head {
+    margin-bottom: 4px !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer .premium-slot,
+  body.stage-one-mode .gate-problem-answer .cast-button {
+    min-height: 40px !important;
   }
 
   body.late-stage-mode .generic-problem-panel {
