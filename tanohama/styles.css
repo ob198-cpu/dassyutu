@@ -10495,3 +10495,134 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Strict viewport containment for puzzle and clear panels ===== */
+.spell-device.is-problem-mode,
+.immersive-panel,
+.stage-clear-overlay,
+.gate-success-sequence {
+  box-sizing: border-box !important;
+}
+
+.spell-device.is-problem-mode {
+  position: fixed !important;
+  top: 6px !important;
+  right: 6px !important;
+  bottom: 6px !important;
+  left: calc(var(--side-menu-w) + 6px) !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+.spell-device.is-problem-mode .gate-sheet-panel {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.spell-device.is-problem-mode .gate-sheet-scroll {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+.gate-success-sequence {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: var(--side-menu-w) !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  padding: 8px !important;
+}
+
+.gate-success-sequence .gate-choice-card,
+.gate-success-sequence .gate-choice-bar {
+  box-sizing: border-box !important;
+  width: min(640px, calc(100% - 16px)) !important;
+  max-width: calc(100% - 16px) !important;
+  max-height: calc(100dvh - 16px) !important;
+  overflow: auto !important;
+}
+
+.stage-clear-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: var(--side-menu-w) !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  padding: 8px !important;
+}
+
+.stage-clear-card {
+  box-sizing: border-box !important;
+  width: min(620px, calc(100% - 16px)) !important;
+  max-width: calc(100% - 16px) !important;
+  max-height: calc(100dvh - 16px) !important;
+  overflow: auto !important;
+}
+
+.final-clear-card {
+  box-sizing: border-box;
+  width: min(680px, calc(100% - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .spell-device.is-problem-mode .gate-sheet-panel {
+    padding: 38px 6px 6px !important;
+  }
+
+  .spell-device.is-problem-mode .stage1-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    zoom: 0.82;
+  }
+
+  .spell-device.is-problem-mode .gate-sheet-scroll .kana-board {
+    margin-top: 2px !important;
+    padding: 3px 6px !important;
+  }
+
+  .gate-success-sequence .gate-choice-card {
+    gap: 7px !important;
+    padding: 10px 12px !important;
+  }
+
+  .gate-success-sequence .reward-card {
+    padding: 8px 10px;
+  }
+
+  .gate-success-sequence .reward-desc,
+  .gate-success-sequence .reward-note,
+  .gate-success-sequence .reward-hint {
+    margin-top: 4px;
+    line-height: 1.25;
+  }
+
+  .stage-clear-card {
+    padding: 11px 14px !important;
+  }
+
+  .final-clear-card {
+    padding: 10px 12px !important;
+  }
+}
