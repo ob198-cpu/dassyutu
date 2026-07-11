@@ -72,9 +72,10 @@ const stages = [
     successMessage: "「　」内の色が消え、扉が現実になって開いた！呪文「ゴクロウサマ」を習得した。",
     failMessage: "何も起こらない。",
     hints: [
-      "ヒント①「壁の色が違う紙に、①②③④の矢印の順で答えを重ねていくんじゃ」",
-      "ヒント②「色のついたマスと白丸の文字をたどるのじゃぞ」",
-      "ヒント③「最後に残るのは、通り抜けた者へかける、ねぎらいの六文字じゃ」",
+      "ヒント①「様々な色がこの紙には書かれとってキレイじゃのう」",
+      "ヒント②「壁の色が違う紙に、①②③④の矢印の順で答えを重ねていくんじゃ」",
+      "ヒント③「色のついたマスと白丸の文字をたどるのじゃぞ」",
+      "ヒント④「最後に残るのは、通り抜けた者へかける、ねぎらいの六文字じゃ」",
     ],
     scene: "corridor",
     sceneCaption: "壁の色マスが見えない扉の位置を示している。光の順路を読み取る。",
@@ -255,6 +256,9 @@ const stage2MemoSpots = [
 
 const stage2Board = {"upper":{"cols":9,"rows":4,"x":[33,114,189,264,338,413,488,563,638,713],"y":[124,196,269,341,413],"h":[[{"black":-2},{"black":-2},{"yellow":-2},{"black":-2},{"black":-2},{"blue":-2},{"blue":-2},{"blue":-2},{"yellow":-2}],[{"white":-1},{"blue":-1},{"yellow":-1},{"red":-1},{"white":-1},{"blue":-1},{"blue":-1},{"red":-2},{"yellow":-2}],[{"blue":-2},{"black":-2},{"red":-2},{"blue":-1},{"red":-2},{"red":-2},{"red":-2},{"red":-2},{"blue":-2}],[{"red":-1},{"red":-1},{"white":-1},{"yellow":-2},{"yellow":-2},{"yellow":-2},{"blue":-2},{"blue":-1},{"yellow":-2}],[{"black":-1},{"black":-1},{"blue":0},{"blue":0},{"black":-2},{"yellow":-1},{"white":-1},{"red":-2},{"blue":0}]],"v":[[{"blue":-7,"black":4},{"blue":-7,"black":4},{"blue":-7,"black":5},{"blue":-7,"black":5}],[{"blue":-2},{"yellow":-2},{"red":-2},{"red":-2}],[{"blue":-2},{"blue":-2},{"black":-1},{"black":-1}],[{"black":-3},{"black":-2},{"black":-2},{"black":-2}],[{"blue":-2},{"red":-2},{"blue":-1},{"blue":-1}],[{"black":-2},{"black":-1},{"black":-1},{"black":-1}],[{"blue":-2},{"blue":-2},{"yellow":-2},{"yellow":-2}],[{"blue":-2},{"red":-2},{"white":-1},{"white":-1}],[{"blue":-2},{"blue":-2},{"red":-2},{"red":-2}],[{"white":-1},{"yellow":0},{"white":-1},{"blue":0}]],"cells":[{"r":0,"c":0,"circle":true,"memo":0},{"r":0,"c":1,"circle":true,"memo":1},{"r":0,"c":2,"circle":true,"memo":2},{"r":0,"c":3,"circle":true,"memo":3},{"r":0,"c":4,"circle":true,"memo":4},{"r":0,"c":5,"circle":true,"memo":5},{"r":0,"c":6,"char":"K","color":"black"},{"r":0,"c":7,"char":"K","color":"black"},{"r":0,"c":8,"char":"K","color":"yellow"},{"r":1,"c":0,"char":"I","color":"white"},{"r":1,"c":1,"char":"O","color":"blue"},{"r":1,"c":2,"char":"I","color":"yellow"},{"r":1,"c":3,"char":"K","color":"red"},{"r":1,"c":4,"char":"I","color":"white"},{"r":1,"c":5,"char":"O","color":"blue"},{"r":1,"c":6,"char":"U","color":"black"},{"r":1,"c":7,"char":"O","color":"black"},{"r":1,"c":8,"circle":true,"memo":6},{"r":2,"c":0,"char":"R","color":"white"},{"r":2,"c":3,"char":"A","color":"red"},{"r":2,"c":4,"char":"R","color":"white"},{"r":2,"c":6,"char":"R","color":"black"},{"r":2,"c":7,"circle":true,"memo":7},{"r":3,"c":0,"char":"O","color":"white"},{"r":3,"c":4,"char":"O","color":"white"},{"r":3,"c":6,"char":"O","color":"black"}]},"lower":{"cols":10,"rows":2,"x":[33,114,190,264,339,414,488,563,638,714,789],"y":[486,559,631],"h":[[{"blue":-1},{"red":-1},{"blue":-2},{"red":1},{"black":-2},{"yellow":-1},{"blue":-2},{"red":-2},{"yellow":-2},{"black":-2}],[{"red":-2},{"red":-2},{"red":-2},{"red":-2},{"black":-2},{"blue":-1},{"yellow":-2},{"yellow":-2},{"white":-2},{"black":-3}],[{"black":-2},{"black":-2},{"yellow":-2},{"blue":-1},{"blue":-2},{"blue":-2},{"blue":-2},{"red":-2},{"red":-2},{"blue":-2}]],"v":[[{"blue":-7,"black":5},{"blue":-7,"black":5}],[{"red":-1},{"yellow":-2}],[{"black":-2},{"black":-2}],[{"red":-2},{"red":-2}],[{"black":-1},{"black":-1}],[{"black":-2},{"black":-2}],[{"yellow":-2},{"yellow":-1}],[{"red":-2},{"blue":-1}],[{"yellow":-2},{"red":-2}],[{"black":-2},{"black":-2}],[{"black":-2,"blue":7},{"black":-2}]],"cells":[{"r":0,"c":0,"char":"o","color":"white"},{"r":0,"c":1,"char":"I","color":"red"},{"r":0,"c":2,"char":"I","color":"blue"},{"r":0,"c":3,"char":"s","color":"black"},{"r":0,"c":4,"char":"I","color":"red"},{"r":0,"c":5,"char":"N","color":"blue"},{"r":0,"c":6,"char":"「I」","color":"red"},{"r":0,"c":7,"char":"o","color":"red"},{"r":0,"c":8,"char":"M","color":"black"},{"r":1,"c":0,"char":"N","color":"blue"},{"r":1,"c":1,"char":"I","color":"white"},{"r":1,"c":2,"char":"o","color":"blue"},{"r":1,"c":3,"char":"q","color":"red"},{"r":1,"c":4,"char":"o","color":"blue"},{"r":1,"c":5,"char":"N","color":"red"},{"r":1,"c":6,"circle":true,"memo":8}]}};
 
+// 原本にはない右端の縦線を描かない。入力欄自体の枠だけを表示する。
+stage2Board.lower.v[10] = [{}, {}];
+
 function normalizeStage2Memo(value) {
   const rows = Array.isArray(value) ? value : [];
   return Array.from({ length: stage2MemoRows }, (_, r) => {
@@ -297,7 +301,7 @@ const stage2BoardPalette = { black: "#1a1a1a", red: "#d61e1e", blue: "#1a46a0", 
 // 返り値: { svg, spots } — spots は白丸メモ/文字タップ用のHTMLオーバーレイ。
 function renderStage2Board(memo, active, pickerOpen) {
   const VBW = 1230;
-  const VBH = 800;
+  const VBH = 680;
   const marks = state.stage2CellMarks && typeof state.stage2CellMarks === "object" ? state.stage2CellMarks : {};
   const pal = stage2BoardPalette;
   let svg = "";
@@ -365,12 +369,18 @@ function renderStage2Board(memo, active, pickerOpen) {
   });
   // ③④の書き込み枠
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
-  // こたえ欄とじいさんの一言
-  for (let i = 0; i < 6; i++) {
-    svg += `<rect x="${33 + i * 76}" y="700" width="72" height="62" fill="#ffffff" stroke="#2a56a8" stroke-width="3"/>`;
-  }
-  svg += `<text x="500" y="740" fill="#333" font-size="26" font-weight="800">←こたえ</text>`;
-  svg += `<text x="655" y="742" fill="#333" font-size="21" font-weight="800">「様々な<tspan fill="#d61e1e">色</tspan>がこの紙には書かれとってキレイじゃのう」</text>`;
+  spots += `
+    <label class="stage2-box-note stage2-box-note-3">
+      <span>③</span>
+      <input type="text" maxlength="12" value="${escapeAttribute((memo[1] || []).join(""))}" data-stage2-note="1" aria-label="③の途中回答">
+    </label>
+    <label class="stage2-box-note stage2-box-note-4">
+      <span>④</span>
+      <input type="text" maxlength="12" value="${escapeAttribute((memo[2] || []).join(""))}" data-stage2-note="2" aria-label="④の途中回答">
+    </label>
+    <label class="stage2-final-cell-note">
+      <input type="text" maxlength="1" value="${escapeAttribute((memo[3] || []).join(""))}" data-stage2-note="3" aria-label="右端の空欄に書き込む">
+    </label>`;
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -741,7 +751,7 @@ function renderPathProblemCard(stage) {
           return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>`;
         })()}
       </div>
-      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む</p>
+      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む / 右の欄=途中回答を直接入力</p>
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
@@ -796,6 +806,17 @@ function wirePathProblem(stage) {
       }
       state.stage2CellMarks = marks;
       render();
+    });
+  });
+  document.querySelectorAll("[data-stage2-note]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const row = Number(input.dataset.stage2Note);
+      if (!Number.isInteger(row) || row < 1 || row >= stage2MemoRows) return;
+      const memo = normalizeStage2Memo(state.stage2Memo);
+      const chars = Array.from(input.value || "").slice(0, stage2MemoCols);
+      memo[row] = Array.from({ length: stage2MemoCols }, (_, index) => chars[index] || "");
+      state.stage2Memo = memo;
+      saveState();
     });
   });
   document.querySelectorAll("[data-memo-tile]").forEach((button) => {
