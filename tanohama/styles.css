@@ -11062,3 +11062,87 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Stage 01: keep the cleared passage visible and fit the full puzzle ===== */
+.gate-success-sequence.is-prompt2 {
+  place-items: end center !important;
+  padding: 0 8px max(8px, env(safe-area-inset-bottom)) !important;
+  background: linear-gradient(180deg, transparent 68%, rgba(0, 0, 0, 0.24)) !important;
+}
+
+.gate-success-sequence.is-prompt2 .gate-choice-bar {
+  width: min(520px, calc(100% - 16px)) !important;
+  max-width: calc(100% - 16px) !important;
+  max-height: none !important;
+  overflow: visible !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center;
+  gap: 8px !important;
+  padding: 6px 8px !important;
+  border-radius: 8px;
+}
+
+.gate-success-sequence.is-prompt2 .gate-choice-copy {
+  min-width: 0;
+}
+
+.gate-success-sequence.is-prompt2 .gate-choice-copy > span {
+  display: block;
+  margin-bottom: 1px;
+  font-size: 8px !important;
+  line-height: 1;
+}
+
+.gate-success-sequence.is-prompt2 .gate-choice-question {
+  font-size: clamp(10px, 1.35vw, 13px) !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  white-space: normal;
+}
+
+.gate-success-sequence.is-prompt2 .gate-choice-actions {
+  display: flex !important;
+  grid-template-columns: none !important;
+  gap: 5px !important;
+}
+
+.gate-success-sequence.is-prompt2 .gate-choice-button {
+  min-width: 62px !important;
+  min-height: 32px !important;
+  padding: 3px 9px !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+}
+
+@media (orientation: landscape) and (pointer: coarse), (orientation: landscape) and (max-height: 700px) {
+  .spell-device.is-problem-mode {
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .spell-device.is-problem-mode .gate-sheet-panel {
+    padding: 36px 6px 12px !important;
+  }
+
+  .spell-device.is-problem-mode .gate-sheet-scroll {
+    padding-bottom: 10px !important;
+  }
+
+  .spell-device.is-problem-mode .stage1-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto -66px !important;
+    transform: scale(0.78) !important;
+    transform-origin: top center !important;
+    zoom: 1 !important;
+  }
+
+  .spell-device.is-problem-mode .gate-sheet-scroll .kana-board {
+    width: min(94%, 790px) !important;
+    margin: 1px auto 0 !important;
+    padding: 3px 6px 5px !important;
+  }
+
+  .gate-success-sequence.is-prompt2 .gate-choice-bar {
+    width: min(480px, calc(100% - 12px)) !important;
+  }
+}
