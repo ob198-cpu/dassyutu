@@ -332,8 +332,11 @@ function renderStage2Board(memo, active, pickerOpen) {
       if (cell.circle) {
         svg += `<circle cx="${cx}" cy="${cy}" r="24" fill="#fbfbfb"/>`;
         const char = memo[0]?.[cell.memo] || "";
+        if (char) {
+          svg += `<text x="${cx}" y="${cy + 2}" fill="#111" font-size="34" font-weight="900" text-anchor="middle" dominant-baseline="central" font-family="'Hiragino Sans','Segoe UI',sans-serif">${escapeAttribute(char)}</text>`;
+        }
         const sel = pickerOpen && active.row === 0 && active.col === cell.memo;
-        spots += `<button class="stage2-memo-spot ${sel ? "is-selected" : ""} ${char ? "has-value" : ""}" style="--spot-x:${sx}%;--spot-y:${sy}%;" type="button" data-memo="0:${cell.memo}" aria-label="白丸に書き込む">${char}</button>`;
+        spots += `<button class="stage2-memo-spot ${sel ? "is-selected" : ""}" style="--spot-x:${sx}%;--spot-y:${sy}%;" type="button" data-memo="0:${cell.memo}" aria-label="白丸に書き込む"></button>`;
       } else {
         const dimmed = Boolean(marks[`${key}:${cell.r}:${cell.c}`]);
         svg += `<text x="${cx}" y="${cy + 2}" fill="${pal[cell.color]}" font-size="52" font-weight="900" text-anchor="middle" dominant-baseline="central" opacity="${dimmed ? 0.14 : 1}" font-family="'Hiragino Sans','Segoe UI',sans-serif">${cell.char}</text>`;
@@ -623,6 +626,7 @@ function render() {
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
   document.body.classList.toggle("stage-path-mode", !state.isClear && stage.id === "path");
+  document.body.classList.toggle("late-stage-mode", !state.isClear && ["shop", "time", "boss"].includes(stage.id));
   elements.topTitle.textContent = state.isClear
     ? "異空間からの脱出 CLEAR"
     : `異空間からの脱出 ${stage.number} / ${stage.title}`;
@@ -1528,12 +1532,6 @@ const stage4Numbers = [
 
 function renderStage4Sheet() {
   const memo = normalizeStage4Memo(state.stage4Memo);
-  const questionMemo = (index) => `
-    <label class="s4-question-memo">
-      <span>${["①", "②", "③", "④"][index]} 途中回答</span>
-      <input type="text" maxlength="40" autocomplete="off" data-s4-answer="${index}" value="${escapeAttribute(memo.answers[index])}" placeholder="分かった言葉をここに入力" />
-    </label>
-  `;
   const numberRow = (group, questionIndex) => `
     <div class="s4-num-row">
       <span class="s4-num-label">${group.label}</span>
@@ -1541,7 +1539,7 @@ function renderStage4Sheet() {
         .map(
           (box, groupIndex) => `<span class="s4-num-box ${box.length ? "" : "is-empty"}">
             <span class="s4-num-source">${box.length ? box.map(([n, c], i) => `${i ? "<i>,</i>" : ""}<b class="n-${c}">${n}</b>`).join("") : "-"}</span>
-            ${box.length ? `<span class="s4-num-inputs">${box.map(([n, c], cellIndex) => `<input class="s4-map-input map-${c}" type="text" maxlength="1" inputmode="text" autocomplete="off" data-s4-cell="${questionIndex}:${groupIndex}:${cellIndex}" value="${escapeAttribute(memo.cells[questionIndex][groupIndex][cellIndex])}" aria-label="${group.label} ${n}に対応する文字" />`).join("")}</span>` : ""}
+            ${box.length ? `<input class="s4-map-input" type="text" maxlength="${box.length}" inputmode="text" autocomplete="off" data-s4-group="${questionIndex}:${groupIndex}" value="${escapeAttribute(memo.cells[questionIndex][groupIndex].join(""))}" aria-label="${group.label} ${box.map(([n]) => n).join("、")}に対応する文字" />` : ""}
           </span>`,
         )
         .join("")}
@@ -1549,29 +1547,15 @@ function renderStage4Sheet() {
   `;
   return `
     <div class="sheet stage4-sheet" role="img" aria-label="ステージ4 問題">
-      <div class="s4-numbers" aria-label="青緑黄色の番号と途中回答">
-        <p class="s4-memo-guide">青・緑・黄の数字は手がかりです。数字の真下へ、対応する文字を1文字ずつ入力してください。</p>
-        <div class="s4-num-col">
-          ${numberRow(stage4Numbers[0], 0)}
-          ${numberRow(stage4Numbers[2], 2)}
-        </div>
-        <div class="s4-num-col">
-          ${numberRow(stage4Numbers[1], 1)}
-          ${numberRow(stage4Numbers[3], 3)}
-        </div>
-        <p class="s4-read-order"><b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
-      </div>
-      <div class="sheet-head-row">
-        <h3 class="sheet-title">ステージ4</h3>
-      </div>
       <p class="s4-header">時空が歪んで、時差が発生した、①〜④の謎を解いて、時差を無くす為の手段を見つけろ</p>
+      <p class="s4-memo-guide">青・緑・黄の数字は手がかりです。各問題の下にある枠へ、対応する文字を入力してください。</p>
       <div class="s4-panels">
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">①</span><em class="red-word">おじさん</em>の<br>間にあるのは?</p>
           <div class="s4-scatter">
             ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch}</span>`).join("")}
           </div>
-          ${questionMemo(0)}
+          <div class="s4-panel-answer">${numberRow(stage4Numbers[0], 0)}</div>
         </div>
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">②</span>?の中に<br>はいる言葉は、なに</p>
@@ -1580,7 +1564,7 @@ function renderStage4Sheet() {
             <p><span class="s4-day">SAT</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">どそく</span></p>
             <p><span class="s4-day s4-day-red">THU</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">?</span></p>
           </div>
-          ${questionMemo(1)}
+          <div class="s4-panel-answer">${numberRow(stage4Numbers[1], 1)}</div>
         </div>
         <div class="s4-panel">
           <p class="s4-panel-note">?に言葉を入れ、四角で囲まれた文字のみ繋げて読む</p>
@@ -1599,14 +1583,15 @@ function renderStage4Sheet() {
             <span class="s4-eq">‖</span>
             <span class="s4-answer-of">③のこたえ</span>
           </div>
-          ${questionMemo(2)}
+          <div class="s4-panel-answer">${numberRow(stage4Numbers[2], 2)}</div>
         </div>
         <div class="s4-panel">
           <p class="s4-panel-note">④投げられた球が、放物線の<em class="red-word">頂点</em>で真下へ落下する時、球が通る言葉を繋いで読め</p>
           <img class="s4-art" src="./assets/stage04-art.webp" alt="放物線と散らばった文字の図(原本)" loading="lazy" />
-          ${questionMemo(3)}
+          <div class="s4-panel-answer">${numberRow(stage4Numbers[3], 3)}</div>
         </div>
       </div>
+      <p class="s4-read-order"><b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
       <p class="sheet-elder">時差を隠す時に使うのじゃ→[ きじのくうきあしょうのみさきよらいのじさめ ]</p>
       <div class="s4-final-row">
         <span class="s4-final-label"><small class="s4-final-ruby">ファイナル アンサー</small>FINAL ANSWER:</span>
@@ -2092,25 +2077,15 @@ function consolePuzzle(stage, done) {
 }
 
 function wireStage4Memo() {
-  document.querySelectorAll("[data-s4-answer]").forEach((input) => {
+  document.querySelectorAll("[data-s4-group]").forEach((input) => {
     input.addEventListener("input", () => {
+      const [questionIndex, groupIndex] = (input.dataset.s4Group || "").split(":").map(Number);
       const memo = normalizeStage4Memo(state.stage4Memo);
-      const index = Number(input.dataset.s4Answer);
-      if (!Number.isInteger(index) || index < 0 || index >= memo.answers.length) return;
-      memo.answers[index] = input.value.slice(0, 40);
-      state.stage4Memo = memo;
-      saveState();
-    });
-  });
-
-  document.querySelectorAll("[data-s4-cell]").forEach((input) => {
-    input.addEventListener("input", () => {
-      const [questionIndex, groupIndex, cellIndex] = (input.dataset.s4Cell || "").split(":").map(Number);
-      const memo = normalizeStage4Memo(state.stage4Memo);
-      if (!memo.cells?.[questionIndex]?.[groupIndex] || !Number.isInteger(cellIndex)) return;
-      const character = Array.from(input.value)[0] || "";
-      input.value = character;
-      memo.cells[questionIndex][groupIndex][cellIndex] = character;
+      const target = memo.cells?.[questionIndex]?.[groupIndex];
+      if (!Array.isArray(target)) return;
+      const characters = Array.from(input.value).slice(0, target.length);
+      input.value = characters.join("");
+      memo.cells[questionIndex][groupIndex] = target.map((_, index) => characters[index] || "");
       state.stage4Memo = memo;
       saveState();
     });

@@ -11219,3 +11219,85 @@ body {
     max-height: calc(100dvh - 82px) !important;
   }
 }
+
+/* Stage 02: the SVG draws the circles and entered text; buttons are hit targets only. */
+.stage2-board-wrap .stage2-memo-spot {
+  width: 5.2% !important;
+  height: auto !important;
+  aspect-ratio: 1;
+  border: 0 !important;
+  background: transparent !important;
+  color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.stage2-board-wrap .stage2-memo-spot.is-selected {
+  outline: 3px solid rgba(215, 24, 24, 0.72);
+  outline-offset: -3px;
+}
+
+/* Stage 04: each puzzle owns its color-number answer row. */
+.stage4-sheet > .s4-memo-guide {
+  margin: 0 0 10px;
+  padding: 7px 10px;
+  border: 1px solid rgba(242, 213, 107, 0.48);
+  border-radius: 4px;
+  background: rgba(4, 12, 15, 0.8);
+}
+
+.stage4-sheet .s4-panel-answer {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.stage4-sheet .s4-panel-answer .s4-num-row {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.stage4-sheet .s4-panel-answer .s4-num-box {
+  min-width: 48px;
+  min-height: 58px;
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 4px;
+  padding: 4px 5px;
+}
+
+.stage4-sheet .s4-panel-answer .s4-map-input {
+  width: 100%;
+  min-width: 30px;
+  height: 28px;
+  padding: 1px 4px;
+  border: 2px solid #111 !important;
+  border-radius: 3px;
+  background: #fffdf5;
+  color: #111;
+  text-align: center;
+}
+
+.stage4-sheet > .s4-read-order {
+  margin-top: 10px;
+  padding: 7px 10px;
+  border: 1px solid rgba(120, 192, 185, 0.35);
+  background: rgba(4, 12, 15, 0.72);
+}
+
+body.late-stage-mode .status-strip {
+  display: none !important;
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .stage4-sheet .s4-panel-answer .s4-num-box {
+    min-width: 40px;
+    min-height: 50px;
+    padding: 3px 4px;
+  }
+
+  .stage4-sheet .s4-panel-answer .s4-map-input {
+    height: 24px;
+    font-size: 14px;
+  }
+}
