@@ -11547,22 +11547,6 @@ body.late-stage-mode .phone-shell {
   margin: 0 !important;
 }
 
-.spell-device.is-problem-mode .gate-answer-toggle {
-  position: absolute;
-  z-index: 45;
-  top: 8px;
-  right: 66px;
-  min-height: 34px;
-  padding: 4px 16px;
-  border: 1px solid rgba(255, 232, 121, 0.72);
-  border-radius: 7px;
-  background: linear-gradient(180deg, #fff1a1, #d7a51f);
-  color: #161006;
-  font-size: 13px;
-  font-weight: 950;
-  line-height: 1;
-}
-
 @media (orientation: landscape) and (max-height: 700px) {
   .spell-device.is-problem-mode .gate-problem-answer {
     padding: 7px 9px;
@@ -12193,6 +12177,7 @@ body.late-stage-mode .phone-shell {
   }
 
   body.stage-one-mode .side-menu,
+  body.stage-path-mode .side-menu,
   body.late-stage-mode .side-menu {
     inset: 0 0 auto 0 !important;
     width: 100% !important;
@@ -12200,6 +12185,7 @@ body.late-stage-mode .phone-shell {
   }
 
   body.stage-one-mode .phone-shell,
+  body.stage-path-mode .phone-shell,
   body.late-stage-mode .phone-shell {
     width: 100% !important;
     margin: 0 !important;
@@ -12300,5 +12286,219 @@ body.late-stage-mode .phone-shell {
 
   .generic-problem-panel .stage4-mountain-illustration {
     min-height: clamp(150px, 25dvh, 220px);
+  }
+
+  body.stage-path-mode {
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-path-mode .phone-shell {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
+    top: calc(var(--mobile-nav-h) + var(--panel-edge)) !important;
+    right: var(--panel-edge) !important;
+    bottom: var(--panel-edge) !important;
+    left: var(--panel-edge) !important;
+  }
+
+  body.stage-path-mode .path-problem-card .stage2-board-wrap {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: 1230 / 680 !important;
+    margin: 0 auto !important;
+  }
+
+  body.stage-path-mode .path-problem-card .stage2-board-svg {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* ===== Problem answer drawer: keep the puzzle readable until input is needed ===== */
+.problem-answer-launcher {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 2px 8px 0;
+}
+
+.problem-answer-toggle {
+  width: min(360px, 100%);
+  min-height: 46px;
+  padding: 8px 22px;
+  border: 1px solid rgba(255, 235, 139, 0.92);
+  border-radius: 7px;
+  background: linear-gradient(180deg, #fff3a8 0%, #e4b526 58%, #bd8310 100%);
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  color: #171007;
+  font: inherit;
+  font-size: clamp(15px, 1.3vw, 19px);
+  font-weight: 950;
+  line-height: 1.15;
+  cursor: pointer;
+}
+
+.problem-answer-toggle:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+}
+
+/* Stage 1: the launcher belongs below the puzzle, never in the top-right controls. */
+.spell-device.is-problem-mode .problem-answer-launcher {
+  position: relative;
+  inset: auto;
+  z-index: 2;
+  margin: 0;
+}
+
+.spell-device.is-problem-mode:not(.is-answer-open) .gate-sheet-panel {
+  flex: 0 1 auto !important;
+}
+
+.spell-device.is-problem-mode.is-answer-open .gate-sheet-panel {
+  flex: 0 1 auto !important;
+  overflow: hidden !important;
+}
+
+/* Stage 2: give the board the viewport; the answer controls are a drawer. */
+.path-problem-card {
+  gap: 6px !important;
+  padding: 8px !important;
+  overflow: hidden !important;
+}
+
+.path-problem-card .path-device-head {
+  min-height: 38px;
+}
+
+.path-problem-card .stage2-board-wrap {
+  flex: 1 1 auto !important;
+  width: min(100%, calc((100dvh - 126px) * 1.8088)) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: calc(100dvh - 126px) !important;
+  margin: 0 auto !important;
+  aspect-ratio: 1230 / 680;
+}
+
+.path-problem-card.is-answer-open .stage2-board-wrap {
+  width: min(100%, calc((100dvh - 252px) * 1.8088)) !important;
+  max-height: calc(100dvh - 252px) !important;
+}
+
+.path-problem-card .stage2-board-svg {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.path-problem-card .stage2-board-hint {
+  margin: 0 !important;
+  font-size: clamp(11px, 1vw, 15px) !important;
+  line-height: 1.25 !important;
+}
+
+.path-problem-card .path-problem-answer {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 0 !important;
+  padding: 8px 10px !important;
+}
+
+.path-problem-card .path-problem-answer-head {
+  margin-bottom: 5px !important;
+}
+
+.path-problem-card .path-problem-answer .device-main-row {
+  margin: 0 !important;
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .problem-answer-toggle {
+    min-height: 40px;
+    padding-block: 6px;
+    font-size: 14px;
+  }
+
+  .path-problem-card {
+    gap: 3px !important;
+    padding: 4px !important;
+  }
+
+  .path-problem-card .path-device-head {
+    position: absolute;
+    z-index: 24;
+    top: 8px;
+    right: 8px;
+    width: auto !important;
+    min-height: 30px;
+  }
+
+  .path-problem-card .path-device-title {
+    display: none;
+  }
+
+  .path-problem-card .path-device-actions .secondary-button {
+    min-width: 58px;
+    min-height: 30px;
+    padding: 2px 8px;
+    background: rgba(4, 11, 18, 0.88);
+    font-size: 11px;
+  }
+
+  .path-problem-card .stage2-board-wrap {
+    width: min(100%, calc((100dvh - 70px) * 1.8088)) !important;
+    max-height: calc(100dvh - 70px) !important;
+  }
+
+  .path-problem-card.is-answer-open .stage2-board-wrap {
+    width: min(100%, calc((100dvh - 184px) * 1.8088)) !important;
+    max-height: calc(100dvh - 184px) !important;
+  }
+
+  .path-problem-card .path-problem-answer {
+    padding: 6px 8px !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .problem-answer-launcher {
+    padding-inline: 4px;
+  }
+
+  .problem-answer-toggle {
+    width: min(300px, 100%);
+    min-height: 40px;
+    font-size: 14px;
+  }
+
+  body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
+    top: calc(var(--mobile-nav-h) + var(--panel-edge)) !important;
+    right: var(--panel-edge) !important;
+    bottom: var(--panel-edge) !important;
+    left: var(--panel-edge) !important;
+  }
+
+  body.stage-path-mode .path-problem-card .stage2-board-wrap,
+  body.stage-path-mode .path-problem-card.is-answer-open .stage2-board-wrap {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: 1230 / 680 !important;
+    margin: 0 auto !important;
+  }
+
+  body.stage-path-mode .path-problem-card .stage2-board-svg {
+    width: 100% !important;
+    height: auto !important;
   }
 }

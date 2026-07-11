@@ -449,6 +449,7 @@ function loadState() {
         isClear: Boolean(saved.isClear),
         problemFit: saved.problemFit !== false,
         pathPanelMode: ["problem", "spell", "closed", "clear"].includes(saved.pathPanelMode) ? saved.pathPanelMode : "spell",
+        pathAnswerOpen: Boolean(saved.pathAnswerOpen),
         stage2Memo: normalizeStage2Memo(saved.stage2Memo),
         memoActive: saved.memoActive && typeof saved.memoActive === "object" ? saved.memoActive : { row: 0, col: 0 },
         memoPickerOpen: Boolean(saved.memoPickerOpen),
@@ -467,7 +468,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -495,6 +496,7 @@ function hideProblemOnStageEntry(stage) {
 function closeStagePanelsOnEntry(stage) {
   state.slotPickerOpen = false;
   state.gateAnswerOpen = false;
+  state.pathAnswerOpen = false;
   state.memoPickerOpen = false;
   state.learnedSpellViewerOpen = false;
   if (stage?.id === "gate") {
@@ -711,8 +713,9 @@ function renderPathProblemCard(stage) {
     ? { row: Math.min(Math.max(state.memoActive.row, 0), stage2MemoRows - 1), col: Math.min(Math.max(state.memoActive.col, 0), stage2MemoCols - 1) }
     : { row: 0, col: 0 };
   const pickerOpen = state.memoPickerOpen === true;
+  const answerOpen = state.pathAnswerOpen === true;
   return `
-    <section class="spell-device path-spell-device path-problem-card" aria-label="問題とメモ">
+    <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""}" aria-label="問題とメモ">
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions">
@@ -725,7 +728,7 @@ function renderPathProblemCard(stage) {
           return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>`;
         })()}
       </div>
-      <p class="stage2-board-hint">文字をタップ=薄く消す / 白丸をタップ=文字を書き込む</p>
+      <p class="stage2-board-hint">白丸をタップして文字を書き込む</p>
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
@@ -744,7 +747,10 @@ function renderPathProblemCard(stage) {
           `
           : ""}
       </div>
-      ${renderPathAnswerControls(stage)}
+      <div class="problem-answer-launcher">
+        <button class="problem-answer-toggle" id="pathAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
+      </div>
+      ${answerOpen ? renderPathAnswerControls(stage) : ""}
     </section>
   `;
 }
@@ -833,6 +839,12 @@ function wirePathProblem(stage) {
 
 function wirePathStage(stage, done) {
   wireProblems();
+  document.querySelector("#pathAnswerToggle")?.addEventListener("click", () => {
+    state.pathAnswerOpen = !state.pathAnswerOpen;
+    state.slotPickerOpen = false;
+    state.feedback = null;
+    render();
+  });
   document.querySelector("#pathToProblem")?.addEventListener("click", () => {
     state.pathPanelMode = "problem";
     state.slotPickerOpen = false;
@@ -1236,10 +1248,12 @@ function renderGateStage(stage) {
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback, backgroundOnly)}
 
-      ${successAnimating || gatePanelMode !== "problem" ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} ${state.slotPickerOpen ? "has-picker" : ""} is-problem-mode" aria-label="問題と回答">
+      ${successAnimating || gatePanelMode !== "problem" ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} ${state.slotPickerOpen ? "has-picker" : ""} ${answerOpen ? "is-answer-open" : ""} is-problem-mode" aria-label="問題と回答">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-        <button class="gate-answer-toggle" id="gateAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "問題を広く見る" : "回答する"}</button>
         ${gateProblemInscription(stage, done, false)}
+        <div class="problem-answer-launcher">
+          <button class="problem-answer-toggle" id="gateAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
+        </div>
         ${answerOpen ? renderGateAnswerControls(stage, done, feedback) : ""}
       </section>`}
 
@@ -2569,6 +2583,7 @@ function resetGame() {
   state.hiddenSpells = {};
   state.gatePanelMode = "spell";
   state.gateAnswerOpen = false;
+  state.pathAnswerOpen = false;
   state.hintLevels = {};
   state.kanaBoardActive = [];
   state.learnedSpellViewerOpen = false;
@@ -2634,6 +2649,7 @@ function focusCurrentProblem() {
 
   if (stage.id === "path") {
     state.pathPanelMode = "problem";
+    state.pathAnswerOpen = false;
     state.learnedSpellViewerOpen = false;
     state.slotPickerOpen = false;
     render();
