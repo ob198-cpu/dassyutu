@@ -704,6 +704,8 @@ function renderPathStage(stage) {
   if (problemMode) {
     wirePathProblem(stage);
     wirePathStage(stage, done);
+  } else if (clearMode) {
+    wirePathStage(stage, done);
   }
 }
 
