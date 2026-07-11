@@ -10626,3 +10626,211 @@ body {
     padding: 10px 12px !important;
   }
 }
+
+/* ===== Stage 04: paperless working notes ===== */
+.stage4-sheet .s4-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.s4-question-memo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 9px;
+  color: #c9f2ea;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.s4-question-memo input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid rgba(129, 205, 197, 0.7);
+  border-radius: 5px;
+  outline: none;
+  background: #eef5ee;
+  color: #11191a;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+
+.s4-question-memo input:focus {
+  border-color: #ffe477;
+  box-shadow: 0 0 0 3px rgba(255, 224, 107, 0.22);
+}
+
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) {
+  scroll-padding-top: 178px;
+}
+
+.stage4-sheet .s4-question-memo {
+  scroll-margin-top: 178px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-numbers {
+  position: sticky;
+  z-index: 8;
+  top: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 10px;
+  max-height: min(48dvh, 260px);
+  margin: 8px 0 12px;
+  padding: 9px 10px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(242, 213, 107, 0.62);
+  border-radius: 6px;
+  background: rgba(4, 12, 15, 0.97);
+  box-shadow: 0 9px 28px rgba(0, 0, 0, 0.46);
+}
+
+.s4-memo-guide,
+.generic-problem-panel .stage4-sheet .s4-read-order {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.s4-memo-guide {
+  color: #fff3bf;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.generic-problem-panel .stage4-sheet .s4-read-order {
+  color: #e9f2ef;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.stage4-sheet .s4-num-col {
+  min-width: 0;
+  gap: 5px;
+}
+
+.stage4-sheet .s4-num-row {
+  min-width: 0;
+  align-items: stretch;
+  overflow-x: auto;
+}
+
+.stage4-sheet .s4-num-label {
+  flex: 0 0 24px;
+  margin-right: 4px;
+  color: #fff3bf;
+}
+
+.stage4-sheet .s4-num-box {
+  flex: 0 0 auto;
+  min-width: 48px;
+  min-height: 58px;
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 4px;
+  padding: 4px 5px;
+  border-color: rgba(169, 197, 193, 0.55);
+  background: #e9e2d1;
+}
+
+.stage4-sheet .s4-num-box.is-empty {
+  min-width: 32px;
+  color: #7b817e;
+}
+
+.s4-num-source,
+.s4-num-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.s4-num-source {
+  min-height: 18px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.s4-map-input {
+  box-sizing: border-box;
+  width: 25px;
+  height: 27px;
+  padding: 1px;
+  border: 2px solid #5e6e71;
+  border-radius: 4px;
+  outline: none;
+  background: #fffdf5;
+  color: #111;
+  font-size: 16px;
+  font-weight: 950;
+  line-height: 1;
+  text-align: center;
+  letter-spacing: 0;
+}
+
+.s4-map-input.map-b { border-color: #2f66c4; }
+.s4-map-input.map-g { border-color: #3f9b3f; }
+.s4-map-input.map-y { border-color: #d8a413; }
+
+.s4-map-input:focus {
+  background: #fff7c9;
+  box-shadow: 0 0 0 2px rgba(255, 238, 143, 0.34);
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .generic-problem-panel .stage4-sheet .s4-numbers {
+    max-height: 54dvh;
+    padding: 6px 7px;
+    gap: 5px 7px;
+  }
+
+  .s4-question-memo {
+    gap: 5px;
+    padding-top: 6px;
+    font-size: 10px;
+  }
+
+  .s4-question-memo input {
+    min-height: 32px;
+    padding: 4px 7px;
+    font-size: 14px;
+  }
+
+  .stage4-sheet .s4-num-box {
+    min-width: 34px;
+    min-height: 48px;
+    padding: 3px;
+  }
+
+  .stage4-sheet .s4-num-row {
+    overflow-x: hidden;
+  }
+
+  .stage4-sheet .s4-num-source,
+  .stage4-sheet .s4-num-inputs {
+    gap: 1px;
+  }
+
+  .stage4-sheet .s4-map-input {
+    width: 22px;
+    height: 24px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 680px) {
+  .generic-problem-panel .stage4-sheet .s4-numbers {
+    grid-template-columns: 1fr;
+    max-height: 52dvh;
+  }
+}

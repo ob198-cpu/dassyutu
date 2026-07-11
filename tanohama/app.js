@@ -263,6 +263,34 @@ function normalizeStage2Memo(value) {
   });
 }
 
+const stage4MemoShape = [[4, 2, 3], [3, 0, 0, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
+
+function normalizeStage4Memo(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const answers = Array.from({ length: 4 }, (_, index) =>
+    typeof source.answers?.[index] === "string" ? source.answers[index].slice(0, 40) : "",
+  );
+  const cells = stage4MemoShape.map((groups, questionIndex) =>
+    groups.map((length, groupIndex) =>
+      Array.from({ length }, (_, cellIndex) => {
+        const cell = source.cells?.[questionIndex]?.[groupIndex]?.[cellIndex];
+        return typeof cell === "string" ? Array.from(cell)[0] || "" : "";
+      }),
+    ),
+  );
+  return { answers, cells };
+}
+
+function escapeAttribute(value) {
+  return String(value || "").replace(/[&"'<>]/g, (character) => ({
+    "&": "&amp;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "<": "&lt;",
+    ">": "&gt;",
+  })[character]);
+}
+
 const stage2BoardPalette = { black: "#1a1a1a", red: "#d61e1e", blue: "#1a46a0", yellow: "#f0c828", white: "#ffffff" };
 
 // 原本PDFから機械抽出+目視確認した盤面をSVGで再構成する。
@@ -418,6 +446,7 @@ function loadState() {
         memoPickerOpen: Boolean(saved.memoPickerOpen),
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
+        stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "play", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : "closed",
         bossPanelMode: ["closed", "problem", "play"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
@@ -426,7 +455,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed" };
 }
 
 function saveState() {
@@ -1468,18 +1497,40 @@ const stage4Numbers = [
 ];
 
 function renderStage4Sheet() {
-  const numberRow = (group) => `
+  const memo = normalizeStage4Memo(state.stage4Memo);
+  const questionMemo = (index) => `
+    <label class="s4-question-memo">
+      <span>${["①", "②", "③", "④"][index]} 途中回答</span>
+      <input type="text" maxlength="40" autocomplete="off" data-s4-answer="${index}" value="${escapeAttribute(memo.answers[index])}" placeholder="分かった言葉をここに入力" />
+    </label>
+  `;
+  const numberRow = (group, questionIndex) => `
     <div class="s4-num-row">
       <span class="s4-num-label">${group.label}</span>
       ${group.boxes
         .map(
-          (box) => `<span class="s4-num-box">${box.map(([n, c], i) => `${i ? "<i>,</i>" : ""}<b class="n-${c}">${n}</b>`).join("")}</span>`,
+          (box, groupIndex) => `<span class="s4-num-box ${box.length ? "" : "is-empty"}">
+            <span class="s4-num-source">${box.length ? box.map(([n, c], i) => `${i ? "<i>,</i>" : ""}<b class="n-${c}">${n}</b>`).join("") : "-"}</span>
+            ${box.length ? `<span class="s4-num-inputs">${box.map(([n, c], cellIndex) => `<input class="s4-map-input map-${c}" type="text" maxlength="1" inputmode="text" autocomplete="off" data-s4-cell="${questionIndex}:${groupIndex}:${cellIndex}" value="${escapeAttribute(memo.cells[questionIndex][groupIndex][cellIndex])}" aria-label="${group.label} ${n}に対応する文字" />`).join("")}</span>` : ""}
+          </span>`,
         )
         .join("")}
     </div>
   `;
   return `
     <div class="sheet stage4-sheet" role="img" aria-label="ステージ4 問題">
+      <div class="s4-numbers" aria-label="青緑黄色の番号と途中回答">
+        <p class="s4-memo-guide">青・緑・黄の数字は手がかりです。数字の真下へ、対応する文字を1文字ずつ入力してください。</p>
+        <div class="s4-num-col">
+          ${numberRow(stage4Numbers[0], 0)}
+          ${numberRow(stage4Numbers[2], 2)}
+        </div>
+        <div class="s4-num-col">
+          ${numberRow(stage4Numbers[1], 1)}
+          ${numberRow(stage4Numbers[3], 3)}
+        </div>
+        <p class="s4-read-order"><b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
+      </div>
       <div class="sheet-head-row">
         <h3 class="sheet-title">ステージ4</h3>
       </div>
@@ -1490,6 +1541,7 @@ function renderStage4Sheet() {
           <div class="s4-scatter">
             ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch}</span>`).join("")}
           </div>
+          ${questionMemo(0)}
         </div>
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">②</span>?の中に<br>はいる言葉は、なに</p>
@@ -1498,6 +1550,7 @@ function renderStage4Sheet() {
             <p><span class="s4-day">SAT</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">どそく</span></p>
             <p><span class="s4-day s4-day-red">THU</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">?</span></p>
           </div>
+          ${questionMemo(1)}
         </div>
         <div class="s4-panel">
           <p class="s4-panel-note">?に言葉を入れ、四角で囲まれた文字のみ繋げて読む</p>
@@ -1509,22 +1562,13 @@ function renderStage4Sheet() {
             <span></span><span class="s4-eq">‖</span><span></span>
             <span></span><span class="s4-answer-of">③のこたえ</span><span></span>
           </div>
+          ${questionMemo(2)}
         </div>
         <div class="s4-panel">
           <p class="s4-panel-note">④投げられた球が、放物線の<em class="red-word">頂点</em>で真下へ落下する時、球が通る言葉を繋いで読め</p>
           <img class="s4-art" src="./assets/stage04-art.webp" alt="放物線と散らばった文字の図(原本)" loading="lazy" />
+          ${questionMemo(3)}
         </div>
-      </div>
-      <div class="s4-numbers">
-        <div class="s4-num-col">
-          ${numberRow(stage4Numbers[0])}
-          ${numberRow(stage4Numbers[2])}
-        </div>
-        <div class="s4-num-col">
-          ${numberRow(stage4Numbers[1])}
-          ${numberRow(stage4Numbers[3])}
-        </div>
-        <p class="s4-read-order"><b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め<br>答えは、それが差ししめす先にある。</p>
       </div>
       <p class="sheet-elder">時差を隠す時に使うのじゃ→[ きじのくうきあしょうのみさきよらいのじさめ ]</p>
       <div class="s4-final-row">
@@ -2002,8 +2046,35 @@ function consolePuzzle(stage, done) {
   `;
 }
 
+function wireStage4Memo() {
+  document.querySelectorAll("[data-s4-answer]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const memo = normalizeStage4Memo(state.stage4Memo);
+      const index = Number(input.dataset.s4Answer);
+      if (!Number.isInteger(index) || index < 0 || index >= memo.answers.length) return;
+      memo.answers[index] = input.value.slice(0, 40);
+      state.stage4Memo = memo;
+      saveState();
+    });
+  });
+
+  document.querySelectorAll("[data-s4-cell]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const [questionIndex, groupIndex, cellIndex] = (input.dataset.s4Cell || "").split(":").map(Number);
+      const memo = normalizeStage4Memo(state.stage4Memo);
+      if (!memo.cells?.[questionIndex]?.[groupIndex] || !Number.isInteger(cellIndex)) return;
+      const character = Array.from(input.value)[0] || "";
+      input.value = character;
+      memo.cells[questionIndex][groupIndex][cellIndex] = character;
+      state.stage4Memo = memo;
+      saveState();
+    });
+  });
+}
+
 function wireStage(stage, done) {
   const note = document.querySelector("#stageNote");
+  if (stage.id === "time") wireStage4Memo();
   if (stage.type === "tiles") {
     document.querySelectorAll(".tile").forEach((button) => {
       button.addEventListener("click", () => {
@@ -2366,6 +2437,7 @@ function resetGame() {
   state.memoPickerOpen = false;
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
+  state.stage4Memo = normalizeStage4Memo(null);
   state.revealed = {};
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
