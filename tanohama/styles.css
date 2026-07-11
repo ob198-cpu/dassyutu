@@ -11514,6 +11514,16 @@ body.late-stage-mode .status-strip {
   display: none !important;
 }
 
+/* Late stages use the full viewport; the side menu and problem panel already identify the stage. */
+body.late-stage-mode .topbar {
+  display: none !important;
+}
+
+body.late-stage-mode .phone-shell {
+  min-height: 100dvh !important;
+  padding: 0 !important;
+}
+
 @media (orientation: landscape) and (max-height: 620px) {
   .stage4-sheet .s4-panel-answer .s4-num-box {
     min-width: 40px;
@@ -11913,11 +11923,12 @@ body.late-stage-mode .status-strip {
 
 .generic-problem-panel .sheet-problem {
   min-height: 0;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
 }
 
 .generic-problem-panel .sheet-problem > .sheet {
   min-height: 0;
+  align-self: flex-start;
 }
 
 .generic-problem-panel .generic-problem-answer {
@@ -12043,6 +12054,10 @@ body.late-stage-mode .status-strip {
     padding: 4px 6px;
   }
 
+  .generic-problem-panel .generic-problem-answer .item-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .generic-problem-panel .generic-problem-answer .item-card strong {
     font-size: 12px;
   }
@@ -12068,6 +12083,40 @@ body.late-stage-mode .status-strip {
     font-size: 9px;
   }
 
+  .generic-problem-panel .stage3-cols {
+    grid-template-columns: 1.08fr 0.92fr;
+  }
+
+  .generic-problem-panel .stage3-left {
+    border-right: 2px solid rgba(224, 185, 75, 0.4);
+    border-bottom: 0;
+  }
+
+  .generic-problem-panel .stage3-cipher {
+    padding: 5px 6px;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .generic-problem-panel .stage3-target-wrap {
+    padding: 8px 5px;
+  }
+
+  .generic-problem-panel .stage3-target {
+    font-size: 20px;
+  }
+
+  .generic-problem-panel .stage3-left .sheet-elder {
+    padding: 5px 6px;
+    font-size: 9px;
+    line-height: 1.25;
+  }
+
+  .generic-problem-panel .stage3-shop-title {
+    padding: 5px 4px;
+    font-size: 14px;
+  }
+
   .generic-problem-panel .stage4-mountain-sheet {
     padding: 6px 8px;
   }
@@ -12083,8 +12132,83 @@ body.late-stage-mode .status-strip {
 }
 
 @media (max-width: 680px) {
+  :root {
+    --side-menu-w: 0px;
+    --panel-edge: 6px;
+    --mobile-nav-h: 116px;
+  }
+
+  body.late-stage-mode .side-menu {
+    inset: 0 0 auto 0 !important;
+    width: 100% !important;
+    height: var(--mobile-nav-h) !important;
+  }
+
+  body.late-stage-mode .phone-shell {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  body.late-stage-mode .generic-problem-panel {
+    top: calc(var(--mobile-nav-h) + var(--panel-edge)) !important;
+    right: var(--panel-edge) !important;
+    bottom: var(--panel-edge) !important;
+    left: var(--panel-edge) !important;
+  }
+
   .generic-problem-panel .immersive-panel-scroll {
     padding: 6px;
+  }
+
+  .generic-problem-panel .generic-problem-answer .item-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .generic-problem-panel .generic-problem-answer .item-card {
+    min-height: 46px;
+    padding: 4px 6px;
+  }
+
+  .generic-problem-panel .generic-problem-answer .item-card strong {
+    font-size: 12px;
+  }
+
+  .generic-problem-panel .generic-problem-answer .item-card small {
+    font-size: 9px;
+  }
+
+  .generic-problem-panel .stage3-cols {
+    grid-template-columns: 1.08fr 0.92fr;
+  }
+
+  .generic-problem-panel .stage3-left {
+    border-right: 2px solid rgba(224, 185, 75, 0.4);
+    border-bottom: 0;
+  }
+
+  .generic-problem-panel .stage3-cipher {
+    padding: 5px 6px;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .generic-problem-panel .stage3-target-wrap {
+    padding: 8px 5px;
+  }
+
+  .generic-problem-panel .stage3-target {
+    font-size: 20px;
+  }
+
+  .generic-problem-panel .stage3-left .sheet-elder {
+    padding: 5px 6px;
+    font-size: 9px;
+    line-height: 1.25;
+  }
+
+  .generic-problem-panel .stage3-shop-title {
+    padding: 5px 4px;
+    font-size: 14px;
   }
 
   .generic-problem-panel .stage4-mountain-illustration {
