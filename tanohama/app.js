@@ -652,7 +652,6 @@ function renderIntro(stage) {
     <section class="intro-stage intro-image-stage" aria-label="異世界へ！？">
       <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
       <button class="primary-button intro-start-button" id="introStartButton" type="button">つぎへ</button>
-      <a class="vr-link" href="./vr/">🥽 VR版(試作)をひらく — Questのブラウザ対応</a>
     </section>
   `;
   document.querySelector("#introStartButton")?.addEventListener("click", () => {
