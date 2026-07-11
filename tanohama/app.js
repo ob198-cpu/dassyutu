@@ -740,7 +740,6 @@ function renderPathProblemCard(stage) {
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions">
           <button class="secondary-button ${state.stage2Rotated ? "is-on" : ""}" id="rotateBoard" type="button" aria-pressed="${state.stage2Rotated}">⟳ 回転</button>
-          <button class="secondary-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本</button>
           <button class="secondary-button" id="pathToSpell" type="button">呪文へ</button>
         </div>
       </div>
