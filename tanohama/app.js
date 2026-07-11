@@ -1253,9 +1253,9 @@ function renderGateStage(stage) {
       ${successAnimating || gatePanelMode !== "problem" ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} ${state.slotPickerOpen ? "has-picker" : ""} ${answerOpen ? "is-answer-open" : ""} is-problem-mode" aria-label="問題と回答">
         <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
         ${gateProblemInscription(stage, done, false)}
-        <div class="problem-answer-launcher">
-          <button class="problem-answer-toggle" id="gateAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
-        </div>
+        ${answerOpen ? "" : `<div class="problem-answer-launcher">
+          <button class="problem-answer-toggle" id="gateAnswerToggle" type="button" aria-expanded="false">解答欄を開く</button>
+        </div>`}
         ${answerOpen ? renderGateAnswerControls(stage, done, feedback) : ""}
       </section>`}
 
@@ -1427,6 +1427,7 @@ function renderGateAnswerControls(stage, done, feedback) {
       <div class="gate-problem-answer-head">
         <strong>回答</strong>
         <span>石板 ${stage.slots}文字</span>
+        <button class="gate-answer-close" id="gateAnswerClose" type="button">閉じる</button>
       </div>
       <div class="device-main-row">
         <div class="premium-slot-row magic-slots">
@@ -1781,6 +1782,13 @@ function wireGateStage(stage, done) {
 
   document.querySelector("#gateAnswerToggle")?.addEventListener("click", () => {
     state.gateAnswerOpen = !state.gateAnswerOpen;
+    state.slotPickerOpen = false;
+    state.feedback = null;
+    render();
+  });
+
+  document.querySelector("#gateAnswerClose")?.addEventListener("click", () => {
+    state.gateAnswerOpen = false;
     state.slotPickerOpen = false;
     state.feedback = null;
     render();
