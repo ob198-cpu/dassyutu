@@ -137,31 +137,27 @@ const stages = [
   {
     id: "time",
     number: "04",
-    title: "時差の機械室",
-    tag: "FINAL ANSWER",
-    mission: "時空のずれで出口が遠ざかっている。四つの計器を合わせ、時差を消す装置を起動する。",
-    reward: "タイムマシン",
+    title: "そびえ立つ山",
+    tag: "壁を越える呪文",
+    mission: "そびえ立つ山の壁があり、乗り越える事が出来ない。",
+    reward: "キミタチナラ",
     type: "console",
-    correct: "タイムマシン",
+    correct: "キミタチナラ",
     scene: "time",
-    sceneCaption: "三つの色ランプと計器がずれている。時差を消す装置名を探す。",
-    briefing: "青、緑、黄の順に読んで得た六音。時を移動する装置の名前を入力する。",
+    sceneCaption: "そびえ立つ山の壁があり、乗り越える事が出来ない。",
+    briefing: "山の壁を乗り越える呪文を入力する。",
     hints: [
-      "ヒント①「①から④を別々に解き、下の同じ番号の枠に当てはめるのじゃ」",
-      "ヒント②「最後は青、緑、黄の順。色の数字が示す文字だけを拾うのじゃぞ」",
-      "ヒント③「答えは六文字。時差を無くすため、時を移動する装置を起動するのじゃ」",
+      "ヒント①「そびえ立つ壁を乗り越えるための言葉を思い出すのじゃ」",
+      "ヒント②「ワシが最後に送ったエールの言葉を思い出すのじゃ」",
     ],
-    problems: [{ file: "stage04-problem-clean.webp", title: "ステージ4 原問題" }],
-    sourceProblemImage: "stage04-problem-clean.webp",
-    solutionImage: "stage04-solution-clean.png",
     textProblem: {
       title: "ステージ4",
-      subtitle: "時空が歪んで、時差が発生した",
-      rule: "①〜④の謎を解いて、時差を無くすための手段を見つける。",
-      prompt: "おじさんの間にあるもの、曜日の箱、THIS WEEK、投げられた球の軌跡を使って答えを出す。",
-      answerHint: "答えは、差し示す先にある。青→緑→黄の順に読む。",
+      subtitle: "そびえ立つ山の壁があり、乗り越える事が出来ない",
+      rule: "山の壁を乗り越える呪文を石板に入力する。",
+      prompt: "そびえ立つ山の壁を越え、出口へ進め。",
+      answerHint: "クリアに必要な呪文は、導入で聞いたエールの言葉。",
       answerBoxes: 6,
-      solvedNote: "FINAL ANSWER: タイムマシン。",
+      solvedNote: "「キミタチナラ」を唱え、そびえ立つ山の壁を乗り越えた。",
     },
   },
   {
@@ -981,7 +977,7 @@ function sideStageLabel(stage) {
     gate: { number: "01", title: "崩れた足場" },
     path: { number: "02", title: "開かずの間" },
     shop: { number: "03", title: "凍った足場" },
-    time: { number: "04", title: "時差の機械室" },
+    time: { number: "04", title: "そびえ立つ山" },
     boss: { number: "05", title: "出口前" },
   };
   return labels[stage.id] || { number: stage.number, title: stage.title };
@@ -1010,9 +1006,9 @@ function renderProblems(stage, done = false) {
       <section class="problem-section sheet-problem">
         <div class="section-head">
           <strong>問題</strong>
-          <button class="text-button sheet-source-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本を見る</button>
+          ${stage.sourceProblemImage ? `<button class="text-button sheet-source-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本を見る</button>` : ""}
         </div>
-        ${stage.id === "shop" ? renderStage3Sheet() : renderStage4Sheet()}
+        ${stage.id === "shop" ? renderStage3Sheet() : renderStage4MountainSheet()}
       </section>
     `;
   }
@@ -1223,11 +1219,12 @@ function iceScene() {
 
 function timeScene() {
   return `
-    <div class="time-core"></div>
-    <div class="dial dial-a"></div>
-    <div class="dial dial-b"></div>
-    <div class="dial dial-c"></div>
-    <div class="time-beam"></div>
+    <div class="mountain-wall-art time-scene-mountain" role="img" aria-label="そびえ立つ山の壁と出口">
+      <div class="mountain-wall-ridge"></div>
+      <div class="mountain-wall-path"></div>
+      <div class="mountain-wall-exit">出口</div>
+      <div class="mountain-wall-figure"></div>
+    </div>
   `;
 }
 
@@ -1523,6 +1520,25 @@ function renderStage3Sheet() {
 }
 
 // ステージ4 問題シート(原本をHTMLで再構成。④の図のみ原本から切り出し)
+function renderStage4MountainSheet() {
+  return `
+    <div class="sheet stage4-sheet stage4-mountain-sheet" role="img" aria-label="ステージ4 そびえ立つ山の壁">
+      <div class="sheet-head-row">
+        <h3 class="sheet-title">ステージ4</h3>
+        <span class="stage4-trial-label">試練</span>
+      </div>
+      <div class="stage4-mountain-illustration" aria-hidden="true">
+        <div class="stage4-mountain-person"></div>
+        <div class="stage4-mountain-ridge"></div>
+        <div class="stage4-mountain-gap"></div>
+        <div class="stage4-mountain-exit">出口</div>
+      </div>
+      <p class="stage4-mountain-copy">そびえ立つ山の壁があり、乗り越える事が出来ない</p>
+      <p class="stage4-mountain-prompt">山の壁を越える呪文を入力せよ</p>
+    </div>
+  `;
+}
+
 const stage4Scatter = [
   ["A", 8.5, 33], ["い", 40, 33], ["ち", 61, 32.5], ["ん", 79, 33],
   ["う", 49, 42.5], ["か", 73, 43], ["た", 93, 43],
@@ -1947,10 +1963,13 @@ function renderStage(stage) {
   const done = isStageCleared(stage.id);
   const panelMode = state.genericPanelMode || "closed";
   const background = stage.id === "shop" ? "stage03-bg-premium.webp" : "stage04-bg-premium.webp";
+  const mountainStage = stage.id === "time";
   elements.game.innerHTML = `
     <section class="stage-panel immersive-stage generic-immersive-stage ${done ? "is-solved" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world generic-stage-world">
-        <img class="stage-bg-art" src="./assets/${background}" alt="${stage.number} ${stage.title}" loading="eager">
+        ${mountainStage
+          ? `<div class="stage-bg-art mountain-wall-art ${done ? "is-cleared" : ""}" role="img" aria-label="${done ? "山の壁を越え、出口への道が開いた" : "そびえ立つ山の壁と出口"}"><div class="mountain-wall-ridge"></div><div class="mountain-wall-path"></div><div class="mountain-wall-exit">出口</div><div class="mountain-wall-figure"></div>${done ? `<div class="mountain-wall-bridge"></div><div class="mountain-wall-clear-light"></div>` : ""}</div>`
+          : `<img class="stage-bg-art" src="./assets/${background}" alt="${stage.number} ${stage.title}" loading="eager">`}
         <div class="art-vignette"></div>
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
@@ -2004,15 +2023,19 @@ function renderGenericPlayPanel(stage, done) {
 
 function renderGenericStageClear(stage) {
   const nextLabel = state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次のステージへ";
+  const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : `${stage.title} クリア`;
+  const clearMessage = stage.id === "time"
+    ? "「キミタチナラ」を唱え、そびえ立つ山の壁を乗り越えた。出口への道が開いた！"
+    : stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。";
   return `
     <section class="stage-clear-overlay" aria-label="ステージクリア">
       <div class="stage-clear-card">
         <span class="clear-kicker">STAGE ${stage.number} COMPLETE</span>
-        <h2>${stage.title} クリア</h2>
+        <h2>${clearTitle}</h2>
         <div class="clear-spell-reward">
           <span>呪文を習得</span>
           <strong>☆ ${stage.reward}</strong>
-          <p>${stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。"}</p>
+          <p>${clearMessage}</p>
         </div>
         <div class="clear-actions">
           <button class="secondary-button" id="genericToProblem" type="button">問題を見直す</button>
@@ -2080,18 +2103,14 @@ function consolePuzzle(stage, done) {
   return `
     <section class="play-box">
       <div class="time-console">
-        <div class="console-screen">BLUE → GREEN → YELLOW</div>
-        <div class="console-lamps">
-          <span class="lamp blue"></span>
-          <span class="lamp green"></span>
-          <span class="lamp yellow"></span>
-        </div>
+        <div class="console-screen">${done ? "山の壁を乗り越えた" : "そびえ立つ山の壁"}</div>
+        <p class="mountain-console-copy">${done ? "出口への道が開いた" : "乗り越える事が出来ない"}</p>
       </div>
       <form id="consoleForm" class="answer-form">
         <input id="answerInput" autocomplete="off" inputmode="text" placeholder="FINAL ANSWER" ${done ? "disabled" : ""} />
         <button class="primary-button" type="submit" ${done ? "disabled" : ""}>起動</button>
       </form>
-      <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "装置は反応しない。六文字と色の読む順を確認しよう。" : "青→緑→黄の順で導いた、六文字の装置名を入力する。"}</p>
+      <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "山の壁は動かない。呪文の文字を確認しよう。" : "山の壁を越える呪文を入力する。"}</p>
     </section>
   `;
 }
