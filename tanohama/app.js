@@ -102,6 +102,7 @@ const stages = [
     reward: "ドラブレス",
     type: "shop",
     correct: "ドラブレス",
+    successMessage: "ドラブレスの炎で氷が溶け、先へ進めるようになった！",
     scene: "ice",
     sceneCaption: "凍った足場を渡るには、氷に効くアイテムを選ぶ必要がある。",
     briefing: "式が指す番号は3。3番の棚には、口から火を出す道具が置かれている。",
@@ -1964,12 +1965,14 @@ function renderStage(stage) {
   const panelMode = state.genericPanelMode || "closed";
   const background = stage.id === "shop" ? "stage03-bg-premium.webp" : "stage04-bg-premium.webp";
   const mountainStage = stage.id === "time";
+  const iceStage = stage.id === "shop";
   elements.game.innerHTML = `
     <section class="stage-panel immersive-stage generic-immersive-stage ${done ? "is-solved" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world generic-stage-world">
         ${mountainStage
           ? `<div class="stage-bg-art mountain-wall-art ${done ? "is-cleared" : ""}" role="img" aria-label="${done ? "山の壁を越え、出口への道が開いた" : "そびえ立つ山の壁と出口"}"><div class="mountain-wall-ridge"></div><div class="mountain-wall-path"></div><div class="mountain-wall-exit">出口</div><div class="mountain-wall-figure"></div>${done ? `<div class="mountain-wall-bridge"></div><div class="mountain-wall-clear-light"></div>` : ""}</div>`
           : `<img class="stage-bg-art" src="./assets/${background}" alt="${stage.number} ${stage.title}" loading="eager">`}
+        ${iceStage && done ? `<div class="ice-melt-clear-scene" role="img" aria-label="ドラブレスの炎で氷が溶け、先へ進めるようになった"><div class="ice-melt-path"></div><div class="ice-melt-flame"></div><div class="ice-melt-steam steam-a"></div><div class="ice-melt-steam steam-b"></div><div class="ice-melt-spark spark-a"></div><div class="ice-melt-spark spark-b"></div></div>` : ""}
         <div class="art-vignette"></div>
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
@@ -2023,9 +2026,11 @@ function renderGenericPlayPanel(stage, done) {
 
 function renderGenericStageClear(stage) {
   const nextLabel = state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次のステージへ";
-  const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : `${stage.title} クリア`;
+  const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : stage.id === "shop" ? "氷が溶けた" : `${stage.title} クリア`;
   const clearMessage = stage.id === "time"
     ? "「キミタチナラ」を唱え、そびえ立つ山の壁を乗り越えた。出口への道が開いた！"
+    : stage.id === "shop"
+      ? "「ドラブレス」を唱えた！炎で氷が溶け、先へ進めるようになった！"
     : stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。";
   return `
     <section class="stage-clear-overlay" aria-label="ステージクリア">
@@ -2093,7 +2098,7 @@ function shopPuzzle(stage, done) {
           </div>
         </div>
       ` : ""}
-      <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "違うようだ。問題の数字と、道具の効果を見直そう。" : "氷を直接溶かせるアイテムを選ぶ。"}</p>
+      <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? stage.successMessage || `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "違うようだ。問題の数字と、道具の効果を見直そう。" : "氷を直接溶かせるアイテムを選ぶ。"}</p>
     </section>
   `;
 }
