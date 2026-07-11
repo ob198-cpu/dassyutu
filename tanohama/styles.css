@@ -12468,6 +12468,72 @@ body.late-stage-mode .phone-shell {
   }
 }
 
+@media (orientation: landscape) and (max-height: 430px) {
+  body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-scroll .kana-board {
+    flex: 0 0 72px !important;
+    height: 72px !important;
+    min-height: 72px !important;
+    grid-template-rows: auto 20px 20px !important;
+    overflow: hidden !important;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body.stage-one-mode .gate-sheet-scroll .kana-board-row {
+    height: 20px !important;
+    min-height: 20px !important;
+  }
+
+  body.stage-one-mode .gate-sheet-scroll .kana-glyph {
+    height: 20px !important;
+    min-height: 20px !important;
+    font-size: 12px !important;
+    line-height: 20px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet {
+    padding: 7px 10px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .sheet-head-row {
+    margin-bottom: 3px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .sheet-title {
+    font-size: 16px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .stage1-cols {
+    gap: 6px !important;
+    padding: 4px 0 !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .stage1-q1 {
+    gap: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .stage1-natto {
+    font-size: 31px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .stage1-inst {
+    font-size: 11px !important;
+    line-height: 1.22 !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .stage1-q2-text {
+    font-size: 14px !important;
+    line-height: 1.25 !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .stage1-footer {
+    margin-top: 3px !important;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+  }
+}
+
 /* ===== Problem answer drawer: keep the puzzle readable until input is needed ===== */
 .problem-answer-launcher {
   flex: 0 0 auto;
