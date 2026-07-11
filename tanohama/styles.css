@@ -12321,6 +12321,36 @@ body.late-stage-mode .phone-shell {
   }
 }
 
+/* Stage 02: keep the visible white circles and their touch targets on one SVG coordinate system. */
+.stage2-board-svg .stage2-memo-hit {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 6px;
+  cursor: pointer;
+  pointer-events: all;
+  touch-action: pan-x pan-y;
+}
+
+.stage2-board-svg .stage2-memo-hit.is-selected {
+  stroke: rgba(42, 86, 168, 0.96);
+}
+
+/* Stage 02: choosing a white circle must not lock the puzzle viewport. */
+body.stage-path-mode .path-problem-card {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+body.stage-path-mode .path-problem-card .stage2-board-wrap,
+body.stage-path-mode .path-problem-card .stage2-board-svg,
+body.stage-path-mode .path-problem-card .stage2-memo-spots,
+body.stage-path-mode .path-problem-card .stage2-cell-toggle {
+  touch-action: pan-x pan-y;
+}
+
 /* ===== Stage 01: one stable layout grid for phone landscape ===== */
 .gate-answer-close {
   margin-left: auto;

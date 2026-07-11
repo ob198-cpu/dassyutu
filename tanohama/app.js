@@ -337,7 +337,7 @@ function renderStage2Board(memo, active, pickerOpen) {
           svg += `<text x="${cx}" y="${cy + 2}" fill="#111" font-size="34" font-weight="900" text-anchor="middle" dominant-baseline="central" font-family="'Hiragino Sans','Segoe UI',sans-serif">${escapeAttribute(char)}</text>`;
         }
         const sel = pickerOpen && active.row === 0 && active.col === cell.memo;
-        spots += `<button class="stage2-memo-spot ${sel ? "is-selected" : ""}" style="--spot-x:${sx}%;--spot-y:${sy}%;" type="button" data-memo="0:${cell.memo}" aria-label="白丸に書き込む"></button>`;
+        svg += `<circle class="stage2-memo-hit ${sel ? "is-selected" : ""}" cx="${cx}" cy="${cy}" r="32" fill="transparent" role="button" tabindex="0" data-memo="0:${cell.memo}" aria-label="白丸に書き込む"/>`;
       } else {
         const dimmed = Boolean(marks[`${key}:${cell.r}:${cell.c}`]);
         svg += `<text x="${cx}" y="${cy + 2}" fill="${pal[cell.color]}" font-size="52" font-weight="900" text-anchor="middle" dominant-baseline="central" opacity="${dimmed ? 0.14 : 1}" font-family="'Hiragino Sans','Segoe UI',sans-serif">${cell.char}</text>`;
