@@ -11524,6 +11524,28 @@ body.late-stage-mode .phone-shell {
   padding: 0 !important;
 }
 
+/* Stage 1: keep the answer controls inside the problem window. */
+.spell-device.is-problem-mode {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  padding: 44px 10px 10px !important;
+}
+
+.spell-device.is-problem-mode .gate-sheet-panel {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+.spell-device.is-problem-mode .gate-problem-answer {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
 @media (orientation: landscape) and (max-height: 620px) {
   .stage4-sheet .s4-panel-answer .s4-num-box {
     min-width: 40px;
