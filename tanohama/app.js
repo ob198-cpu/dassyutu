@@ -2077,7 +2077,7 @@ function shopPuzzle(stage, done) {
       </div>
       ${pending && !done ? `
         <div class="shop-confirmation" role="group" aria-label="呪文の確認">
-          <p>「${pending.name}」で本当にいい？</p>
+          <p>「${pending.name}」で本当にいいか？</p>
           <div class="shop-confirmation-actions">
             <button class="primary-button" id="confirmShopItem" type="button">これで発動する</button>
             <button class="secondary-button" id="cancelShopItem" type="button">選び直す</button>
