@@ -10878,21 +10878,3 @@ body {
     max-height: 52dvh;
   }
 }
-
-/* VR版へのリンク(導入画面) */
-.vr-link {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 8px 16px;
-  border: 1px solid rgba(157, 214, 255, 0.55);
-  border-radius: 999px;
-  color: #bfe2ff;
-  background: rgba(10, 20, 34, 0.85);
-  font-size: 13px;
-  font-weight: 900;
-  text-decoration: none;
-}
-
-.vr-link:hover {
-  filter: brightness(1.2);
-}

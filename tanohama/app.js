@@ -414,6 +414,10 @@ let gateSuccessTimers = [];
 const fallingRockPreload = new Image();
 fallingRockPreload.src = "./assets/stage01-rock-small.webp";
 
+// ステージ2は正解時に扉あり／扉なし背景を瞬時に切り替えるため、先読みしておく。
+const openPathPreload = new Image();
+openPathPreload.src = "./assets/stage02-bg-open.webp";
+
 function loadState() {
   try {
     const raw = localStorage.getItem(storeKey);
@@ -665,6 +669,8 @@ function renderIntro(stage) {
 function renderPathStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const casting = feedback?.type === "success" && feedback.phase === "casting";
+  const pathOpen = done && !casting;
   const panelClosed = state.pathPanelMode === "closed";
   const problemMode = state.pathPanelMode === "problem";
   const clearMode = done && state.pathPanelMode === "clear";
@@ -674,12 +680,15 @@ function renderPathStage(stage) {
   const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
   const pickerOpen = !done && !problemMode && state.slotPickerOpen === true;
   elements.game.innerHTML = `
-    <section class="stage-panel premium-stage path-stage-background-only ${done ? "is-solved" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}" aria-label="${stage.number} / ${stage.title}">
+    <section class="stage-panel premium-stage path-stage-background-only ${pathOpen ? "is-path-open is-solved" : ""} ${casting ? "is-path-casting" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world">
-        <img class="stage-bg-art" src="./assets/stage02-bg.webp" alt="${stage.number} ${stage.title}" loading="eager">
+        <img class="stage-bg-art" src="${pathOpen ? "./assets/stage02-bg-open.webp" : "./assets/stage02-bg.webp"}" alt="${pathOpen ? "扉が消えて通れるようになった古い石造りの通路" : `${stage.number} ${stage.title}`}" loading="eager">
         <div class="art-vignette"></div>
+        <div class="path-stage-title ${casting ? "is-erasing" : ""}" aria-label="${pathOpen ? "扉のない通路" : "扉のあかない通路"}">
+          ${pathOpen ? "『扉のない通路』" : `『扉の<span class="path-red-word">あか</span>ない通路』`}
+        </div>
       </div>
-      ${clearMode ? renderPathStageClear(stage) : panelClosed ? "" : problemMode ? renderPathProblemCard(stage) : `
+      ${casting ? renderPathCastEffect(stage) : clearMode ? renderPathStageClear(stage) : panelClosed ? "" : problemMode ? renderPathProblemCard(stage) : `
       <section class="spell-device path-spell-device ${done ? "is-clear-compact" : ""} ${pickerOpen ? "has-picker" : ""}" aria-label="${done ? "習得済み呪文" : "呪文入力"}">
         ${`
             <div class="path-device-head">
@@ -884,11 +893,18 @@ function wirePathStage(stage, done) {
     }
     addUnique(state.cleared, stage.id);
     addUnique(state.spells, stage.reward);
-    state.feedback = null;
-    state.pathPanelMode = "clear";
+    state.feedback = { stageId: stage.id, type: "success", phase: "casting" };
+    state.pathPanelMode = "closed";
     resetStageInput();
     render();
-    burstOnce(".stage-clear-card");
+    window.setTimeout(() => {
+      if (stages[state.stageIndex]?.id !== stage.id) return;
+      if (state.feedback?.stageId !== stage.id || state.feedback?.phase !== "casting") return;
+      state.feedback = { stageId: stage.id, type: "success", phase: "done" };
+      state.pathPanelMode = "clear";
+      render();
+      burstOnce(".path-clear-card");
+    }, 1400);
   });
 }
 
@@ -1640,16 +1656,24 @@ function renderKanaBoard() {
 function renderPathStageClear(stage) {
   return `
     <section class="stage-clear-overlay path-clear-overlay" aria-label="ステージ2 クリア">
-      <div class="stage-clear-card">
-        <span class="clear-kicker">STAGE ${stage.number} COMPLETE</span>
-        <h2>${stage.title} クリア</h2>
-        <div class="clear-spell-reward">
-          <span>呪文を習得</span>
-          <strong>☆ ${stage.reward}</strong>
-          <p>${stage.textProblem?.solvedNote || stage.successMessage}</p>
+      <div class="stage-clear-card path-clear-card">
+        <div class="path-clear-copy">
+          <span class="clear-kicker">STAGE ${stage.number} COMPLETE</span>
+          <h2>『扉のない通路』</h2>
+          <p><strong>${stage.reward}を唱えた！</strong>『』の中の<span class="path-red-word">あか</span>色を消したことで『扉のない通路』になった！</p>
         </div>
-        <div class="clear-actions"><button class="primary-button" id="nextButton" type="button">次のステージへ</button></div>
+        <button class="primary-button" id="nextButton" type="button">次のステージへ</button>
       </div>
+    </section>
+  `;
+}
+
+function renderPathCastEffect(stage) {
+  return `
+    <section class="path-cast-effect" aria-live="assertive" aria-label="${stage.reward}を唱えた">
+      <div class="path-cast-ring" aria-hidden="true"></div>
+      <p><strong>${stage.reward}</strong>を唱えた！</p>
+      <span>『』の中の「あか」を消去中…</span>
     </section>
   `;
 }
