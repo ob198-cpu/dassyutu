@@ -1648,11 +1648,12 @@ function renderKanaBoard() {
           `,
         )
         .join("")}
-      <div class="kana-reading ${decoded ? "is-decoded" : ""}" aria-live="polite">
-        <span>読み取り</span>
-        <strong>${reading || "選んだ文字の下を左から読む"}</strong>
-        ${decoded ? `<p>上段に隠れた獣の名前の誤字を探せ。誤字の下にある一文字を「ケモノ」に加えると、石板の呪文になる。</p>` : ""}
-      </div>
+      ${reading ? `
+        <div class="kana-reading ${decoded ? "is-decoded" : ""}" aria-live="polite">
+          <strong>${reading}</strong>
+          ${decoded ? `<p>上段に隠れた獣の名前の誤字を探せ。誤字の下にある一文字を「ケモノ」に加えると、石板の呪文になる。</p>` : ""}
+        </div>
+      ` : ""}
     </div>
   `;
 }
