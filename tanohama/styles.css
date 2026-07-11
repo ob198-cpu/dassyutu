@@ -12470,10 +12470,10 @@ body.late-stage-mode .phone-shell {
 
 @media (orientation: landscape) and (max-height: 430px) {
   body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-scroll .kana-board {
-    flex: 0 0 72px !important;
-    height: 72px !important;
-    min-height: 72px !important;
-    grid-template-rows: auto 20px 20px !important;
+    flex: 0 0 56px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    grid-template-rows: 20px 20px !important;
     overflow: hidden !important;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -12529,8 +12529,16 @@ body.late-stage-mode .phone-shell {
 
   body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .stage1-sheet .stage1-footer {
     margin-top: 3px !important;
-    font-size: 11px !important;
+    font-size: clamp(10px, 1.3vw, 12px) !important;
     line-height: 1.15 !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-footer {
+    font-size: clamp(10px, 1.3vw, 12px) !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
   }
 }
 
