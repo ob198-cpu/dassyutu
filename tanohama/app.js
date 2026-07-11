@@ -1782,8 +1782,9 @@ function wireGateStage(stage, done) {
       const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
       state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
       state.slotInput[slot] = button.dataset.tile;
-      state.activeSlot = Math.min(slot + 1, stage.slots - 1);
-      state.slotPickerOpen = false;
+      const nextSlot = state.slotInput.findIndex((value) => !value);
+      state.activeSlot = nextSlot >= 0 ? nextSlot : Math.min(slot + 1, stage.slots - 1);
+      state.slotPickerOpen = nextSlot >= 0;
       state.feedback = null;
       render();
       popOnce(`.premium-slot[data-slot="${slot}"]`);
