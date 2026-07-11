@@ -1555,12 +1555,19 @@ function renderStage4Sheet() {
         <div class="s4-panel">
           <p class="s4-panel-note">?に言葉を入れ、四角で囲まれた文字のみ繋げて読む</p>
           <div class="s4-this-grid">
-            <span></span><span class="s4-boxed s4-red">THIS</span><span class="s4-red">WEEK</span>
-            <span></span><span class="s4-plus">+</span><span></span>
-            <span>うえ</span><span class="s4-boxed">?</span><span>した</span>
-            <span></span><span></span><span class="s4-ge">GE</span>
-            <span></span><span class="s4-eq">‖</span><span></span>
-            <span></span><span class="s4-answer-of">③のこたえ</span><span></span>
+            <div class="s4-word-pair s4-word-pair-left">
+              <span class="s4-boxed s4-red">THIS</span>
+              <span class="s4-pair-label">うえ</span>
+              <span class="s4-boxed s4-pair-answer">?</span>
+            </div>
+            <span class="s4-plus">+</span>
+            <div class="s4-word-pair s4-word-pair-right">
+              <span class="s4-red">WEEK</span>
+              <span class="s4-pair-label">した</span>
+              <span class="s4-ge">GE</span>
+            </div>
+            <span class="s4-eq">‖</span>
+            <span class="s4-answer-of">③のこたえ</span>
           </div>
           ${questionMemo(2)}
         </div>
