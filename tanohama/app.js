@@ -460,13 +460,15 @@ function loadState() {
         shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "play", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : "closed",
-        bossPanelMode: ["closed", "problem", "play"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
+        bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
+        bossSlotCreationPending: Boolean(saved.bossSlotCreationPending),
+        bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) || (Array.isArray(saved.bossInput) && saved.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))),
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false };
 }
 
 function saveState() {
@@ -506,6 +508,8 @@ function closeStagePanelsOnEntry(stage) {
   state.gatePanelMode = "spell";
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
+  state.bossSlotCreationPending = false;
+  state.bossSixthSlotCreated = false;
   if (stage?.id === "path") {
     state.pathPanelMode = "closed";
   }
@@ -2234,6 +2238,7 @@ function renderBoss(stage) {
         <div class="art-vignette"></div>
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
+      ${mode === "spells" ? renderBossSpellBookPanel(stage) : ""}
       ${mode === "problem" ? renderBossProblemPanel(stage) : ""}
       ${mode === "play" ? `
         <section class="immersive-panel boss-battle-panel" aria-label="ラスボス戦">
@@ -2258,6 +2263,31 @@ function renderBoss(stage) {
     </section>
   `;
   wireBoss();
+}
+
+function renderBossSpellBookPanel(stage) {
+  return `
+    <section class="immersive-panel boss-spell-book-panel" aria-label="過去と新しく覚えた呪文">
+      <div class="immersive-panel-head">
+        <div><span>STAGE ${stage.number}</span><strong>覚えた呪文</strong></div>
+        <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="呪文一覧を閉じる">×</button>
+      </div>
+      <div class="boss-spell-book-scroll">
+        <section class="boss-spell-book-section">
+          <h3>過去の呪文</h3>
+          <div class="boss-spell-book-grid">
+            ${bossLearnedSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+          </div>
+        </section>
+        <section class="boss-spell-book-section">
+          <h3>新しく覚えた呪文</h3>
+          <div class="boss-spell-book-grid">
+            ${bossNewSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+          </div>
+        </section>
+      </div>
+    </section>
+  `;
 }
 
 function renderBossProblemPanel(stage) {
@@ -2301,9 +2331,42 @@ function renderBossProblemPanel(stage) {
           ${sequence}
           <p class="boss-brief-final">「今こそ共に歩んだ仲間の事を思い出す時じゃ。どんなに離れても皆仲間、さぁとびきりの一撃を放つのじゃ」<span aria-label="蝶の印">蝶の印</span></p>
         </section>
+        ${renderBossDirectAnswer(stage)}
         <button class="secondary-button boss-source-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原問題">原本画像を確認</button>
       </div>
-      <div class="immersive-panel-actions"><button class="primary-button" id="bossToPlay" type="button">戦闘を始める</button></div>
+      <div class="immersive-panel-actions"><span class="boss-direct-help">この問題画面から、次の呪文を直接回答できます。</span></div>
+    </section>
+  `;
+}
+
+function renderBossDirectAnswer(stage) {
+  const step = bossBattle[state.bossInput.length];
+  if (!step) {
+    return `<section class="boss-direct-answer is-complete"><h3>すべての攻撃を切り抜けた</h3><p>ラスボスへの回答は完了しています。</p></section>`;
+  }
+  const isGokurosama = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ");
+  const hasTsukemono = state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"));
+  const feedback = state.feedback?.stageId === "boss" && state.feedback.type === "fail" ? state.feedback.message : "";
+  if (isGokurosama && !state.bossSixthSlotCreated) {
+    return `
+      <section class="boss-direct-answer boss-slot-creation" aria-label="ゴクロウサマの6文字目">
+        <h3>ゴクロウサマの6文字目</h3>
+        <p>ゴクロウサマは、まだ5文字目までしか記入できない。ツケモノを使って、最後の枠を作成する。</p>
+        <div class="boss-direct-slots" aria-label="作成前の5文字の枠">${Array.from({ length: 5 }).map(() => "<span></span>").join("")}</div>
+        ${hasTsukemono ? `<button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノを使って6文字目の枠を作成</button>` : `<p class="boss-direct-locked">先にツケモノを習得して、この場所で使う。</p>`}
+      </section>
+    `;
+  }
+  return `
+    <section class="boss-direct-answer" aria-label="呪文を直接回答">
+      <h3>この問題に直接回答</h3>
+      <p>第${state.bossInput.length + 1}手 / ${step.answer === "ゴクロウサマ" ? "6" : step.slots}文字</p>
+      <div class="boss-direct-slots" aria-label="${step.slots}文字の回答欄">${Array.from({ length: step.slots }).map(() => "<span></span>").join("")}</div>
+      <form id="bossDirectForm" class="boss-direct-form">
+        <input id="bossDirectInput" type="text" maxlength="${step.slots}" autocomplete="off" inputmode="text" placeholder="呪文を入力" aria-label="呪文を直接入力" />
+        <button class="primary-button" id="bossDirectSubmit" type="submit">回答する</button>
+      </form>
+      ${feedback ? `<p class="result-message is-fail">${feedback}</p>` : ""}
     </section>
   `;
 }
@@ -2361,8 +2424,21 @@ function wireBoss() {
     state.feedback = null;
     render();
   });
+  document.querySelector("#useTsukemonoSlot")?.addEventListener("click", () => {
+    if (!state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))) return;
+    state.bossSlotCreationPending = false;
+    state.bossSixthSlotCreated = true;
+    state.feedback = null;
+    state.slotInput = [];
+    render();
+  });
   const step = bossBattle[state.bossInput.length];
   if (!step) return;
+  document.querySelector("#bossDirectForm")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = document.querySelector("#bossDirectInput");
+    castBossDirectAnswer(step, input?.value || "");
+  });
   if (state.slotPickerOpen) {
     requestAnimationFrame(() => document.querySelector(".slot-choice-popover")?.scrollIntoView({ block: "nearest" }));
   }
@@ -2407,18 +2483,7 @@ function castBossSpell(step) {
   }
   const value = normalizeAnswer(letters.join(""));
   if (value === normalizeAnswer(step.answer)) {
-    state.bossInput.push(step.answer);
-    resetStageInput();
-    state.feedback = null;
-    if (state.bossInput.length >= bossBattle.length) {
-      addUnique(state.cleared, "boss");
-      state.isClear = true;
-    }
-    render();
-    requestAnimationFrame(() => {
-      const solved = document.querySelectorAll(".boss-step.is-solved");
-      solved[solved.length - 1]?.classList.add("just-solved");
-    });
+    completeBossStep(step);
     return;
   }
   const used = state.bossInput.map((spell) => normalizeAnswer(spell));
@@ -2433,6 +2498,43 @@ function castBossSpell(step) {
   }
   state.feedback = { stageId: "boss", type: "fail", message };
   render();
+}
+
+function castBossDirectAnswer(step, value) {
+  if (!String(value).trim()) {
+    state.feedback = { stageId: "boss", type: "fail", message: "呪文を入力してください。" };
+    render();
+    return;
+  }
+  if (normalizeAnswer(value) === normalizeAnswer(step.answer)) {
+    completeBossStep(step);
+    return;
+  }
+  state.feedback = { stageId: "boss", type: "fail", message: "その答えではない。問題と呪文の一覧を確認してください。" };
+  render();
+}
+
+function completeBossStep(step) {
+  state.bossInput.push(step.answer);
+  state.feedback = null;
+  state.slotInput = [];
+  state.activeSlot = 0;
+  state.slotPickerOpen = false;
+  if (normalizeAnswer(step.answer) === normalizeAnswer("ツケモノ")) {
+    state.bossSlotCreationPending = true;
+    state.bossPanelMode = "problem";
+    render();
+    return;
+  }
+  if (state.bossInput.length >= bossBattle.length) {
+    addUnique(state.cleared, "boss");
+    state.isClear = true;
+  }
+  render();
+  requestAnimationFrame(() => {
+    const solved = document.querySelectorAll(".boss-step.is-solved");
+    solved[solved.length - 1]?.classList.add("just-solved");
+  });
 }
 
 function renderClear() {
@@ -2623,7 +2725,8 @@ function focusCurrentMagic() {
   }
 
   if (stage.id === "boss") {
-    state.bossPanelMode = "play";
+    state.bossPanelMode = "spells";
+    state.slotPickerOpen = false;
     state.feedback = null;
     render();
     return;

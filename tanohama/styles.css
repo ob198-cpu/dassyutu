@@ -9927,6 +9927,161 @@ body {
   margin-top: 10px;
 }
 
+.boss-direct-answer {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 232, 121, 0.66);
+  border-radius: 7px;
+  background: linear-gradient(135deg, rgba(57, 36, 11, 0.9), rgba(7, 13, 20, 0.96));
+}
+
+.boss-direct-answer h3,
+.boss-direct-answer p {
+  margin: 0;
+}
+
+.boss-direct-answer h3 {
+  color: #fff0b0;
+  font-size: clamp(17px, 2.4vw, 24px);
+}
+
+.boss-direct-answer > p {
+  color: #e6dfce;
+  line-height: 1.45;
+}
+
+.boss-direct-slots {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  min-height: 40px;
+}
+
+.boss-direct-slots span {
+  width: clamp(29px, 5vw, 46px);
+  aspect-ratio: 0.88;
+  border: 2px solid rgba(255, 224, 104, 0.82);
+  border-radius: 4px;
+  background: rgba(3, 8, 13, 0.94);
+}
+
+.boss-direct-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.boss-direct-form input {
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 2px solid rgba(255, 224, 104, 0.68);
+  border-radius: 5px;
+  background: #f7f4e8;
+  color: #121212;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+  outline: none;
+}
+
+.boss-direct-form input:focus {
+  border-color: #fff1a3;
+  box-shadow: 0 0 0 3px rgba(255, 224, 104, 0.2);
+}
+
+.boss-direct-form button,
+.boss-slot-creation > button {
+  min-height: 44px;
+}
+
+.boss-slot-creation {
+  border-color: rgba(118, 229, 196, 0.72);
+  background: linear-gradient(135deg, rgba(8, 54, 50, 0.88), rgba(7, 13, 20, 0.96));
+}
+
+.boss-slot-creation .boss-direct-slots span {
+  border-color: rgba(118, 229, 196, 0.72);
+}
+
+.boss-direct-locked {
+  color: #f1c7c7 !important;
+  font-weight: 850;
+}
+
+.boss-direct-answer.is-complete {
+  border-color: rgba(118, 229, 196, 0.72);
+}
+
+.boss-direct-help {
+  color: #cdd9e7;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.boss-spell-book-panel {
+  padding-bottom: 0;
+}
+
+.boss-spell-book-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px;
+}
+
+.boss-spell-book-section + .boss-spell-book-section {
+  margin-top: 14px;
+}
+
+.boss-spell-book-section h3 {
+  margin: 0 0 8px;
+  color: #ffe89a;
+  font-size: clamp(17px, 2.2vw, 23px);
+}
+
+.boss-spell-book-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.boss-spell-book-grid article {
+  padding: 10px 12px;
+  border: 1px solid rgba(119, 211, 197, 0.36);
+  border-radius: 6px;
+  background: rgba(5, 19, 25, 0.88);
+}
+
+.boss-spell-book-grid article strong {
+  color: #fff0a6;
+  font-size: 16px;
+}
+
+.boss-spell-book-grid article p {
+  margin: 5px 0 0;
+  color: #d9e5e8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 680px) {
+  .boss-spell-book-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .boss-direct-form {
+    grid-template-columns: 1fr;
+  }
+
+  .boss-direct-form button,
+  .boss-slot-creation > button {
+    width: 100%;
+  }
+}
+
 .premium-final-clear {
   position: relative;
   color: #f8f3e6;
