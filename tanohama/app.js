@@ -1472,16 +1472,18 @@ function renderStage1Sheet() {
 // ステージ3 問題シート(原本をHTMLで再構成)
 function renderStage3Sheet() {
   const items = [
-    { name: "①メラソード", note: "切ったものが燃える" },
-    { name: "②ソラブーツ", note: "装備すると素早くなる" },
-    { name: "③ドラブレス", note: "口から火が出せる" },
-    { name: "④マジホウキ", note: "飛べる、掃除もできる" },
+    { name: "メラソード", note: "切ったものが燃える" },
+    { name: "ソラブーツ", note: "装備すると素早くなる" },
+    { name: "ドラブレス", note: "口から火が出せる" },
+    { name: "マジホウキ", note: "飛べる、掃除もできる" },
   ];
+  const selectedIndex = items.findIndex((item) => item.name === state.shopPendingItem);
+  const done = isStageCleared("shop");
   return `
-    <div class="sheet stage3-sheet" role="img" aria-label="ステージ3 問題">
+    <div class="sheet stage3-sheet" role="group" aria-label="ステージ3 問題">
       <div class="sheet-head-row">
         <h3 class="sheet-title">ステージ3</h3>
-        <span class="stage3-answer-slot">解答番号→<span class="stage3-answer-box" aria-hidden="true"></span></span>
+        <span class="stage3-answer-slot">解答番号→<span class="stage3-answer-box ${selectedIndex >= 0 ? "is-filled" : ""}" aria-live="polite">${selectedIndex >= 0 ? selectedIndex + 1 : ""}</span></span>
       </div>
       <div class="stage3-cols">
         <div class="stage3-left">
@@ -1492,7 +1494,7 @@ function renderStage3Sheet() {
         <div class="stage3-right">
           <h4 class="stage3-shop-title">アイテム屋</h4>
           <ul class="stage3-items">
-            ${items.map((item) => `<li><span class="stage3-item-main"><strong>${item.name}</strong><small>${item.note}</small></span></li>`).join("")}
+            ${items.map((item, index) => `<li><button class="stage3-answer-option ${state.shopPendingItem === item.name ? "is-selected" : ""}" type="button" data-item="${item.name}" aria-pressed="${state.shopPendingItem === item.name}" ${done ? "disabled" : ""}><span class="stage3-answer-number">${index + 1}</span><span class="stage3-item-main"><strong>${item.name}</strong><small>${item.note}</small></span></button></li>`).join("")}
           </ul>
         </div>
       </div>
@@ -2049,31 +2051,23 @@ function tilePuzzle(stage, done) {
 function shopPuzzle(stage, done) {
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
   const pending = stage.items.find((item) => item.name === state.shopPendingItem) || null;
+  const pendingIndex = pending ? stage.items.findIndex((item) => item.name === pending.name) + 1 : 0;
   return `
-    <section class="play-box">
-      <div class="item-grid">
-        ${stage.items
-          .map(
-            (item, i) => `
-              <button class="item-card ${pending?.name === item.name ? "is-pending" : ""}" type="button" data-item="${item.name}" aria-pressed="${pending?.name === item.name}" ${done ? "disabled" : ""}>
-                <span class="item-icon icon-${item.icon}"></span>
-                <strong>${i + 1}. ${item.name}</strong>
-                <small>${item.detail}</small>
-              </button>
-            `,
-          )
-          .join("")}
-      </div>
+    <section class="play-box stage3-answer-controls">
       ${pending && !done ? `
-        <div class="shop-confirmation" role="group" aria-label="呪文の確認">
-          <p>「${pending.name}」で本当にいいか？</p>
-          <div class="shop-confirmation-actions">
-            <button class="primary-button" id="confirmShopItem" type="button">これで発動する</button>
-            <button class="secondary-button" id="cancelShopItem" type="button">選び直す</button>
+        <div class="stage3-confirmation-screen" role="dialog" aria-modal="true" aria-label="回答の確認">
+          <div class="shop-confirmation stage3-confirmation-card">
+            <span class="stage3-confirmation-kicker">回答番号 ${pendingIndex}</span>
+            <strong class="stage3-confirmation-item">${pending.name}</strong>
+            <p>${pending.name}で本当にいいか？</p>
+            <div class="shop-confirmation-actions">
+              <button class="primary-button" id="confirmShopItem" type="button">はい</button>
+              <button class="secondary-button" id="cancelShopItem" type="button">いいえ</button>
+            </div>
           </div>
         </div>
       ` : ""}
-      <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? stage.successMessage || `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "違うようだ。問題の数字と、道具の効果を見直そう。" : "氷を直接溶かせるアイテムを選ぶ。"}</p>
+      <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? stage.successMessage || `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "違うようだ。問題の数字と、道具の効果を見直そう。" : "問題内の回答番号を押してください。"}</p>
     </section>
   `;
 }
@@ -2138,7 +2132,7 @@ function wireStage(stage, done) {
     });
   }
   if (stage.type === "shop") {
-    document.querySelectorAll(".item-card").forEach((button) => {
+    document.querySelectorAll(".stage3-answer-option").forEach((button) => {
       button.addEventListener("click", () => {
         if (done) return;
         state.shopPendingItem = button.dataset.item || "";
