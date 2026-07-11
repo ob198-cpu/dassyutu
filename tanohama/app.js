@@ -1428,7 +1428,6 @@ function renderStage1Sheet() {
     <div class="sheet stage1-sheet" role="img" aria-label="ステージ1 問題">
       <div class="sheet-head-row">
         <h3 class="sheet-title">ステージ1</h3>
-        <button class="text-button sheet-source-button" type="button" data-problem="ステージ１　問題 VER2.png" data-title="ステージ1 原本">原本</button>
       </div>
       <div class="stage1-cols">
         <div class="stage1-q stage1-q1">
