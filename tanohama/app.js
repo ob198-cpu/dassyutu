@@ -683,7 +683,9 @@ function renderIntro(stage) {
 function renderPathStage(stage) {
   const done = isStageCleared(stage.id);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const successPhase = feedback?.type === "success" ? feedback.phase : "";
   const casting = feedback?.type === "success" && feedback.phase === "casting";
+  const successPrompt = successPhase === "learned" || successPhase === "confirm";
   const pathOpen = done && !casting;
   const panelClosed = state.pathPanelMode === "closed";
   const problemMode = state.pathPanelMode === "problem";
@@ -697,13 +699,15 @@ function renderPathStage(stage) {
           ${pathOpen ? "『扉のない通路』" : `『扉の<span class="path-red-word">あか</span>ない通路』`}
         </div>
       </div>
-      ${casting ? renderPathCastEffect(stage) : clearMode ? renderPathStageClear(stage) : panelClosed ? "" : problemMode ? renderPathProblemCard(stage) : ""}
+      ${casting ? renderPathCastEffect(stage) : successPrompt ? renderPathSuccessStep(stage, successPhase) : clearMode ? renderPathStageClear(stage) : panelClosed ? "" : problemMode ? renderPathProblemCard(stage) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
     </section>
   `;
   if (problemMode) {
     wirePathProblem(stage);
     wirePathStage(stage, done);
+  } else if (successPrompt) {
+    wirePathSuccessStep(stage);
   } else if (clearMode) {
     wirePathStage(stage, done);
   }
@@ -913,20 +917,12 @@ function wirePathStage(stage, done) {
       render();
       return;
     }
-    addUnique(state.cleared, stage.id);
     addUnique(state.spells, stage.reward);
-    state.feedback = { stageId: stage.id, type: "success", phase: "casting" };
+    state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
     state.pathPanelMode = "closed";
     resetStageInput();
     render();
-    window.setTimeout(() => {
-      if (stages[state.stageIndex]?.id !== stage.id) return;
-      if (state.feedback?.stageId !== stage.id || state.feedback?.phase !== "casting") return;
-      state.feedback = { stageId: stage.id, type: "success", phase: "done" };
-      state.pathPanelMode = "clear";
-      render();
-      burstOnce(".path-clear-card");
-    }, 3400);
+    burstOnce(".path-sequence-card");
   });
 }
 
@@ -1673,6 +1669,63 @@ function renderPathStageClear(stage) {
       </div>
     </section>
   `;
+}
+
+function renderPathSuccessStep(stage, phase) {
+  if (phase === "learned") {
+    return `
+      <section class="stage-clear-overlay path-sequence-overlay" aria-label="${stage.reward}を覚えた">
+        <div class="stage-clear-card path-sequence-card">
+          <span class="clear-kicker">STAGE ${stage.number} CLEAR</span>
+          <h2>${stage.reward}を覚えた</h2>
+          <div class="path-learned-spell">
+            <strong>☆ ${stage.reward}</strong>
+            <p>「　」内の色を消すことが出来る。</p>
+            <p>「　」内の内容の意味が通れば、それは現実となる。</p>
+          </div>
+          <button class="primary-button" id="pathLearnedNext" type="button">つぎへ</button>
+        </div>
+      </section>
+    `;
+  }
+  return `
+    <section class="stage-clear-overlay path-sequence-overlay" aria-label="${stage.reward}を唱える確認">
+      <div class="stage-clear-card path-sequence-card path-cast-confirm-card">
+        <span class="clear-kicker">SPELL READY</span>
+        <h2>${stage.reward}を唱えますか？</h2>
+        <div class="path-sequence-actions">
+          <button class="primary-button" id="pathCastYes" type="button">はい</button>
+          <button class="secondary-button" id="pathCastNo" type="button">いいえ</button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function beginPathCast(stage) {
+  state.feedback = { stageId: stage.id, type: "success", phase: "casting" };
+  render();
+  window.setTimeout(() => {
+    if (stages[state.stageIndex]?.id !== stage.id) return;
+    if (state.feedback?.stageId !== stage.id || state.feedback?.phase !== "casting") return;
+    addUnique(state.cleared, stage.id);
+    state.feedback = { stageId: stage.id, type: "success", phase: "done" };
+    state.pathPanelMode = "clear";
+    render();
+    burstOnce(".path-clear-card");
+  }, 3400);
+}
+
+function wirePathSuccessStep(stage) {
+  document.querySelector("#pathLearnedNext")?.addEventListener("click", () => {
+    state.feedback = { stageId: stage.id, type: "success", phase: "confirm" };
+    render();
+  });
+  document.querySelector("#pathCastYes")?.addEventListener("click", () => beginPathCast(stage));
+  document.querySelector("#pathCastNo")?.addEventListener("click", () => {
+    state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
+    render();
+  });
 }
 
 function renderPathCastEffect(stage) {
