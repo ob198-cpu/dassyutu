@@ -10946,11 +10946,11 @@ body {
 
 .path-stage-title.is-erasing .path-red-word {
   display: inline-block;
-  animation: path-red-erase 1.25s ease-in forwards;
+  animation: path-red-erase 3.25s ease-in forwards;
 }
 
 .path-stage-background-only.is-path-casting .stage-bg-art {
-  animation: path-door-cast 1.4s ease-in-out both;
+  animation: path-door-cast 3.4s ease-in-out both;
 }
 
 .path-stage-background-only.is-path-open .stage-bg-art {
@@ -11001,7 +11001,7 @@ body {
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0.12);
   box-shadow: 0 0 42px #fff1a6, inset 0 0 42px #fff1a6;
-  animation: path-cast-ring 1.35s ease-out forwards;
+  animation: path-cast-ring 3.35s ease-out forwards;
 }
 
 .path-clear-overlay {

@@ -922,7 +922,7 @@ function wirePathStage(stage, done) {
       state.pathPanelMode = "clear";
       render();
       burstOnce(".path-clear-card");
-    }, 1400);
+    }, 3400);
   });
 }
 
