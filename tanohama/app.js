@@ -467,12 +467,13 @@ function loadState() {
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
         bossSlotCreationPending: Boolean(saved.bossSlotCreationPending),
         bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) || (Array.isArray(saved.bossInput) && saved.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))),
+        bossColorRemoved: Boolean(saved.bossColorRemoved),
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -2223,14 +2224,23 @@ function checkStage(stage, value) {
   burstOnce(".stage-clear-card");
 }
 
+function getBossAttackText(step, index) {
+  if (!step.after) return "";
+  if (index === 5 && state.bossColorRemoved) {
+    return "『一犬糸争を放つ』「百黙絶静」から白・黒・色・青が消えた攻撃。カタメで防ぐ！";
+  }
+  return step.after;
+}
+
 function renderBoss(stage) {
   const total = bossBattle.length;
   const solvedCount = Math.min(state.bossInput.length, total);
   const rows = bossBattle
     .map((step, index) => {
       const slate = renderBossSlate(step, index, index < solvedCount, index === solvedCount);
-      const actionText = step.after ? step.after.replace(/『[^』]+』/g, (m) => `<span class="boss-attack-name">${m}</span>`) : "";
-      const action = step.after ? `<p class="boss-action">↓　${actionText}</p>` : "";
+      const attackText = getBossAttackText(step, index);
+      const actionText = attackText ? attackText.replace(/『[^』]+』/g, (m) => `<span class="boss-attack-name">${m}</span>`) : "";
+      const action = attackText ? `<p class="boss-action">↓　${actionText}</p>` : "";
       return `${slate}${action}`;
     })
     .join("");
@@ -2297,8 +2307,9 @@ function renderBossSpellBookPanel(stage) {
 function renderBossProblemPanel(stage) {
   const sequence = bossBattle
     .map((step, index) => {
-      const action = step.after
-        ? step.after.replace(/『[^』]+』/g, (text) => `<span class="boss-attack-name">${text}</span>`)
+      const attackText = getBossAttackText(step, index);
+      const action = attackText
+        ? attackText.replace(/『[^』]+』/g, (text) => `<span class="boss-attack-name">${text}</span>`)
         : "最後の石板。仲間と歩んだ全ての試練を思い出せ。";
       return `
         <article class="boss-brief-step">
@@ -2351,6 +2362,9 @@ function renderBossDirectAnswer(stage) {
   const isGokurosama = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ");
   const hasTsukemono = state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"));
   const feedback = state.feedback?.stageId === "boss" && state.feedback.type === "fail" ? state.feedback.message : "";
+  const colorRemovalNotice = state.bossColorRemoved && normalizeAnswer(step.answer) === normalizeAnswer("カタメ")
+    ? `<p class="result-message is-success boss-gokurosama-effect">ゴクロウサマを唱えた！「百黙絶静」から白・黒・色・青が消え、「一犬糸争」になった！「カタメ」で防ぐ。</p>`
+    : "";
   if (isGokurosama && !state.bossSixthSlotCreated) {
     return `
       <section class="boss-direct-answer boss-slot-creation" aria-label="ゴクロウサマの6文字目">
@@ -2370,6 +2384,7 @@ function renderBossDirectAnswer(stage) {
         <input id="bossDirectInput" type="text" maxlength="${step.slots}" autocomplete="off" inputmode="text" placeholder="呪文を入力" aria-label="呪文を直接入力" />
         <button class="primary-button" id="bossDirectSubmit" type="submit">回答する</button>
       </form>
+      ${colorRemovalNotice}
       ${feedback ? `<p class="result-message is-fail">${feedback}</p>` : ""}
     </section>
   `;
@@ -2524,6 +2539,9 @@ function completeBossStep(step) {
   state.slotInput = [];
   state.activeSlot = 0;
   state.slotPickerOpen = false;
+  if (normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ")) {
+    state.bossColorRemoved = true;
+  }
   if (normalizeAnswer(step.answer) === normalizeAnswer("ツケモノ")) {
     state.bossSlotCreationPending = true;
     state.bossPanelMode = "problem";
@@ -2593,6 +2611,7 @@ function resetGame() {
   state.revealed = {};
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
+  state.bossColorRemoved = false;
   saveState();
   render();
 }
