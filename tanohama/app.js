@@ -456,7 +456,7 @@ function loadState() {
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
-        genericPanelMode: ["closed", "problem", "play", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : "closed",
+        genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
         bossSlotCreationPending: Boolean(saved.bossSlotCreationPending),
         bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) || (Array.isArray(saved.bossInput) && saved.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))),
@@ -684,11 +684,6 @@ function renderPathStage(stage) {
   const panelClosed = state.pathPanelMode === "closed";
   const problemMode = state.pathPanelMode === "problem";
   const clearMode = done && state.pathPanelMode === "clear";
-  const selected = done
-    ? [...stage.correct].slice(0, stage.slots)
-    : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
-  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
-  const pickerOpen = !done && !problemMode && state.slotPickerOpen === true;
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage path-stage-background-only ${pathOpen ? "is-path-open is-solved" : ""} ${casting ? "is-path-casting" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world">
@@ -698,34 +693,12 @@ function renderPathStage(stage) {
           ${pathOpen ? "『扉のない通路』" : `『扉の<span class="path-red-word">あか</span>ない通路』`}
         </div>
       </div>
-      ${casting ? renderPathCastEffect(stage) : clearMode ? renderPathStageClear(stage) : panelClosed ? "" : problemMode ? renderPathProblemCard(stage) : `
-      <section class="spell-device path-spell-device ${done ? "is-clear-compact" : ""} ${pickerOpen ? "has-picker" : ""}" aria-label="${done ? "習得済み呪文" : "呪文入力"}">
-        ${`
-            <div class="path-device-head">
-              <span class="path-device-title">石板 ${stage.slots}文字</span>
-              <div class="path-device-actions">
-                <button class="secondary-button" id="pathToProblem" type="button">問題とメモ</button>
-                <button class="secondary-button learned-spell-open" id="toggleLearnedSpellViewer" type="button">覚えた呪文を見る</button>
-              </div>
-            </div>
-            <div class="device-main-row">
-              <div class="premium-slot-row magic-slots">
-                ${Array.from({ length: stage.slots })
-                  .map((_, i) => `<button class="premium-slot ${!done && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!done && i === activeSlot}" ${done ? "disabled" : ""}>${selected[i] || ""}</button>`)
-                  .join("")}
-              </div>
-              <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "習得済み" : "呪文を唱える"}</button>
-            </div>
-            ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
-            ${feedback?.type === "fail" ? `<p class="result-message is-fail">${stage.failMessage}</p>` : ""}
-          `}
-      </section>`}
+      ${casting ? renderPathCastEffect(stage) : clearMode ? renderPathStageClear(stage) : panelClosed ? "" : problemMode ? renderPathProblemCard(stage) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
     </section>
   `;
   if (problemMode) {
     wirePathProblem(stage);
-  } else {
     wirePathStage(stage, done);
   }
 }
@@ -742,7 +715,6 @@ function renderPathProblemCard(stage) {
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions">
           <button class="secondary-button ${state.stage2Rotated ? "is-on" : ""}" id="rotateBoard" type="button" aria-pressed="${state.stage2Rotated}">⟳ 回転</button>
-          <button class="secondary-button" id="pathToSpell" type="button">呪文へ</button>
         </div>
       </div>
       <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
@@ -770,17 +742,41 @@ function renderPathProblemCard(stage) {
           `
           : ""}
       </div>
+      ${renderPathAnswerControls(stage)}
+    </section>
+  `;
+}
+
+function renderPathAnswerControls(stage) {
+  const done = isStageCleared(stage.id);
+  const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const selected = done
+    ? [...stage.correct].slice(0, stage.slots)
+    : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+  const pickerOpen = !done && state.slotPickerOpen === true;
+  return `
+    <section class="path-problem-answer" aria-label="問題の回答">
+      <div class="path-problem-answer-head">
+        <strong>回答</strong>
+        <span>石板 ${stage.slots}文字</span>
+      </div>
+      <div class="device-main-row">
+        <div class="premium-slot-row magic-slots">
+          ${Array.from({ length: stage.slots })
+            .map((_, i) => `<button class="premium-slot ${!done && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!done && i === activeSlot}" ${done ? "disabled" : ""}>${selected[i] || ""}</button>`)
+            .join("")}
+        </div>
+        <button class="primary-button cast-button" id="activateStage" type="button" ${done ? "disabled" : ""}>${done ? "習得済み" : "呪文を唱える"}</button>
+      </div>
+      ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
+      ${feedback?.type === "fail" ? `<p class="result-message is-fail">${stage.failMessage}</p>` : ""}
     </section>
   `;
 }
 
 function wirePathProblem(stage) {
   wireProblems();
-  document.querySelector("#pathToSpell")?.addEventListener("click", () => {
-    state.pathPanelMode = "spell";
-    state.memoPickerOpen = false;
-    render();
-  });
   document.querySelector("#rotateBoard")?.addEventListener("click", () => {
     state.stage2Rotated = !state.stage2Rotated;
     render();
@@ -1233,44 +1229,20 @@ function renderGateStage(stage) {
   const spellHidden = state.hiddenSpells?.[stage.id] === true;
   const backgroundOnly = problemHidden && spellHidden;
   const gatePanelMode = state.gatePanelMode === "problem" ? "problem" : "spell";
-  const selected = done
-    ? [...stage.correct].slice(0, stage.slots)
-    : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
-  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
-  const locked = done || rockDropping || successAnimating;
-  const pickerOpen = !locked && state.slotPickerOpen === true;
   elements.game.innerHTML = `
     <section class="stage-panel premium-stage stage-one-redesign ${done ? "is-solved" : ""} ${rockDropping ? "is-rock-drop" : ""} ${feedback?.type === "fail" ? "is-fail" : ""}">
       ${gatePlayableVisual(stage, done, feedback, backgroundOnly)}
 
-      ${successAnimating || spellHidden ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} ${pickerOpen ? "has-picker" : ""} is-${gatePanelMode}-mode" aria-label="${gatePanelMode === "problem" ? "問題" : "呪文入力"}">
-        <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="${gatePanelMode === "problem" ? "問題ウィンドウを閉じる" : "呪文ウィンドウを閉じる"}">×</button>
-        ${gatePanelMode === "problem"
-          ? gateProblemInscription(stage, done, false)
-          : `
-            ${renderSpellRuleNotice()}
-            ${renderLearnedSpellButton()}
-
-            <div class="device-main-row">
-              <div class="premium-slot-row magic-slots">
-                ${Array.from({ length: stage.slots })
-                  .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
-                  .join("")}
-              </div>
-              <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${rockDropping ? "発動中..." : "呪文を唱える"}</button>
-            </div>
-
-            ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
-          `
-        }
-
-          ${renderGateResult(stage, done, feedback)}
-        </section>`}
+      ${successAnimating || gatePanelMode !== "problem" ? "" : `<section class="spell-device ${done ? "is-clear-compact" : ""} ${state.slotPickerOpen ? "has-picker" : ""} is-problem-mode" aria-label="問題と回答">
+        <button class="spell-window-close" id="closeSpellWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
+        ${gateProblemInscription(stage, done, false)}
+        ${renderGateAnswerControls(stage, done, feedback)}
+      </section>`}
 
       ${successAnimating ? renderGateSuccessOverlay(feedback.phase) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
 
-      ${done && !spellHidden && gatePanelMode === "spell" ? `<div class="gate-clear-actions">
+      ${done && gatePanelMode === "problem" && !successAnimating ? `<div class="gate-clear-actions">
         <button class="primary-button" id="nextButton" type="button">${stage.id === "gate" ? "ステージ2へ" : "次へ進む"}</button>
       </div>` : ""}
     </section>
@@ -1438,12 +1410,37 @@ function gateProblemInscription(stage, done, hidden = false) {
   if (!problem || hidden) return "";
   return `
     <section class="device-problem gate-problem-card gate-sheet-panel ${done ? "is-solved" : ""}" aria-label="問題文">
-      <button class="problem-window-close" id="closeProblemWindow" type="button" aria-label="問題ウィンドウを閉じる">×</button>
-      <button class="secondary-button gate-sheet-to-spell" id="mobileProblemToSpell" type="button">呪文へ</button>
       <div class="gate-sheet-scroll">
         ${renderStage1Sheet()}
         ${stage.id === "gate" ? renderKanaBoard() : ""}
       </div>
+    </section>
+  `;
+}
+
+function renderGateAnswerControls(stage, done, feedback) {
+  const selected = done
+    ? [...stage.correct].slice(0, stage.slots)
+    : Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
+  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
+  const pickerOpen = !done && state.slotPickerOpen === true;
+  const locked = done || (feedback?.type === "success" && feedback.phase !== "done");
+  return `
+    <section class="gate-problem-answer" aria-label="問題の回答">
+      <div class="gate-problem-answer-head">
+        <strong>回答</strong>
+        <span>石板 ${stage.slots}文字</span>
+      </div>
+      <div class="device-main-row">
+        <div class="premium-slot-row magic-slots">
+          ${Array.from({ length: stage.slots })
+            .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
+            .join("")}
+        </div>
+        <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${locked && !done ? "発動中..." : done ? "習得済み" : "呪文を唱える"}</button>
+      </div>
+      ${pickerOpen ? renderSlotPicker(stage, activeSlot) : ""}
+      ${renderGateResult(stage, done, feedback)}
     </section>
   `;
 }
@@ -1963,7 +1960,6 @@ function renderStage(stage) {
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
       ${panelMode === "problem" ? renderGenericProblemPanel(stage, done) : ""}
-      ${panelMode === "play" ? renderGenericPlayPanel(stage, done) : ""}
       ${panelMode === "clear" && done ? renderGenericStageClear(stage) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
     </section>
@@ -1981,9 +1977,10 @@ function renderGenericProblemPanel(stage, done) {
       </div>
       <div class="immersive-panel-scroll">
         ${renderProblems(stage, done)}
-      </div>
-      <div class="immersive-panel-actions">
-        <button class="primary-button" id="genericToPlay" type="button">解答する</button>
+        <div class="generic-problem-answer" aria-label="問題の回答">
+          ${stage.type === "shop" ? shopPuzzle(stage, done) : ""}
+          ${stage.type === "console" ? consolePuzzle(stage, done) : ""}
+        </div>
       </div>
     </section>
   `;
@@ -2180,7 +2177,7 @@ function wireStage(stage, done) {
     render();
   });
   document.querySelector("#genericToPlay")?.addEventListener("click", () => {
-    state.genericPanelMode = "play";
+    state.genericPanelMode = "problem";
     state.feedback = null;
     render();
   });
@@ -2659,6 +2656,7 @@ function focusCurrentProblem() {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: false };
     state.gatePanelMode = "problem";
+    state.learnedSpellViewerOpen = false;
     state.slotPickerOpen = false;
     render();
     return;
@@ -2666,6 +2664,7 @@ function focusCurrentProblem() {
 
   if (stage.id === "path") {
     state.pathPanelMode = "problem";
+    state.learnedSpellViewerOpen = false;
     state.slotPickerOpen = false;
     render();
     return;
@@ -2718,40 +2717,26 @@ function focusCurrentMagic() {
     render();
   }
   if (stage.id === "gate") {
-    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: false };
+    state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
     state.hiddenProblems = { ...(state.hiddenProblems || {}), [stage.id]: true };
     state.gatePanelMode = "spell";
+    state.learnedSpellViewerOpen = true;
     state.slotPickerOpen = false;
     render();
-    requestAnimationFrame(() => {
-      const magic = document.querySelector(".spell-device");
-      if (magic) {
-        magic.scrollIntoView({ behavior: "smooth", block: "center" });
-        magic.classList.remove("is-menu-focus");
-        requestAnimationFrame(() => magic.classList.add("is-menu-focus"));
-      }
-    });
     return;
   }
 
   if (stage.id === "path") {
-    state.pathPanelMode = "spell";
+    state.pathPanelMode = "closed";
     state.memoPickerOpen = false;
+    state.learnedSpellViewerOpen = true;
     render();
-    requestAnimationFrame(() => {
-      const magic = document.querySelector(".spell-device");
-      if (magic) {
-        magic.scrollIntoView({ behavior: "smooth", block: "center" });
-        magic.classList.remove("is-menu-focus");
-        requestAnimationFrame(() => magic.classList.add("is-menu-focus"));
-      }
-    });
     return;
   }
 
   if (stage.id === "shop" || stage.id === "time") {
-    state.genericPanelMode = "play";
-    state.learnedSpellViewerOpen = false;
+    state.genericPanelMode = "closed";
+    state.learnedSpellViewerOpen = true;
     state.feedback = null;
     render();
     return;
@@ -2766,8 +2751,8 @@ function focusCurrentMagic() {
   }
 
   if (stage.id === "shop" || stage.id === "time") {
-    state.genericPanelMode = "play";
-    state.learnedSpellViewerOpen = false;
+    state.genericPanelMode = "closed";
+    state.learnedSpellViewerOpen = true;
     state.feedback = null;
     render();
     return;

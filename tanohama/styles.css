@@ -11416,6 +11416,52 @@ body {
   outline-offset: -2px;
 }
 
+.path-problem-answer,
+.gate-problem-answer,
+.generic-problem-answer {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(242, 213, 107, 0.34);
+  border-radius: 8px;
+  background: rgba(5, 12, 20, 0.82);
+}
+
+.path-problem-answer-head,
+.gate-problem-answer-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #fff0af;
+}
+
+.path-problem-answer-head span,
+.gate-problem-answer-head span {
+  color: #b5c9d7;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.path-problem-answer .device-main-row,
+.gate-problem-answer .device-main-row {
+  margin: 0;
+}
+
+.path-problem-answer .result-message,
+.gate-problem-answer .result-message {
+  margin-bottom: 0;
+}
+
+.generic-problem-answer {
+  display: grid;
+  gap: 10px;
+}
+
+.generic-problem-answer .play-box {
+  margin: 0;
+}
+
 /* Stage 04: each puzzle owns its color-number answer row. */
 .stage4-sheet > .s4-memo-guide {
   margin: 0 0 10px;
