@@ -11462,6 +11462,10 @@ body {
   font-weight: 900;
 }
 
+.path-cast-effect .stage2-color-word {
+  color: #ff3b30;
+}
+
 .path-cast-ring {
   position: absolute;
   left: 50%;

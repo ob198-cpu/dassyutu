@@ -2074,7 +2074,7 @@ function renderPathCastEffect(stage) {
     <section class="path-cast-effect" aria-live="assertive" aria-label="${stage.reward}を唱えた">
       <div class="path-cast-ring" aria-hidden="true"></div>
       <p><strong>${stage.reward}</strong>を唱えた！</p>
-      <span>『』の中の「あか」を消去中…</span>
+      <span>『』の中の「<strong class="stage2-color-word">いろ</strong>」を消去中…</span>
     </section>
   `;
 }
