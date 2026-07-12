@@ -475,6 +475,7 @@ function loadState() {
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
+        timeAnswerOpen: Boolean(saved.timeAnswerOpen),
         shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
@@ -487,7 +488,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), timeAnswerOpen: false, shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -516,6 +517,7 @@ function closeStagePanelsOnEntry(stage) {
   state.slotPickerOpen = false;
   state.gateAnswerOpen = false;
   state.pathAnswerOpen = false;
+  state.timeAnswerOpen = false;
   state.memoPickerOpen = false;
   state.learnedSpellViewerOpen = false;
   if (stage?.id === "gate") {
@@ -1570,7 +1572,7 @@ function renderStage4Sheet() {
     </div>
   `;
   return `
-    <div class="sheet stage4-sheet" role="img" aria-label="ステージ4 問題">
+    <div class="sheet stage4-sheet" role="group" aria-label="ステージ4 問題">
       <p class="s4-header">時空が歪んで、時差が発生した、①〜④の謎を解いて、時差を無くす為の手段を見つけろ</p>
       <p class="s4-memo-guide">青・緑・黄の数字は手がかりです。各問題の下にある枠へ、対応する文字を入力してください。</p>
       <div class="s4-panels">
@@ -1617,15 +1619,6 @@ function renderStage4Sheet() {
       </div>
       <p class="s4-read-order"><b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
       <p class="sheet-elder">時差を隠す時に使うのじゃ→[ きじのくうきあしょうのみさきよらいのじさめ ]</p>
-      <div class="s4-final-row">
-        <span class="s4-final-label"><small class="s4-final-ruby">ファイナル アンサー</small>FINAL ANSWER:</span>
-        <span class="s4-final-boxes">${Array.from({ length: 6 }).map(() => `<span></span>`).join("")}</span>
-        <svg class="s4-clocks" viewBox="0 0 120 40" aria-hidden="true">
-          <g stroke="#3f9b3f" fill="none" stroke-width="3"><circle cx="20" cy="20" r="14"/><path d="M20 20 L20 10 M20 20 L27 24"/></g>
-          <g stroke="#2f66c4" fill="none" stroke-width="3"><circle cx="60" cy="20" r="14"/><path d="M60 20 L60 10 M60 20 L53 26"/></g>
-          <g stroke="#e0b31e" fill="none" stroke-width="3"><circle cx="100" cy="20" r="14"/><path d="M100 20 L100 11 M100 20 L108 20"/></g>
-        </svg>
-      </div>
     </div>
   `;
 }
@@ -2072,19 +2065,23 @@ function renderStage(stage) {
 }
 
 function renderGenericProblemPanel(stage, done) {
+  const timeAnswerButton = stage.id === "time" && !done
+    ? `<button class="primary-button stage4-answer-open" id="timeAnswerToggle" type="button" aria-expanded="${state.timeAnswerOpen}">${state.timeAnswerOpen ? "解答欄を閉じる" : "解答する"}</button>`
+    : "";
   return `
     <section class="immersive-panel generic-problem-panel" aria-label="${stage.number} 問題">
       <div class="immersive-panel-head">
         <div><span>STAGE ${stage.number}</span><strong>${stage.title} / 問題</strong></div>
-        <button class="panel-close-button" id="genericClosePanel" type="button" aria-label="問題を閉じる">×</button>
+        <div class="immersive-panel-head-actions">
+          ${timeAnswerButton}
+          <button class="panel-close-button" id="genericClosePanel" type="button" aria-label="問題を閉じる">×</button>
+        </div>
       </div>
       <div class="immersive-panel-scroll">
         ${renderProblems(stage, done)}
-        <div class="generic-problem-answer" aria-label="問題の回答">
-          ${stage.type === "shop" ? shopPuzzle(stage, done) : ""}
-          ${stage.type === "console" ? consolePuzzle(stage, done) : ""}
-        </div>
+        ${stage.type === "shop" ? `<div class="generic-problem-answer" aria-label="問題の回答">${shopPuzzle(stage, done)}</div>` : ""}
       </div>
+      ${stage.id === "time" && state.timeAnswerOpen && !done ? renderStage4AnswerDrawer(stage) : ""}
     </section>
   `;
 }
@@ -2231,19 +2228,29 @@ function shopPuzzle(stage, done) {
   `;
 }
 
-function consolePuzzle(stage, done) {
+function renderStage4AnswerDrawer(stage) {
+  const slotCount = stage.textProblem?.answerBoxes || 6;
+  const selected = Array.from({ length: slotCount }, (_, index) => state.slotInput[index] || "");
+  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), slotCount - 1);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const tiles = ["ア", "イ", "ウ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "タ", "チ", "ツ", "ナ", "ニ", "ノ", "ハ", "ブ", "マ", "ミ", "モ", "ラ", "リ", "ル", "レ", "ロ", "ン"];
   return `
-    <section class="play-box">
-      <div class="time-console">
-        <div class="console-screen">${done ? "山の壁を乗り越えた" : "そびえ立つ山の壁"}</div>
-        <p class="mountain-console-copy">${done ? "出口への道が開いた" : "乗り越える事が出来ない"}</p>
+    <section class="stage4-answer-drawer" aria-label="ステージ4 解答">
+      <div class="stage4-answer-head">
+        <div><span>石板 6文字</span><strong>文字を選んで呪文を作る</strong></div>
+        <button class="text-button" id="timeAnswerClose" type="button">閉じる</button>
       </div>
-      <form id="consoleForm" class="answer-form">
-        <input id="answerInput" autocomplete="off" inputmode="text" placeholder="FINAL ANSWER" ${done ? "disabled" : ""} />
-        <button class="primary-button" type="submit" ${done ? "disabled" : ""}>起動</button>
-      </form>
-      <p class="note ${done ? "is-ok" : feedback?.type === "fail" ? "is-error" : ""}" id="stageNote">${done ? `獲得済み: ${stage.reward}` : feedback?.type === "fail" ? "山の壁は動かない。呪文の文字を確認しよう。" : "山の壁を越える呪文を入力する。"}</p>
+      <div class="stage4-answer-slots" aria-label="選択した6文字">
+        ${selected.map((character, index) => `<button class="stage4-answer-slot ${index === activeSlot ? "is-active" : ""}" type="button" data-time-slot="${index}" aria-pressed="${index === activeSlot}">${character || "―"}</button>`).join("")}
+      </div>
+      <div class="stage4-answer-tiles" aria-label="文字候補">
+        ${tiles.map((tile) => `<button type="button" data-time-tile="${tile}">${tile}</button>`).join("")}
+      </div>
+      <div class="stage4-answer-actions">
+        <button class="secondary-button" id="timeAnswerClear" type="button">全消去</button>
+        <button class="primary-button" id="timeAnswerCast" type="button">呪文を唱える</button>
+      </div>
+      ${feedback?.type === "fail" ? `<p class="result-message is-fail">山の壁は動かない。選んだ文字を確認しよう。</p>` : ""}
     </section>
   `;
 }
@@ -2310,14 +2317,48 @@ function wireStage(stage, done) {
       checkStage(stage, selected);
     });
   }
-  if (stage.type === "console") {
-    document.querySelector("#consoleForm")?.addEventListener("submit", (event) => {
-      event.preventDefault();
-      checkStage(stage, document.querySelector("#answerInput").value);
+  if (stage.id === "time") {
+    document.querySelector("#timeAnswerToggle")?.addEventListener("click", () => {
+      state.timeAnswerOpen = !state.timeAnswerOpen;
+      state.feedback = null;
+      render();
+    });
+    document.querySelector("#timeAnswerClose")?.addEventListener("click", () => {
+      state.timeAnswerOpen = false;
+      state.feedback = null;
+      render();
+    });
+    document.querySelectorAll("[data-time-slot]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.activeSlot = Number(button.dataset.timeSlot);
+        render();
+      });
+    });
+    document.querySelectorAll("[data-time-tile]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const slotCount = stage.textProblem?.answerBoxes || 6;
+        const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), slotCount - 1);
+        state.slotInput = Array.from({ length: slotCount }, (_, index) => state.slotInput[index] || "");
+        state.slotInput[slot] = button.dataset.timeTile || "";
+        const nextEmpty = state.slotInput.findIndex((value) => !value);
+        state.activeSlot = nextEmpty >= 0 ? nextEmpty : Math.min(slot + 1, slotCount - 1);
+        state.feedback = null;
+        render();
+      });
+    });
+    document.querySelector("#timeAnswerClear")?.addEventListener("click", () => {
+      resetStageInput();
+      state.feedback = null;
+      render();
+    });
+    document.querySelector("#timeAnswerCast")?.addEventListener("click", () => {
+      const slotCount = stage.textProblem?.answerBoxes || 6;
+      checkStage(stage, Array.from({ length: slotCount }, (_, index) => state.slotInput[index] || "").join(""));
     });
   }
   document.querySelector("#genericClosePanel")?.addEventListener("click", () => {
     state.genericPanelMode = "closed";
+    state.timeAnswerOpen = false;
     state.learnedSpellViewerOpen = false;
     state.feedback = null;
     render();
@@ -2379,6 +2420,7 @@ function checkStage(stage, value) {
   }
   addUnique(state.cleared, stage.id);
   addUnique(state.spells, stage.reward);
+  if (stage.id === "time") state.timeAnswerOpen = false;
   resetStageInput();
   state.feedback = { stageId: stage.id, type: "success" };
   state.genericPanelMode = "clear";
@@ -2771,6 +2813,7 @@ function resetGame() {
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
   state.stage4Memo = normalizeStage4Memo(null);
+  state.timeAnswerOpen = false;
   state.shopPendingItem = "";
   state.revealed = {};
   state.genericPanelMode = "closed";
@@ -2831,6 +2874,7 @@ function focusCurrentProblem() {
 
   if (stage.id === "shop" || stage.id === "time") {
     state.genericPanelMode = "problem";
+    state.timeAnswerOpen = false;
     state.learnedSpellViewerOpen = false;
     state.feedback = null;
     render();

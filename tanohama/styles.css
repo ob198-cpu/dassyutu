@@ -11959,23 +11959,344 @@ body.late-stage-mode .phone-shell {
   padding: 8px 10px 10px;
 }
 
-/* Stage 04 is taller than one viewport. Keep every puzzle and answer reachable. */
+/* Stage 04 overview: all four puzzles stay visible without scrolling. */
 .generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) {
   overflow-x: hidden !important;
-  overflow-y: auto !important;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  overflow-y: hidden !important;
+  padding: 4px !important;
+  touch-action: none;
 }
 
 .generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .sheet-problem,
-.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .stage4-sheet,
-.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .generic-problem-answer {
-  flex-shrink: 0;
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .stage4-sheet {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  flex: 1 1 auto;
 }
 
-.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .s4-num-row {
-  touch-action: pan-x pan-y;
+.generic-problem-panel .stage4-sheet {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  gap: 3px;
+  overflow: hidden;
+  padding: 4px !important;
+}
+
+.generic-problem-panel .stage4-sheet .s4-header,
+.generic-problem-panel .stage4-sheet > .s4-memo-guide,
+.generic-problem-panel .stage4-sheet > .s4-read-order,
+.generic-problem-panel .stage4-sheet > .sheet-elder {
+  min-height: 0;
+  margin: 0;
+  padding: 2px 5px;
+  font-size: clamp(7px, 0.82vw, 11px);
+  line-height: 1.1;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.generic-problem-panel .stage4-sheet .s4-panels {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-panel {
+  min-width: 0;
+  min-height: 0 !important;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  padding: 3px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-panel-title,
+.generic-problem-panel .stage4-sheet .s4-panel-note {
+  margin: 0;
+  font-size: clamp(8px, 1vw, 12px);
+  line-height: 1.08;
+}
+
+.generic-problem-panel .stage4-sheet .s4-scatter {
+  min-height: 0;
+  height: auto;
+  font-size: clamp(8px, 1.05vw, 12px);
+}
+
+.generic-problem-panel .stage4-sheet .s4-week-rows {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: center;
+  gap: 2px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-week-rows p {
+  min-width: 0;
+  gap: 2px;
+  margin: 0;
+  font-size: clamp(7px, 0.9vw, 11px);
+  white-space: nowrap;
+}
+
+.generic-problem-panel .stage4-sheet .s4-hatch {
+  width: clamp(10px, 1.5vw, 18px);
+  height: clamp(10px, 1.4vw, 17px);
+  border-width: 1px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-mini-box {
+  min-width: 0;
+  padding: 1px 3px;
+  border-width: 1px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-this-grid {
+  min-height: 0;
+  align-self: center;
+  grid-template-columns: minmax(45px, 1fr) auto minmax(45px, 1fr);
+  gap: 1px 4px;
+  font-size: clamp(8px, 1vw, 12px);
+}
+
+.generic-problem-panel .stage4-sheet .s4-word-pair {
+  grid-template-rows: 16px 13px 16px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-word-pair > :first-child,
+.generic-problem-panel .stage4-sheet .s4-word-pair > :last-child {
+  min-width: 38px;
+  min-height: 15px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-pair-label {
+  font-size: 7px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-pair-label::after {
+  font-size: 8px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-art {
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.generic-problem-panel .stage4-sheet .s4-panel-answer {
+  min-width: 0;
+  margin: 0;
+  padding: 1px 0 0;
+}
+
+.generic-problem-panel .stage4-sheet .s4-panel-answer .s4-num-row {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.generic-problem-panel .stage4-sheet .s4-num-label {
+  flex: 0 0 16px;
+  margin: 0;
+  font-size: 12px;
+}
+
+.generic-problem-panel .stage4-sheet .s4-panel-answer .s4-num-box {
+  min-width: 0 !important;
+  min-height: 27px;
+  flex: 1 1 0;
+  grid-template-rows: 10px 13px;
+  gap: 1px;
+  padding: 1px 2px;
+  border: 1px solid #536a6c;
+}
+
+.generic-problem-panel .stage4-sheet .s4-panel-answer .s4-num-box.is-empty {
+  min-width: 0 !important;
+  flex: 0.45 1 0;
+}
+
+.generic-problem-panel .stage4-sheet .s4-num-source {
+  min-height: 0;
+  gap: 0;
+  overflow: hidden;
+  font-size: clamp(6px, 0.72vw, 9px);
+}
+
+.generic-problem-panel .stage4-sheet .s4-panel-answer .s4-map-input {
+  width: 100%;
+  min-width: 0;
+  height: 13px;
+  padding: 0;
+  border-width: 1px !important;
+  border-radius: 1px;
+  font-size: 9px;
+  line-height: 1;
+}
+
+.immersive-panel-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage4-answer-open {
+  min-height: 38px;
+  padding: 0 18px;
+}
+
+.stage4-answer-drawer {
+  position: absolute;
+  z-index: 30;
+  inset: 54px 8px 8px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  gap: 8px;
+  min-height: 0;
+  padding: 12px;
+  overflow-y: auto;
+  border: 1px solid rgba(242, 213, 107, 0.72);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(5, 12, 18, 0.985), rgba(2, 6, 10, 0.995));
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.72);
+}
+
+.stage4-answer-head,
+.stage4-answer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stage4-answer-head > div {
+  display: grid;
+  gap: 2px;
+}
+
+.stage4-answer-head span {
+  color: #c9ae55;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.stage4-answer-head strong {
+  color: #fff3bf;
+  font-size: clamp(16px, 2.4vw, 24px);
+}
+
+.stage4-answer-slots {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.stage4-answer-slot {
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid rgba(242, 213, 107, 0.58);
+  border-radius: 5px;
+  background: #111711;
+  color: #fff0a9;
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 950;
+}
+
+.stage4-answer-slot.is-active {
+  border-color: #fff0a0;
+  background: #2a2717;
+  box-shadow: 0 0 0 2px rgba(255, 228, 116, 0.22);
+}
+
+.stage4-answer-tiles {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  align-content: center;
+  gap: 5px;
+}
+
+.stage4-answer-tiles button {
+  min-width: 0;
+  min-height: 34px;
+  border: 1px solid rgba(151, 205, 199, 0.52);
+  border-radius: 4px;
+  background: #112326;
+  color: #eaf8f4;
+  font-size: clamp(13px, 2vw, 18px);
+  font-weight: 900;
+  touch-action: manipulation;
+}
+
+.stage4-answer-actions {
+  justify-content: flex-end;
+}
+
+.stage4-answer-actions button {
+  min-width: min(220px, 42%);
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .generic-problem-panel:has(.stage4-sheet) .immersive-panel-head {
+    min-height: 38px;
+    padding: 3px 6px;
+  }
+
+  .generic-problem-panel:has(.stage4-sheet) .immersive-panel-head > div:first-child strong {
+    font-size: 14px;
+  }
+
+  .generic-problem-panel:has(.stage4-sheet) .immersive-panel-head > div:first-child span {
+    font-size: 8px;
+  }
+
+  .generic-problem-panel:has(.stage4-sheet) .panel-close-button {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .generic-problem-panel:has(.stage4-sheet) .stage4-answer-open {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .stage4-answer-drawer {
+    inset: 44px 6px 6px;
+    gap: 5px;
+    padding: 7px;
+  }
+
+  .stage4-answer-head strong {
+    font-size: 15px;
+  }
+
+  .stage4-answer-slot {
+    min-height: 36px;
+    font-size: 20px;
+  }
+
+  .stage4-answer-tiles {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .stage4-answer-tiles button {
+    min-height: 27px;
+    font-size: 13px;
+  }
+
+  .stage4-answer-actions button {
+    min-height: 34px;
+  }
 }
 
 .generic-problem-panel .sheet-problem {
