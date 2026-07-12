@@ -11959,6 +11959,25 @@ body.late-stage-mode .phone-shell {
   padding: 8px 10px 10px;
 }
 
+/* Stage 04 is taller than one viewport. Keep every puzzle and answer reachable. */
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .sheet-problem,
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .stage4-sheet,
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .generic-problem-answer {
+  flex-shrink: 0;
+}
+
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-sheet) .s4-num-row {
+  touch-action: pan-x pan-y;
+}
+
 .generic-problem-panel .sheet-problem {
   min-height: 0;
   flex: 0 0 auto;
