@@ -1473,13 +1473,11 @@ function renderStage3Sheet() {
     { name: "ドラブレス", note: "口から火が出せる" },
     { name: "マジホウキ", note: "飛べる、掃除もできる" },
   ];
-  const selectedIndex = items.findIndex((item) => item.name === state.shopPendingItem);
   const done = isStageCleared("shop");
   return `
     <div class="sheet stage3-sheet" role="group" aria-label="ステージ3 問題">
       <div class="sheet-head-row">
         <h3 class="sheet-title">ステージ3</h3>
-        <span class="stage3-answer-slot">解答番号→<span class="stage3-answer-box ${selectedIndex >= 0 ? "is-filled" : ""}" aria-live="polite">${selectedIndex >= 0 ? selectedIndex + 1 : ""}</span></span>
       </div>
       <div class="stage3-cols">
         <div class="stage3-left">
