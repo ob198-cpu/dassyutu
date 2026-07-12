@@ -139,29 +139,30 @@ const stages = [
     id: "time",
     number: "04",
     title: "そびえ立つ山",
-    tag: "壁を越える呪文",
+    tag: "山を越える手段",
     mission: "そびえ立つ山の壁があり、乗り越える事が出来ない。",
-    reward: "キミタチナラ",
+    reward: "タイムマシン",
     type: "console",
-    correct: "キミタチナラ",
+    correct: "タイムマシン",
     scene: "time",
     sceneCaption: "そびえ立つ山の壁があり、乗り越える事が出来ない。",
-    briefing: "山の壁を乗り越える呪文を入力する。",
+    briefing: "①〜④を解き、青・緑・黄の順に拾った6文字で山を越える手段を見つける。",
     hints: [
       "ヒント①「①は『お→じ→さ→ん』の順に文字を線で結ぶのじゃ。線の途中にある文字を、通った順に拾うんじゃぞ」",
       "ヒント②「②のTUE・SAT・THUは曜日じゃ。日本語の曜日を表す漢字に直し、同じ読み方の言葉を後ろにつけて比べるのじゃ」",
       "ヒント③「③は位置関係が大事じゃ。THISの下にある空欄と、WEEKの下にあるGEを、上と下で対応させて考えるのじゃぞ」",
       "ヒント④「④は球を投げた位置から放物線の頂点へ進み、そこから真下へ落ちる軌道をたどるのじゃ。球が通る文字を順につなげるんじゃぞ」",
       "ヒント⑤「①〜④の答えが出たら、各欄の色数字が示す文字を記入し、青→緑→黄の順に読むのじゃ」",
+      "ヒント⑥「最後の答えは6文字。時差を無くすために、時を移動する装置の名前を入力するのじゃ」",
     ],
     textProblem: {
       title: "ステージ4",
       subtitle: "そびえ立つ山の壁があり、乗り越える事が出来ない",
-      rule: "山の壁を乗り越える呪文を石板に入力する。",
-      prompt: "そびえ立つ山の壁を越え、出口へ進め。",
-      answerHint: "クリアに必要な呪文は、導入で聞いたエールの言葉。",
+      rule: "①〜④の謎を解き、色数字が示す文字を青→緑→黄の順に読む。",
+      prompt: "山の壁を越えるために使う6文字の手段を見つける。",
+      answerHint: "答えは6文字。時を移動する装置の名前。",
       answerBoxes: 6,
-      solvedNote: "「キミタチナラ」を唱え、そびえ立つ山の壁を乗り越えた。",
+      solvedNote: "タイムマシン: 一時的に未来空間へ移動し、まだ習得していない呪文を1つ唱えられる。効果は現在異空間で発動し、同時に自分も現在異空間へ戻る。",
     },
   },
   {
@@ -450,6 +451,12 @@ function loadState() {
         saved.genericPanelMode = "clear";
       } else if (saved.feedback && saved.feedback.type === "success" && saved.feedback.phase !== "done" && saved.feedback.stageId !== "shop") {
         saved.feedback = null;
+      }
+      saved.cleared = Array.isArray(saved.cleared) ? saved.cleared : [];
+      saved.spells = Array.isArray(saved.spells) ? saved.spells : [];
+      if (saved.cleared.includes("time") || saved.spells.includes("キミタチナラ")) {
+        saved.spells = saved.spells.filter((spell) => spell !== "キミタチナラ");
+        if (saved.cleared.includes("time") && !saved.spells.includes("タイムマシン")) saved.spells.push("タイムマシン");
       }
       return {
         stageIndex: Number.isInteger(saved.stageIndex) ? saved.stageIndex : 0,
@@ -2047,7 +2054,7 @@ function renderStage(stage) {
       : done
         ? "氷が溶け、登れる石段が露出した急傾斜の回廊"
         : "鏡面状の氷に覆われ、滑って登れない急傾斜の回廊"
-    : done ? "そびえ立つ山壁を乗り越え、山上の出口へ到達した" : "そびえ立つ山の壁と山上に光る出口";
+    : done ? "そびえ立つ山壁を越え、山上の出口へ到達した" : "そびえ立つ山の壁と山上に光る出口";
   elements.game.innerHTML = `
     <section class="stage-panel immersive-stage generic-immersive-stage stage-${stage.id} ${done ? "is-solved" : ""} ${shopSuccessPhase === "casting" ? "is-shop-casting" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world generic-stage-world">
@@ -2165,7 +2172,7 @@ function renderGenericStageClear(stage) {
   const nextLabel = state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次のステージへ";
   const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : stage.id === "shop" ? "氷が溶けた" : `${stage.title} クリア`;
   const clearMessage = stage.id === "time"
-    ? "「キミタチナラ」を唱え、そびえ立つ山の壁を乗り越えた。出口への道が開いた！"
+    ? "「タイムマシン」を起動し、そびえ立つ山の壁を越えて出口へ到達した！"
     : stage.id === "shop"
       ? "「ドラブレス」を唱えた！炎で氷が溶け、先へ進めるようになった！"
     : stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。";
@@ -2237,7 +2244,7 @@ function renderStage4AnswerDrawer(stage) {
   const selected = Array.from({ length: slotCount }, (_, index) => state.slotInput[index] || "");
   const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), slotCount - 1);
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
-  const tiles = ["ア", "イ", "ウ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "タ", "チ", "ツ", "ナ", "ニ", "ノ", "ハ", "ブ", "マ", "ミ", "モ", "ラ", "リ", "ル", "レ", "ロ", "ン"];
+  const tiles = ["ア", "イ", "ウ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "タ", "チ", "ツ", "ナ", "ニ", "ノ", "ハ", "ブ", "マ", "ミ", "ム", "モ", "ラ", "リ", "ル", "レ", "ロ", "ン"];
   return `
     <section class="stage4-answer-drawer" aria-label="ステージ4 解答">
       <div class="stage4-answer-head">
