@@ -2016,10 +2016,10 @@ function renderStage(stage) {
   const panelMode = state.genericPanelMode || "closed";
   const background = stage.id === "shop"
     ? done ? "stage03-clear-premium-v2.webp" : "stage03-bg-premium.webp"
-    : done ? "stage04-clear-mountain-v2.webp" : "stage04-bg-mountain-v2.webp";
+    : done ? "stage04-clear-overcome-v3.webp" : "stage04-bg-mountain-v2.webp";
   const backgroundAlt = stage.id === "shop"
     ? done ? "氷が溶け、濡れた石床の道が出口まで開いた回廊" : "凍りついた足場とアイテム屋の回廊"
-    : done ? "山壁に石段が現れ、山上の出口まで道がつながった" : "そびえ立つ山の壁と山上に光る出口";
+    : done ? "そびえ立つ山壁を乗り越え、山上の出口へ到達した" : "そびえ立つ山の壁と山上に光る出口";
   elements.game.innerHTML = `
     <section class="stage-panel immersive-stage generic-immersive-stage stage-${stage.id} ${done ? "is-solved" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world generic-stage-world">
