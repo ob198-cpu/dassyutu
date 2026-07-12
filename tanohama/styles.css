@@ -12600,6 +12600,33 @@ body.late-stage-mode .phone-shell {
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.1), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.08));
 }
 
+.stage4-background-message {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 8%;
+  width: min(820px, 78%);
+  margin: 0;
+  padding: 9px 18px;
+  color: #fff2c5;
+  background: linear-gradient(90deg, transparent, rgba(3, 7, 12, 0.72) 16%, rgba(3, 7, 12, 0.72) 84%, transparent);
+  font-size: clamp(17px, 2.2vw, 27px);
+  font-weight: 950;
+  line-height: 1.25;
+  text-align: center;
+  text-shadow: 0 2px 7px #000, 0 0 18px rgba(0, 0, 0, 0.9);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .stage4-background-message {
+    bottom: 5%;
+    padding: 5px 12px;
+    font-size: clamp(14px, 2vw, 20px);
+  }
+}
+
 /* Stage 03 clear sequence: compact prompts leave the environment visible. */
 .shop-success-sequence {
   position: fixed;

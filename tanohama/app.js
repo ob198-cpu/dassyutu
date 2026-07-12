@@ -1022,7 +1022,7 @@ function renderProblems(stage, done = false) {
           <strong>問題</strong>
           ${stage.sourceProblemImage ? `<button class="text-button sheet-source-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原本">原本を見る</button>` : ""}
         </div>
-        ${stage.id === "shop" ? renderStage3Sheet() : renderStage4MountainSheet()}
+        ${stage.id === "shop" ? renderStage3Sheet() : renderStage4Sheet()}
       </section>
     `;
   }
@@ -2051,6 +2051,7 @@ function renderStage(stage) {
         <div class="art-vignette"></div>
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
+      ${stage.id === "time" && !done ? `<p class="stage4-background-message">このままでは「乗り越える」ことができない</p>` : ""}
       ${panelMode === "problem" ? renderGenericProblemPanel(stage, done) : ""}
       ${shopSuccessPhase ? renderShopSuccessSequence(stage, shopSuccessPhase) : panelMode === "clear" && done ? renderGenericStageClear(stage) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
