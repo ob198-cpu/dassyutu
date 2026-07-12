@@ -4721,6 +4721,10 @@ body::before {
   color: #9aa4ad;
 }
 
+body.game-clear-mode .status-strip {
+  display: none !important;
+}
+
 .side-menu-button {
   width: 100%;
   min-height: 68px;

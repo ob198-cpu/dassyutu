@@ -863,6 +863,7 @@ function render() {
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
   document.body.classList.toggle("stage-path-mode", !state.isClear && stage.id === "path");
   document.body.classList.toggle("late-stage-mode", !state.isClear && ["shop", "time", "boss"].includes(stage.id));
+  document.body.classList.toggle("game-clear-mode", state.isClear);
   elements.topTitle.textContent = state.isClear
     ? "異空間からの脱出 CLEAR"
     : `異空間からの脱出 ${stage.number} / ${stage.title}`;
@@ -3310,7 +3311,6 @@ function renderClear() {
         <span class="clear-kicker">ESCAPE COMPLETE</span>
         <h2>脱出成功</h2>
         <p>とびきりの一撃がラスボスを打ち砕いた。出口の光が開き、現在異空間からの脱出に成功した。</p>
-        <div class="final-spell-list"><span>習得した呪文</span>${state.spells.map((spell) => `<strong>☆ ${spell}</strong>`).join("")}</div>
         <div class="stage-actions">
           <button class="primary-button" id="replayButton" type="button">最初から遊ぶ</button>
         </div>
