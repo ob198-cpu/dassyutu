@@ -12388,6 +12388,10 @@ body.late-stage-mode .phone-shell {
   min-height: 15px;
 }
 
+.generic-problem-panel .stage4-sheet .s4-word-pair-left > .s4-red {
+  color: #ef5145;
+}
+
 .generic-problem-panel .stage4-sheet .s4-pair-label {
   font-size: 10px;
   line-height: 1;
@@ -12456,6 +12460,124 @@ body.late-stage-mode .phone-shell {
   border-radius: 1px;
   font-size: 11px;
   line-height: 1;
+}
+
+button.s4-map-input {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button.s4-map-input.is-active {
+  border-color: #ffe77f !important;
+  background: #fff4b9;
+  box-shadow: 0 0 0 2px rgba(255, 231, 127, 0.32), 0 0 12px rgba(255, 211, 71, 0.24);
+}
+
+.s4-choice-picker {
+  position: fixed;
+  z-index: 180;
+  right: 12px;
+  bottom: 10px;
+  left: calc(var(--side-menu-w) + 12px);
+  width: min(760px, calc(100% - var(--side-menu-w) - 24px));
+  margin: 0 auto;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 224, 122, 0.78);
+  border-radius: 7px;
+  background: rgba(5, 12, 15, 0.97);
+  color: #f8efd9;
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.s4-choice-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.s4-choice-head > div {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.s4-choice-head span {
+  color: #d8bd65;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.s4-choice-head strong {
+  overflow: hidden;
+  color: #fff2b8;
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.s4-choice-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+  gap: 5px;
+}
+
+.s4-choice-tiles button {
+  min-width: 0;
+  min-height: 42px;
+  border: 1px solid rgba(224, 185, 75, 0.66);
+  border-radius: 5px;
+  background: linear-gradient(#26251d, #111511);
+  color: #fff0b0;
+  font-size: 20px;
+  font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.s4-choice-tiles button:hover,
+.s4-choice-tiles button:focus-visible {
+  border-color: #ffe477;
+  outline: none;
+  background: #4a3c13;
+}
+
+.s4-choice-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.s4-choice-actions button,
+.s4-choice-head .text-button {
+  min-height: 34px;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .s4-choice-picker {
+    gap: 5px;
+    padding: 7px 9px;
+  }
+
+  .s4-choice-tiles button {
+    min-height: 34px;
+    font-size: 17px;
+  }
+
+  .s4-choice-actions button,
+  .s4-choice-head .text-button {
+    min-height: 30px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
 }
 
 .immersive-panel-head-actions {

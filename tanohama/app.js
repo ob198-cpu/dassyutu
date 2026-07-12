@@ -462,6 +462,13 @@ function normalizeStage2Memo(value) {
 
 const stage4MemoShape = [[4, 2, 3], [3, 8, 8, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
 
+const stage4ChoiceCandidates = [
+  Array.from(new Set(Array.from("ろうかのどきじませ"))),
+  Array.from(new Set(Array.from("もくそくきんすいかし"))),
+  Array.from(new Set(Array.from("こんじょうらいせげ"))),
+  Array.from(new Set(Array.from("あせかきみせさきひめますつきみまうえ"))),
+];
+
 function normalizeStage4Memo(value) {
   const source = value && typeof value === "object" ? value : {};
   const answers = Array.from({ length: 4 }, (_, index) =>
@@ -666,6 +673,10 @@ function loadState() {
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
+        stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
+          ? saved.stage4ActiveGroup
+          : { question: 0, group: 0 },
+        stage4PickerOpen: Boolean(saved.stage4PickerOpen),
         stage4FinalActive: Array.isArray(saved.stage4FinalActive) ? saved.stage4FinalActive : [],
         timeAnswerOpen: Boolean(saved.timeAnswerOpen),
         timeSequencePhase: ["learned", "explanation", "choose", "cast-fail", "casting-time"].includes(saved.timeSequencePhase) ? saved.timeSequencePhase : "",
@@ -687,7 +698,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -718,6 +729,7 @@ function closeStagePanelsOnEntry(stage) {
   state.pathAnswerOpen = false;
   state.timeAnswerOpen = false;
   state.memoPickerOpen = false;
+  state.stage4PickerOpen = false;
   state.learnedSpellViewerOpen = false;
   if (stage?.id === "gate") {
     state.hiddenProblems = { ...(state.hiddenProblems || {}), gate: true };
@@ -1834,6 +1846,29 @@ function renderStage4FinalSection() {
   `;
 }
 
+function renderStage4ChoicePicker() {
+  if (!state.stage4PickerOpen) return "";
+  const questionIndex = Math.min(Math.max(state.stage4ActiveGroup?.question || 0, 0), 3);
+  const groupIndex = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[questionIndex].length - 1);
+  const memo = normalizeStage4Memo(state.stage4Memo);
+  const value = memo.cells[questionIndex][groupIndex].join("");
+  return `
+    <section class="s4-choice-picker" aria-label="${questionIndex + 1}番の文字候補">
+      <div class="s4-choice-head">
+        <div><span>途中回答 ${questionIndex + 1}-${groupIndex + 1}</span><strong>${value || "未入力"}</strong></div>
+        <button class="text-button" id="stage4PickerClose" type="button">閉じる</button>
+      </div>
+      <div class="s4-choice-tiles" role="group" aria-label="選択候補">
+        ${stage4ChoiceCandidates[questionIndex].map((character) => `<button type="button" data-s4-choice="${character}">${character}</button>`).join("")}
+      </div>
+      <div class="s4-choice-actions">
+        <button class="secondary-button" id="stage4PickerBackspace" type="button">1文字戻す</button>
+        <button class="secondary-button" id="stage4PickerClear" type="button">この欄を消す</button>
+      </div>
+    </section>
+  `;
+}
+
 function renderStage4Sheet() {
   const memo = normalizeStage4Memo(state.stage4Memo);
   const numberRow = (group, questionIndex) => `
@@ -1846,9 +1881,11 @@ function renderStage4Sheet() {
             const inputLabel = box.length
               ? `${group.label} ${box.map(([n]) => n).join("、")}に対応する文字`
               : `${group.label} 中央メモ ${groupIndex}`;
+            const currentValue = memo.cells[questionIndex][groupIndex].join("");
+            const isActive = state.stage4PickerOpen && state.stage4ActiveGroup?.question === questionIndex && state.stage4ActiveGroup?.group === groupIndex;
             return `<span class="s4-num-box ${box.length ? "" : "is-empty"}">
             <span class="s4-num-source">${box.length ? box.map(([n, c], i) => `${i ? "<i>,</i>" : ""}<b class="n-${c}">${n}</b>`).join("") : "-"}</span>
-            ${inputLength ? `<input class="s4-map-input" type="text" maxlength="${inputLength}" inputmode="text" autocomplete="off" data-s4-group="${questionIndex}:${groupIndex}" value="${escapeAttribute(memo.cells[questionIndex][groupIndex].join(""))}" aria-label="${inputLabel}" />` : ""}
+            ${inputLength ? `<button class="s4-map-input ${isActive ? "is-active" : ""}" type="button" data-s4-group="${questionIndex}:${groupIndex}" aria-expanded="${isActive}" aria-label="${inputLabel}">${currentValue || "―"}</button>` : ""}
           </span>`;
           },
         )
@@ -1885,7 +1922,7 @@ function renderStage4Sheet() {
             </div>
             <span class="s4-plus">+</span>
             <div class="s4-word-pair s4-word-pair-right">
-              <span class="s4-red">W${stage4EMarker("む", "s4-inline-e")}${stage4EMarker("ま", "s4-inline-e")}K</span>
+              <span>W${stage4EMarker("む", "s4-inline-e")}${stage4EMarker("ま", "s4-inline-e")}K</span>
               <span class="s4-pair-label">した</span>
               <span class="s4-ge">G${stage4EMarker("し", "s4-inline-e")}</span>
             </div>
@@ -1900,6 +1937,7 @@ function renderStage4Sheet() {
           <div class="s4-panel-answer">${numberRow(stage4Numbers[3], 3)}</div>
         </div>
       </div>
+      ${renderStage4ChoicePicker()}
       <p class="s4-footer-note">※<b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
       ${renderStage4FinalSection()}
     </div>
@@ -2681,18 +2719,51 @@ function renderStage4AnswerDrawer(stage) {
 }
 
 function wireStage4Memo() {
-  document.querySelectorAll("[data-s4-group]").forEach((input) => {
-    input.addEventListener("input", () => {
-      const [questionIndex, groupIndex] = (input.dataset.s4Group || "").split(":").map(Number);
-      const memo = normalizeStage4Memo(state.stage4Memo);
-      const target = memo.cells?.[questionIndex]?.[groupIndex];
-      if (!Array.isArray(target)) return;
-      const characters = Array.from(input.value).slice(0, target.length);
-      input.value = characters.join("");
-      memo.cells[questionIndex][groupIndex] = target.map((_, index) => characters[index] || "");
-      state.stage4Memo = memo;
-      saveState();
+  document.querySelectorAll("[data-s4-group]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const [question, group] = (button.dataset.s4Group || "0:0").split(":").map(Number);
+      state.stage4ActiveGroup = { question, group };
+      state.stage4PickerOpen = true;
+      render();
     });
+  });
+  document.querySelectorAll("[data-s4-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const question = Math.min(Math.max(state.stage4ActiveGroup?.question || 0, 0), 3);
+      const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
+      const memo = normalizeStage4Memo(state.stage4Memo);
+      const target = memo.cells[question][group];
+      const emptyIndex = target.findIndex((character) => !character);
+      if (emptyIndex < 0) return;
+      target[emptyIndex] = button.dataset.s4Choice || "";
+      state.stage4Memo = memo;
+      if (emptyIndex === target.length - 1 && group < stage4MemoShape[question].length - 1) {
+        state.stage4ActiveGroup = { question, group: group + 1 };
+      }
+      render();
+    });
+  });
+  document.querySelector("#stage4PickerBackspace")?.addEventListener("click", () => {
+    const question = Math.min(Math.max(state.stage4ActiveGroup?.question || 0, 0), 3);
+    const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
+    const memo = normalizeStage4Memo(state.stage4Memo);
+    const target = memo.cells[question][group];
+    const lastFilled = target.map((character, index) => character ? index : -1).filter((index) => index >= 0).pop();
+    if (Number.isInteger(lastFilled)) target[lastFilled] = "";
+    state.stage4Memo = memo;
+    render();
+  });
+  document.querySelector("#stage4PickerClear")?.addEventListener("click", () => {
+    const question = Math.min(Math.max(state.stage4ActiveGroup?.question || 0, 0), 3);
+    const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
+    const memo = normalizeStage4Memo(state.stage4Memo);
+    memo.cells[question][group] = memo.cells[question][group].map(() => "");
+    state.stage4Memo = memo;
+    render();
+  });
+  document.querySelector("#stage4PickerClose")?.addEventListener("click", () => {
+    state.stage4PickerOpen = false;
+    render();
   });
   document.querySelectorAll("[data-s4-final-char]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -3414,6 +3485,8 @@ function resetGame() {
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
   state.stage4Memo = normalizeStage4Memo(null);
+  state.stage4ActiveGroup = { question: 0, group: 0 };
+  state.stage4PickerOpen = false;
   state.stage4FinalActive = [];
   state.timeAnswerOpen = false;
   state.timeSequencePhase = "";
