@@ -15287,3 +15287,6 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
     height: auto !important;
   }
 }
+.stage1-used-word {
+  color: #d61e1e;
+}

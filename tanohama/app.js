@@ -1726,7 +1726,7 @@ function renderStage1Sheet() {
           <p class="stage1-q2-text">給料日の曜日が無くなると現れる<br><strong class="veg-word">野菜</strong>は?</p>
         </div>
       </div>
-      <p class="stage1-footer">①、②が解けたら次は「<u>つかった①、②の答え</u>」の下のカタカナを読むのじゃ！（下の文字を押すと赤くなるぞ！）</p>
+      <p class="stage1-footer">①、②が解けたら次は「<u><span class="stage1-used-word">つかった</span>①、②の答え</u>」の下のカタカナを読むのじゃ！（下の文字を押すと赤くなるぞ！）</p>
     </div>
   `;
 }
