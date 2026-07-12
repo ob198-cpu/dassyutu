@@ -485,6 +485,7 @@ function loadState() {
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
+        stage4FinalActive: Array.isArray(saved.stage4FinalActive) ? saved.stage4FinalActive : [],
         timeAnswerOpen: Boolean(saved.timeAnswerOpen),
         timeSequencePhase: ["learned", "explanation", "choose", "cast-fail", "casting-time"].includes(saved.timeSequencePhase) ? saved.timeSequencePhase : "",
         introReturnPhase: ["message", "ready"].includes(saved.introReturnPhase) ? saved.introReturnPhase : "",
@@ -501,7 +502,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -1577,6 +1578,36 @@ const stage4Numbers = [
   { label: "④", boxes: [[["1", "b"], ["7", "y"]], [["9", "b"], ["6", "g"], ["15", "y"]], [["5", "b"], ["12", "y"]], [["5", "g"], ["4", "y"]]] },
 ];
 
+const stage4FinalPhrase = Array.from("きじのくうきあしょうのみさきよらいじさめ");
+
+function stage4EMarker(letter, extraClass = "") {
+  return `<span class="s4-e-marker ${extraClass}"><i>${letter}</i><b>E</b></span>`;
+}
+
+function renderStage4FinalSection() {
+  const active = new Set(Array.isArray(state.stage4FinalActive) ? state.stage4FinalActive : []);
+  const selected = Array.from({ length: 6 }, (_, index) => state.slotInput[index] || "");
+  return `
+    <section class="s4-final-section" aria-label="ステージ4 最終手掛かり">
+      <div class="s4-final-clue">
+        <strong>※ 時差を隠す時に使うのじゃ→</strong>
+        <div class="s4-final-phrase" aria-label="文字を押すと赤くなる">
+          ${stage4FinalPhrase.map((character, index) => `<button class="${active.has(index) ? "is-active" : ""}" type="button" data-s4-final-char="${index}" aria-pressed="${active.has(index)}">${character}</button>`).join("")}
+        </div>
+      </div>
+      <div class="s4-final-answer-line">
+        <div class="s4-final-answer-title">
+          <span>ファイナルア<span class="s4-final-n">ン</span>サー</span>
+          <strong>FINAL ANSW${stage4EMarker("ん", "s4-final-e")}R:</strong>
+        </div>
+        <button class="s4-final-answer-slots" id="stage4FinalAnswerOpen" type="button" aria-label="ファイナルアンサーを入力">
+          ${selected.map((character) => `<span>${character || "―"}</span>`).join("")}
+        </button>
+      </div>
+    </section>
+  `;
+}
+
 function renderStage4Sheet() {
   const memo = normalizeStage4Memo(state.stage4Memo);
   const numberRow = (group, questionIndex) => `
@@ -1605,14 +1636,14 @@ function renderStage4Sheet() {
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">①</span><em class="red-word">おじさん</em>の<br>間にあるのは?</p>
           <div class="s4-scatter">
-            ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch}</span>`).join("")}
+            ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch === "E" ? stage4EMarker("た", "s4-scatter-e") : ch}</span>`).join("")}
           </div>
           <div class="s4-panel-answer">${numberRow(stage4Numbers[0], 0)}</div>
         </div>
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">②</span>?の中に<br>はいる言葉は、なに</p>
           <div class="s4-week-rows">
-            <p><span class="s4-day">TUE</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">かそく</span></p>
+            <p><span class="s4-day">TU${stage4EMarker("い", "s4-inline-e")}</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">かそく</span></p>
             <p><span class="s4-day">SAT</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">どそく</span></p>
             <p><span class="s4-day s4-day-red">THU</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">?</span></p>
           </div>
@@ -1628,9 +1659,9 @@ function renderStage4Sheet() {
             </div>
             <span class="s4-plus">+</span>
             <div class="s4-word-pair s4-word-pair-right">
-              <span class="s4-red">WEEK</span>
+              <span class="s4-red">W${stage4EMarker("む", "s4-inline-e")}${stage4EMarker("ま", "s4-inline-e")}K</span>
               <span class="s4-pair-label">した</span>
-              <span class="s4-ge">GE</span>
+              <span class="s4-ge">G${stage4EMarker("し", "s4-inline-e")}</span>
             </div>
             <span class="s4-eq">‖</span>
             <span class="s4-answer-of">③のこたえ</span>
@@ -1643,7 +1674,8 @@ function renderStage4Sheet() {
           <div class="s4-panel-answer">${numberRow(stage4Numbers[3], 3)}</div>
         </div>
       </div>
-      <p class="s4-footer-note">※<b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。※　時差を隠す時に使うのじゃ→[ きじのくうきあしょうのみさきよらいのじさめ ]</p>
+      <p class="s4-footer-note">※<b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
+      ${renderStage4FinalSection()}
     </div>
   `;
 }
@@ -2429,6 +2461,18 @@ function wireStage4Memo() {
       saveState();
     });
   });
+  document.querySelectorAll("[data-s4-final-char]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.s4FinalChar);
+      const active = new Set(Array.isArray(state.stage4FinalActive) ? state.stage4FinalActive : []);
+      if (active.has(index)) active.delete(index);
+      else active.add(index);
+      state.stage4FinalActive = [...active].sort((a, b) => a - b);
+      button.classList.toggle("is-active", active.has(index));
+      button.setAttribute("aria-pressed", String(active.has(index)));
+      saveState();
+    });
+  });
 }
 
 function wireStage(stage, done) {
@@ -2481,6 +2525,11 @@ function wireStage(stage, done) {
     });
   }
   if (stage.id === "time") {
+    document.querySelector("#stage4FinalAnswerOpen")?.addEventListener("click", () => {
+      state.timeAnswerOpen = true;
+      state.feedback = null;
+      render();
+    });
     document.querySelector("#timeAnswerToggle")?.addEventListener("click", () => {
       state.timeAnswerOpen = !state.timeAnswerOpen;
       state.feedback = null;
@@ -3043,6 +3092,7 @@ function resetGame() {
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
   state.stage4Memo = normalizeStage4Memo(null);
+  state.stage4FinalActive = [];
   state.timeAnswerOpen = false;
   state.timeSequencePhase = "";
   state.introReturnPhase = "";
