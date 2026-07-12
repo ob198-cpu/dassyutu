@@ -13922,7 +13922,7 @@ button.s4-map-input.is-active {
   }
 }
 
-/* Final battle: current action plus two compact forecasts. */
+/* Final battle: current action plus one fully readable forecast. */
 .boss-visual-stack {
   min-width: 0;
   min-height: 0;
@@ -13938,7 +13938,7 @@ button.s4-map-input.is-active {
 
 .boss-forecast-strip {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
   gap: 6px;
 }
@@ -13946,7 +13946,7 @@ button.s4-map-input.is-active {
 .boss-forecast-card {
   min-width: 0;
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
+  grid-template-columns: 112px minmax(0, 1fr);
   align-items: center;
   gap: 6px;
   padding: 5px;
@@ -13956,13 +13956,8 @@ button.s4-map-input.is-active {
   color: #dcece8;
 }
 
-.boss-forecast-card.is-next-next {
-  grid-template-columns: 62px minmax(0, 1fr);
-  opacity: 0.76;
-}
-
 .boss-forecast-image {
-  height: 54px;
+  height: 70px;
   overflow: hidden;
   border: 1px solid rgba(239, 208, 101, 0.28);
   border-radius: 3px;
@@ -13983,19 +13978,12 @@ button.s4-map-input.is-active {
 }
 
 .boss-forecast-card p {
-  display: -webkit-box;
   margin: 0;
-  overflow: hidden;
   color: #dcece8;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
-  line-height: 1.25;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.boss-forecast-card.is-next-next p {
-  font-size: 8px;
+  line-height: 1.38;
+  white-space: normal;
 }
 
 .boss-effect-next {
@@ -14157,13 +14145,9 @@ button.s4-map-input.is-active {
   }
 
   .boss-forecast-card {
-    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-columns: 82px minmax(0, 1fr);
     gap: 4px;
     padding: 3px;
-  }
-
-  .boss-forecast-card.is-next-next {
-    grid-template-columns: 48px minmax(0, 1fr);
   }
 
   .boss-forecast-image {
@@ -14174,9 +14158,9 @@ button.s4-map-input.is-active {
     font-size: 8px;
   }
 
-  .boss-forecast-card p,
-  .boss-forecast-card.is-next-next p {
-    font-size: 7px;
+  .boss-forecast-card p {
+    font-size: 9px;
+    line-height: 1.28;
   }
 
   .boss-step-effect {

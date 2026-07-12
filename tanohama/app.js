@@ -3171,7 +3171,6 @@ function renderBossProblemPanel(stage) {
           </div>
           <div class="boss-forecast-strip" aria-label="この後の行動">
             ${renderBossForecast(index + 1, "次の行動", "is-next")}
-            ${renderBossForecast(index + 2, "次の次の行動", "is-next-next")}
           </div>
         </div>
         <section class="boss-current-copy ${effectActive ? "is-effect-mode" : ""}">
@@ -3181,7 +3180,7 @@ function renderBossProblemPanel(stage) {
             <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"}" aria-live="assertive">
               <strong>${feedback.phase === "hit" ? feedback.message || effectCopy : effectCopy}</strong>
               ${feedback.phase === "effect" && index === 4 ? renderBossColorRemovalEffect() : ""}
-              <span>${feedback.phase === "hit" ? "「最初からやり直す」を押すと第1問へ戻る。" : "演出を確認してから「次へ」を押してください。"}</span>
+              ${feedback.phase === "hit" ? `<span>「最初からやり直す」を押すと第1問へ戻る。</span>` : ""}
               <button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : "次へ"}</button>
             </div>
           ` : `
