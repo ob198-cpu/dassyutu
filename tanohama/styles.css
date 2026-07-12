@@ -12210,6 +12210,22 @@ body.late-stage-mode .phone-shell {
     margin: 0 !important;
   }
 
+  body.stage-path-mode .learned-spell-viewer {
+    z-index: 140 !important;
+    top: calc(var(--mobile-nav-h) + var(--panel-edge)) !important;
+    right: var(--panel-edge) !important;
+    bottom: var(--panel-edge) !important;
+    left: var(--panel-edge) !important;
+    overflow-y: auto !important;
+    pointer-events: auto !important;
+    touch-action: pan-y;
+  }
+
+  body.stage-path-mode .learned-spell-viewer button {
+    pointer-events: auto !important;
+    touch-action: manipulation;
+  }
+
   body.stage-one-mode {
     height: 100dvh !important;
     overflow: hidden !important;

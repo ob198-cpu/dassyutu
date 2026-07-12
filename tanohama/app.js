@@ -729,6 +729,8 @@ function renderPathStage(stage) {
     wirePathSuccessStep(stage);
   } else if (clearMode) {
     wirePathStage(stage, done);
+  } else if (state.learnedSpellViewerOpen) {
+    wirePathStage(stage, done);
   }
 }
 
