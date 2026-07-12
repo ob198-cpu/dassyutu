@@ -1436,6 +1436,7 @@ function gatePlayableVisual(stage, done, feedback, backgroundOnly = false) {
       <div class="art-vignette"></div>
       <div class="far-door-aura"></div>
       <div class="glow-bridge"></div>
+      ${!done && !successPhase ? `<p class="gate-background-message">大きな穴が開いていて先に進めない</p>` : ""}
       ${rockDropping ? `<img class="falling-rock" src="./assets/stage01-rock-small.webp" alt="" aria-hidden="true" />` : ""}
     </div>
   `;
