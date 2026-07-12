@@ -2624,7 +2624,7 @@ function renderGenericStageClear(stage) {
   const nextLabel = state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次のステージへ";
   const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : stage.id === "shop" ? "氷が溶けた" : `${stage.title} クリア`;
   const clearMessage = stage.id === "time"
-    ? "「キミタチナラ」を唱えた！ 言葉に背中を押され、そびえ立つ山の壁を乗り越えた！"
+    ? "<strong>「キミタチナラ」を唱えた！</strong><br>その言葉が仲間たちの背中を押し、諦めかけていた心にもう一度力が戻った。足場の少ない急斜面に手をかけ、互いに支え合いながら一歩ずつ登っていく。山の壁そのものが消えたわけではない。それでも進み続け、ついに全員で頂上を乗り越えた！"
     : stage.id === "shop"
       ? "「ドラブレス」を唱えた！炎で氷が溶け、先へ進めるようになった！"
     : stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。";
@@ -2633,11 +2633,9 @@ function renderGenericStageClear(stage) {
       <div class="stage-clear-card">
         <span class="clear-kicker">STAGE ${stage.number} COMPLETE</span>
         <h2>${clearTitle}</h2>
-        <div class="clear-spell-reward">
-          <span>呪文を習得</span>
-          <strong>☆ ${stage.reward}</strong>
-          <p>${clearMessage}</p>
-        </div>
+        ${stage.id === "time"
+          ? `<div class="clear-spell-reward time-clear-story"><p>${clearMessage}</p></div>`
+          : `<div class="clear-spell-reward"><span>呪文を習得</span><strong>☆ ${stage.reward}</strong><p>${clearMessage}</p></div>`}
         <div class="clear-actions">
           <button class="secondary-button" id="genericToProblem" type="button">問題を見直す</button>
           <button class="primary-button" id="nextButton" type="button">${nextLabel}</button>
