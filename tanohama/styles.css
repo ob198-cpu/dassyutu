@@ -8145,6 +8145,202 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .stage3-items small { font-size: clamp(10px, 1.5vw, 12px); font-weight: 700; color: #333; }
 .stage3-item-ico { font-size: clamp(18px, 3vw, 28px); }
 
+.stage3-right {
+  position: relative;
+}
+
+.shop-chain-lock {
+  position: absolute;
+  z-index: 18;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 5, 6, 0.3);
+  box-shadow: inset 0 0 42px rgba(0, 0, 0, 0.72);
+}
+
+.shop-chain {
+  position: absolute;
+  left: -22%;
+  top: 50%;
+  width: 144%;
+  height: 22px;
+  border: 2px solid #161b1d;
+  border-radius: 11px;
+  background:
+    radial-gradient(ellipse at center, transparent 0 28%, #171c1f 31% 41%, #9ca7aa 44% 53%, #242b2e 57% 66%, transparent 69%) 0 50% / 28px 18px repeat-x,
+    linear-gradient(#4e585b, #151a1c 48%, #697477 52%, #202628);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.85), inset 0 1px 2px rgba(255, 255, 255, 0.28);
+  transform-origin: center;
+}
+
+.shop-chain-a { transform: rotate(27deg); }
+.shop-chain-b { transform: rotate(-27deg); }
+
+.shop-padlock {
+  position: relative;
+  z-index: 2;
+  width: 76px;
+  height: 92px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.72));
+  touch-action: manipulation;
+}
+
+.shop-padlock-shackle {
+  position: absolute;
+  top: 2px;
+  left: 17px;
+  width: 42px;
+  height: 47px;
+  border: 9px solid #aeb6b7;
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+  background: transparent;
+  box-shadow: inset 2px 0 2px rgba(255, 255, 255, 0.32), 2px 0 2px rgba(0, 0, 0, 0.55);
+}
+
+.shop-padlock-body {
+  position: absolute;
+  left: 7px;
+  bottom: 1px;
+  width: 62px;
+  height: 57px;
+  border: 2px solid #4a310d;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #ffe074, #9c6914 58%, #e0ad3a);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7), inset 0 -7px 12px rgba(68, 34, 2, 0.42);
+}
+
+.shop-padlock-body i {
+  position: absolute;
+  left: 50%;
+  top: 17px;
+  width: 10px;
+  height: 20px;
+  border-radius: 50% 50% 3px 3px;
+  background: #241705;
+  transform: translateX(-50%);
+}
+
+.shop-padlock:hover,
+.shop-padlock:focus-visible {
+  outline: none;
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 13px rgba(255, 221, 117, 0.58)) drop-shadow(0 8px 8px rgba(0, 0, 0, 0.72));
+}
+
+.shop-lock-dialog-screen {
+  position: fixed;
+  z-index: 150;
+  top: var(--panel-edge);
+  right: var(--panel-edge);
+  bottom: var(--panel-edge);
+  left: calc(var(--side-menu-w) + var(--panel-edge));
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: rgba(0, 3, 6, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.shop-lock-dialog {
+  width: min(380px, 100%);
+  display: grid;
+  gap: 9px;
+  padding: 19px;
+  border: 1px solid rgba(255, 222, 117, 0.72);
+  border-radius: 8px;
+  background: #080d12;
+  color: #f7efdc;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.72), inset 0 0 24px rgba(224, 185, 75, 0.06);
+}
+
+.shop-lock-dialog > span {
+  color: #d7b857;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.shop-lock-dialog h4,
+.shop-lock-dialog p {
+  margin: 0;
+}
+
+.shop-lock-dialog h4 {
+  color: #ffe49a;
+  font-size: 25px;
+}
+
+.shop-lock-dialog input {
+  width: 126px;
+  height: 58px;
+  justify-self: center;
+  border: 1px solid #d7b857;
+  border-radius: 6px;
+  background: #020507;
+  color: #fff1b9;
+  font-size: 34px;
+  font-weight: 950;
+  letter-spacing: 0.22em;
+  text-align: center;
+  padding-left: 0.22em;
+}
+
+.shop-lock-error {
+  color: #ff8d78;
+  font-weight: 900;
+}
+
+.shop-lock-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.shop-lock-actions button {
+  min-height: 44px;
+}
+
+@media (max-width: 680px) {
+  .shop-lock-dialog-screen {
+    left: var(--panel-edge);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .shop-padlock {
+    transform: scale(0.82);
+  }
+
+  .shop-padlock:hover,
+  .shop-padlock:focus-visible {
+    transform: scale(0.88);
+  }
+
+  .shop-lock-dialog {
+    gap: 5px;
+    padding: 10px 14px;
+  }
+
+  .shop-lock-dialog h4 {
+    font-size: 20px;
+  }
+
+  .shop-lock-dialog input {
+    height: 46px;
+    font-size: 27px;
+  }
+
+  .shop-lock-actions button {
+    min-height: 36px;
+  }
+}
+
 /* ===== ステージ4(水色の計器室) ===== */
 .stage4-sheet {
   background: #eef6f9;

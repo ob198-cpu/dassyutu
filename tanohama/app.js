@@ -671,6 +671,10 @@ function loadState() {
         timeSequencePhase: ["learned", "explanation", "choose", "cast-fail", "casting-time"].includes(saved.timeSequencePhase) ? saved.timeSequencePhase : "",
         introReturnPhase: ["message", "ready"].includes(saved.introReturnPhase) ? saved.introReturnPhase : "",
         shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
+        shopLockOpen: Boolean(saved.shopLockOpen),
+        shopLockPromptOpen: Boolean(saved.shopLockPromptOpen),
+        shopLockCode: typeof saved.shopLockCode === "string" ? saved.shopLockCode.replace(/\D/g, "").slice(0, 2) : "",
+        shopLockError: Boolean(saved.shopLockError),
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
@@ -683,7 +687,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -1732,8 +1736,33 @@ function renderStage3Sheet() {
           <ul class="stage3-items">
             ${items.map((item, index) => `<li><button class="stage3-answer-option ${state.shopPendingItem === item.name ? "is-selected" : ""}" type="button" data-item="${item.name}" aria-pressed="${state.shopPendingItem === item.name}" ${done ? "disabled" : ""}><span class="stage3-answer-number">${index + 1}</span><span class="stage3-item-main"><strong>${item.name}</strong><small>${item.note}</small></span></button></li>`).join("")}
           </ul>
+          ${!done && !state.shopLockOpen ? `
+            <div class="shop-chain-lock" aria-label="チェーンと鍵で封印されたアイテム屋">
+              <span class="shop-chain shop-chain-a" aria-hidden="true"></span>
+              <span class="shop-chain shop-chain-b" aria-hidden="true"></span>
+              <button class="shop-padlock" id="shopLockButton" type="button" aria-label="中央の鍵を調べる">
+                <span class="shop-padlock-shackle" aria-hidden="true"></span>
+                <span class="shop-padlock-body" aria-hidden="true"><i></i></span>
+              </button>
+            </div>
+          ` : ""}
         </div>
       </div>
+      ${!done && !state.shopLockOpen && state.shopLockPromptOpen ? `
+        <div class="shop-lock-dialog-screen" role="dialog" aria-modal="true" aria-label="鍵の解除番号">
+          <form class="shop-lock-dialog" id="shopLockForm">
+            <span>LOCKED</span>
+            <h4>解除番号</h4>
+            <p>2桁の番号を入力</p>
+            <input id="shopLockInput" type="text" value="${state.shopLockCode}" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" aria-label="2桁の解除番号">
+            ${state.shopLockError ? `<p class="shop-lock-error" role="alert">番号が違う</p>` : ""}
+            <div class="shop-lock-actions">
+              <button class="secondary-button" id="shopLockCancel" type="button">閉じる</button>
+              <button class="primary-button" type="submit">解除</button>
+            </div>
+          </form>
+        </div>
+      ` : ""}
     </div>
   `;
 }
@@ -2372,14 +2401,12 @@ function renderShopSuccessSequence(stage, phase) {
     `;
   }
 
-  const content = phase === "explanation"
-      ? `<span>SPELL GUIDE</span><h2>ドラブレス</h2><p>龍の息のような高熱火炎を前方へ噴射し、氷を急速に融解する。<br>大量の蒸気が発生するため、発射方向に注意。</p>`
-      : phase === "confirm"
-        ? `<span>SPELL READY</span><h2>ドラブレスを使いますか？</h2><p>鏡面状に凍った急坂へ高熱火炎を放つ。</p>`
-        : `<span>NEW SPELL</span><h2>ドラブレスを覚えた</h2><p class="shop-spell-name">☆ ドラブレス</p>`;
+  const content = phase === "confirm"
+    ? `<span>SPELL READY</span><h2>ドラブレスを使いますか？</h2><p>鏡面状に凍った急坂へ高熱火炎を放つ。</p>`
+    : `<span>NEW SPELL</span><h2>ドラブレスを覚えた！</h2><p><strong>ドラブレス：</strong>龍の息のような高熱火炎を前方へ噴射し、氷を急速に融解する。<br>大量の蒸気が発生するため、発射方向に注意。</p>`;
   const actions = phase === "confirm"
     ? `<div class="shop-sequence-actions"><button class="primary-button" id="shopCastYes" type="button">はい</button><button class="secondary-button" id="shopCastNo" type="button">いいえ</button></div>`
-    : `<button class="primary-button" id="${phase === "explanation" ? "shopExplanationNext" : "shopLearnedNext"}" type="button">つぎへ</button>`;
+    : `<button class="primary-button" id="shopLearnedNext" type="button">つぎへ</button>`;
 
   return `
     <section class="shop-success-sequence is-${phase}" aria-label="ステージ3 クリア進行">
@@ -2545,16 +2572,12 @@ function beginShopCast(stage) {
 
 function wireShopSuccessSequence(stage) {
   document.querySelector("#shopLearnedNext")?.addEventListener("click", () => {
-    state.feedback = { stageId: stage.id, type: "success", phase: "explanation" };
-    render();
-  });
-  document.querySelector("#shopExplanationNext")?.addEventListener("click", () => {
     state.feedback = { stageId: stage.id, type: "success", phase: "confirm" };
     render();
   });
   document.querySelector("#shopCastYes")?.addEventListener("click", () => beginShopCast(stage));
   document.querySelector("#shopCastNo")?.addEventListener("click", () => {
-    state.feedback = { stageId: stage.id, type: "success", phase: "explanation" };
+    state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
     render();
   });
 }
@@ -2716,9 +2739,51 @@ function wireStage(stage, done) {
     });
   }
   if (stage.type === "shop") {
+    document.querySelector("#shopLockButton")?.addEventListener("click", () => {
+      state.shopLockPromptOpen = true;
+      state.shopLockCode = "";
+      state.shopLockError = false;
+      render();
+      requestAnimationFrame(() => document.querySelector("#shopLockInput")?.focus());
+    });
+    document.querySelector("#shopLockCancel")?.addEventListener("click", () => {
+      state.shopLockPromptOpen = false;
+      state.shopLockCode = "";
+      state.shopLockError = false;
+      render();
+    });
+    document.querySelector("#shopLockInput")?.addEventListener("input", (event) => {
+      const input = event.currentTarget;
+      input.value = input.value.replace(/\D/g, "").slice(0, 2);
+      state.shopLockCode = input.value;
+      state.shopLockError = false;
+    });
+    document.querySelector("#shopLockForm")?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const input = document.querySelector("#shopLockInput");
+      const code = (input?.value || "").replace(/\D/g, "").slice(0, 2);
+      state.shopLockCode = code;
+      if (code === "89") {
+        state.shopLockOpen = true;
+        state.shopLockPromptOpen = false;
+        state.shopLockCode = "";
+        state.shopLockError = false;
+        audioDirector.playEffect("success");
+        render();
+        return;
+      }
+      state.shopLockError = true;
+      audioDirector.playEffect("fail");
+      render();
+      requestAnimationFrame(() => {
+        const nextInput = document.querySelector("#shopLockInput");
+        nextInput?.focus();
+        nextInput?.select();
+      });
+    });
     document.querySelectorAll(".stage3-answer-option").forEach((button) => {
       button.addEventListener("click", () => {
-        if (done) return;
+        if (done || !state.shopLockOpen) return;
         state.shopPendingItem = button.dataset.item || "";
         state.feedback = null;
         render();
@@ -3354,6 +3419,10 @@ function resetGame() {
   state.timeSequencePhase = "";
   state.introReturnPhase = "";
   state.shopPendingItem = "";
+  state.shopLockOpen = false;
+  state.shopLockPromptOpen = false;
+  state.shopLockCode = "";
+  state.shopLockError = false;
   state.revealed = {};
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
