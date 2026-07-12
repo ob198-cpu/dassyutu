@@ -12379,6 +12379,81 @@ body.late-stage-mode .phone-shell {
   background: transparent;
 }
 
+/* Stage 03: keep the final explanation and all four item labels visible. */
+.generic-problem-panel .immersive-panel-scroll:has(.stage3-sheet) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.generic-problem-panel .stage3-cipher,
+.generic-problem-panel .stage3-target,
+.generic-problem-panel .stage3-left .sheet-elder,
+.generic-problem-panel .stage3-items strong,
+.generic-problem-panel .stage3-items small {
+  line-height: 1.3;
+}
+
+.generic-problem-panel .stage3-items small {
+  display: block;
+  padding-bottom: 1px;
+}
+
+@media (orientation: landscape) and (max-height: 760px) {
+  .generic-problem-panel .stage3-sheet {
+    padding: 7px 8px;
+  }
+
+  .generic-problem-panel .stage3-sheet .sheet-head-row {
+    margin-bottom: 5px;
+    padding-bottom: 4px;
+  }
+
+  .generic-problem-panel .stage3-sheet .sheet-title {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  .generic-problem-panel .stage3-cipher {
+    padding: 4px 6px;
+    line-height: 1.3;
+  }
+
+  .generic-problem-panel .stage3-target-wrap {
+    padding: 5px;
+  }
+
+  .generic-problem-panel .stage3-target {
+    line-height: 1.2;
+  }
+
+  .generic-problem-panel .stage3-left .sheet-elder {
+    padding: 4px 6px 5px;
+    line-height: 1.3;
+  }
+
+  .generic-problem-panel .stage3-shop-title {
+    padding: 4px;
+    line-height: 1.2;
+  }
+
+  .generic-problem-panel .stage3-items li {
+    min-height: 32px;
+    padding: 3px 0;
+  }
+
+  .generic-problem-panel .generic-problem-answer:has(.stage3-answer-controls) {
+    padding: 3px 6px;
+  }
+
+  .generic-problem-panel .stage3-answer-controls .note {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.25;
+  }
+}
+
 .stage3-confirmation-screen {
   position: fixed;
   z-index: 140;
