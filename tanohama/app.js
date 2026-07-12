@@ -492,6 +492,7 @@ function loadState() {
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
+        bossAnswerOpen: Boolean(saved.bossAnswerOpen),
         bossSlotCreationPending: Boolean(saved.bossSlotCreationPending),
         bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) || (Array.isArray(saved.bossInput) && saved.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))),
         bossColorRemoved: Boolean(saved.bossColorRemoved),
@@ -500,7 +501,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -543,6 +544,7 @@ function closeStagePanelsOnEntry(stage) {
   state.gatePanelMode = "spell";
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
+  state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
   state.bossSixthSlotCreated = false;
   if (stage?.id === "path") {
@@ -2606,18 +2608,42 @@ function getBossAttackText(step, index) {
   return step.after;
 }
 
+const bossActionDescriptions = [
+  "糸のように繊細で鋭い爪による弱攻撃「一犬糸争」を放とうとしている",
+  "両の前足で地面を叩き、「二脚地動」で周囲を揺らそうとしている",
+  "小幡の方へ向き、目が合うと石化する「三石化線」を放とうとしている",
+  "大技を放つため、動かずに力を溜めようとしている",
+  "動かないまま、破滅的な大技の準備を続けようとしている",
+  "百発百中の即死攻撃「百黙絶静」を放とうとしている",
+  "出口を封じる「零式空間」を放とうとしている",
+  "最後の抵抗をしようとしている。仲間を思い出し、とびきりの一撃を放つ時だ",
+];
+
+const bossSuccessEffects = [
+  "バリが鋭い爪の攻撃を弾いた！",
+  "フユウで地面から離れ、揺れをかわした！",
+  "ヘンガオで視線をそらし、石化を防いだ！",
+  "ツケモノが新しい呪文枠を作れる状態にした！",
+  "ゴクロウサマが「百黙絶静」から色を消した！",
+  "カタメで変化した攻撃を防いだ！",
+  "タイムマシンが封鎖される直前の空間へ移動した！",
+  "バタフライエフェクトが未来を変え、とびきりの一撃を放った！",
+];
+
+function getBossActionDescription(index) {
+  if (index === 5 && state.bossColorRemoved) {
+    return "「百黙絶静」から白・黒・色・青が消えて生まれた「一犬糸争」を放とうとしている";
+  }
+  return bossActionDescriptions[index] || "最後の攻撃を放とうとしている";
+}
+
+function renderBossActionImage(index) {
+  const column = index % 4;
+  const row = Math.floor(index / 4);
+  return `<div class="boss-action-image" role="img" aria-label="ラスボスの第${index + 1}行動" style="background-position:${column * 33.3333}% ${row * 100}%;"></div>`;
+}
+
 function renderBoss(stage) {
-  const total = bossBattle.length;
-  const solvedCount = Math.min(state.bossInput.length, total);
-  const rows = bossBattle
-    .map((step, index) => {
-      const slate = renderBossSlate(step, index, index < solvedCount, index === solvedCount);
-      const attackText = getBossAttackText(step, index);
-      const actionText = attackText ? attackText.replace(/『[^』]+』/g, (m) => `<span class="boss-attack-name">${m}</span>`) : "";
-      const action = attackText ? `<p class="boss-action">↓　${actionText}</p>` : "";
-      return `${slate}${action}`;
-    })
-    .join("");
   const mode = state.bossPanelMode || "closed";
   elements.game.innerHTML = `
     <section class="stage-panel immersive-stage boss-immersive-stage" aria-label="${stage.number} / ${stage.title}">
@@ -2627,27 +2653,7 @@ function renderBoss(stage) {
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
       ${mode === "spells" ? renderBossSpellBookPanel(stage) : ""}
-      ${mode === "problem" ? renderBossProblemPanel(stage) : ""}
-      ${mode === "play" ? `
-        <section class="immersive-panel boss-battle-panel" aria-label="ラスボス戦">
-          <div class="immersive-panel-head">
-            <div><span>FINAL BATTLE ${solvedCount} / ${total}</span><strong>攻撃に合う呪文を選べ</strong></div>
-            <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="戦闘画面を閉じる">×</button>
-          </div>
-          <p class="boss-rule">呪文は1種類につき1回だけ。石板の文字数と、次の攻撃の特徴を照合する。</p>
-          <details class="boss-spell-list" ${solvedCount === 0 ? "open" : ""}>
-            <summary>使用できる呪文一覧</summary>
-            <ul>${bossNewSpells.map((spell) => `<li>☆<strong>${spell.name}</strong>…${spell.effect}</li>`).join("")}</ul>
-            <p class="boss-spell-list-sub">これまでに習得した呪文</p>
-            <ul>${bossLearnedSpells.map((spell) => `<li>☆<strong>${spell.name}</strong>…${spell.effect}${spell.explanation ? `<small class="boss-inline-spell-explanation">解説: ${spell.explanation}</small>` : ""}</li>`).join("")}</ul>
-          </details>
-          <section class="boss-timeline" aria-label="攻撃の流れ">
-            ${rows}
-            <p class="boss-final-words">「今こそ共に歩んだ仲間の事を思い出す時じゃ。どんなに離れても皆仲間、さぁとびきりの一撃を放つのじゃ」<span class="boss-butterfly" aria-label="蝶">蝶</span></p>
-          </section>
-          <div class="generic-panel-footer"><button class="secondary-button" id="bossToProblem" type="button">原問題を確認</button></div>
-        </section>
-      ` : ""}
+      ${mode === "problem" || mode === "play" ? renderBossProblemPanel(stage) : ""}
     </section>
   `;
   wireBoss();
@@ -2679,51 +2685,60 @@ function renderBossSpellBookPanel(stage) {
 }
 
 function renderBossProblemPanel(stage) {
-  const sequence = bossBattle
-    .map((step, index) => {
-      const attackText = getBossAttackText(step, index);
-      const action = attackText
-        ? attackText.replace(/『[^』]+』/g, (text) => `<span class="boss-attack-name">${text}</span>`)
-        : "最後の石板。仲間と歩んだ全ての試練を思い出せ。";
-      return `
-        <article class="boss-brief-step">
-          <div class="boss-brief-step-head"><span>第${index + 1}手</span><strong>石板 ${step.slots}文字</strong></div>
-          <div class="boss-brief-slots" aria-label="${step.slots}文字の空欄">
-            ${Array.from({ length: step.slots }).map(() => `<span></span>`).join("")}
-          </div>
-          <p>${action}</p>
-        </article>
-      `;
-    })
-    .join("");
+  const index = Math.min(state.bossInput.length, bossBattle.length - 1);
+  const step = bossBattle[index];
+  const feedback = state.feedback?.stageId === "boss" ? state.feedback : null;
+  const effectActive = feedback?.phase === "effect" || feedback?.phase === "hit";
+  const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
+  const slotCount = needsSixthSlot ? 5 : step.slots;
+  const effectCopy = feedback?.phase === "effect"
+    ? bossSuccessEffects[index]
+    : feedback?.phase === "hit"
+      ? "呪文が外れた。ラスボスの攻撃を受けた！"
+      : "";
   return `
-    <section class="immersive-panel boss-problem-panel" aria-label="ラスボス問題">
+    <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""}" aria-label="ラスボス 第${index + 1}問">
       <div class="immersive-panel-head">
-        <div><span>STAGE ${stage.number}</span><strong>出口を守るラスボスを破壊せよ</strong></div>
+        <div><span>FINAL BATTLE ${index + 1} / ${bossBattle.length}</span><strong>ラスボスの行動を見て呪文を選べ</strong></div>
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="問題を閉じる">×</button>
       </div>
-      <div class="boss-problem-copy">
-        <section class="boss-brief-intro">
-          <strong>現在異空間からの出口を発見したが、ラスボスが立ちはだかった。</strong>
-          <p>呪文を駆使して全ての攻撃に耐え抜き、ラスボスを破壊せよ。</p>
-          <p class="boss-brief-rule">ここで使える呪文は1呪文につき1回まで。石板の文字数と、その直後に来る攻撃を見比べる。</p>
+      <div class="boss-current-layout">
+        <div class="boss-current-visual">
+          ${renderBossActionImage(index)}
+          <span class="boss-current-step">第${index + 1}問</span>
+        </div>
+        <section class="boss-current-copy">
+          <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
+          <div class="boss-current-meta"><span>石板 ${slotCount}文字${needsSixthSlot ? "＋未完成の1枠" : ""}</span><span>呪文は1種類につき1回</span></div>
+          ${effectActive ? `
+            <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"}" aria-live="assertive">
+              <strong>${effectCopy}</strong>
+              <span>${feedback.phase === "hit" ? "戦闘は第1問からやり直しになる。" : "攻撃を切り抜けた。次の行動へ進む。"}</span>
+            </div>
+          ` : `
+            <div class="boss-current-actions">
+              <button class="primary-button" id="bossOpenAnswer" type="button">${state.bossAnswerOpen ? "呪文入力を閉じる" : "呪文を入力"}</button>
+              <button class="secondary-button" id="bossOpenSpellBook" type="button">呪文の書</button>
+            </div>
+            ${state.bossAnswerOpen ? `
+              <section class="boss-current-answer" aria-label="第${index + 1}問の呪文入力">
+                ${needsSixthSlot ? `
+                  <p>ゴクロウサマには6文字目の枠が足りない。ツケモノで枠を作る。</p>
+                  <div class="boss-direct-slots" aria-label="作成前の5文字の枠">${Array.from({ length: 5 }).map(() => "<span></span>").join("")}</div>
+                  <button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノで6文字目の枠を作る</button>
+                ` : `
+                  <div class="boss-direct-slots" aria-label="${step.slots}文字の回答欄">${Array.from({ length: step.slots }).map(() => "<span></span>").join("")}</div>
+                  <form id="bossDirectForm" class="boss-direct-form">
+                    <input id="bossDirectInput" type="text" maxlength="${step.slots}" autocomplete="off" inputmode="text" placeholder="カタカナで呪文を入力" aria-label="呪文を入力" />
+                    <button class="primary-button" type="submit">呪文を唱える</button>
+                  </form>
+                `}
+              </section>
+            ` : ""}
+          `}
+          ${index === bossBattle.length - 1 ? `<p class="boss-final-clue">「今こそ共に歩んだ仲間の事を思い出す時じゃ。どんなに離れても皆仲間、さぁとびきりの一撃を放つのじゃ」<span aria-label="蝶の印">蝶の印</span></p>` : ""}
         </section>
-        <details class="boss-brief-spells" open>
-          <summary>新たに習得した呪文一覧</summary>
-          <div class="boss-brief-spell-grid">
-            ${bossNewSpells.map((spell) => `<p><strong>☆ ${spell.name}</strong><span>${spell.effect}</span></p>`).join("")}
-          </div>
-          <p class="boss-brief-known">これまでのステージで習得した呪文も使用できる。</p>
-        </details>
-        <section class="boss-brief-sequence">
-          <h3>石板と攻撃順</h3>
-          ${sequence}
-          <p class="boss-brief-final">「今こそ共に歩んだ仲間の事を思い出す時じゃ。どんなに離れても皆仲間、さぁとびきりの一撃を放つのじゃ」<span aria-label="蝶の印">蝶の印</span></p>
-        </section>
-        ${renderBossDirectAnswer(stage)}
-        <button class="secondary-button boss-source-button" type="button" data-problem="${stage.sourceProblemImage}" data-title="${stage.number} ${stage.title} 原問題">原本画像を確認</button>
       </div>
-      <div class="immersive-panel-actions"><span class="boss-direct-help">この問題画面から、次の呪文を直接回答できます。</span></div>
     </section>
   `;
 }
@@ -2800,8 +2815,19 @@ function renderBossSlate(step, index, solved, active) {
 function wireBoss() {
   wireProblems();
   document.querySelector("#bossClosePanel")?.addEventListener("click", () => {
-    state.bossPanelMode = "closed";
+    state.bossPanelMode = state.bossPanelMode === "spells" ? "problem" : "closed";
+    state.bossAnswerOpen = false;
     state.slotPickerOpen = false;
+    state.feedback = null;
+    render();
+  });
+  document.querySelector("#bossOpenAnswer")?.addEventListener("click", () => {
+    state.bossAnswerOpen = !state.bossAnswerOpen;
+    state.feedback = null;
+    render();
+  });
+  document.querySelector("#bossOpenSpellBook")?.addEventListener("click", () => {
+    state.bossPanelMode = "spells";
     state.feedback = null;
     render();
   });
@@ -2821,6 +2847,7 @@ function wireBoss() {
     if (!state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))) return;
     state.bossSlotCreationPending = false;
     state.bossSixthSlotCreated = true;
+    state.bossAnswerOpen = true;
     state.feedback = null;
     state.slotInput = [];
     render();
@@ -2876,7 +2903,7 @@ function castBossSpell(step) {
   }
   const value = normalizeAnswer(letters.join(""));
   if (value === normalizeAnswer(step.answer)) {
-    completeBossStep(step);
+    startBossSuccessEffect(step);
     return;
   }
   const used = state.bossInput.map((spell) => normalizeAnswer(spell));
@@ -2889,8 +2916,7 @@ function castBossSpell(step) {
   } else if (known.includes(value)) {
     message = "獣には通じない！状況と文字数に合う呪文を見極めるのじゃ。";
   }
-  state.feedback = { stageId: "boss", type: "fail", message };
-  render();
+  startBossHit(message);
 }
 
 function castBossDirectAnswer(step, value) {
@@ -2900,16 +2926,49 @@ function castBossDirectAnswer(step, value) {
     return;
   }
   if (normalizeAnswer(value) === normalizeAnswer(step.answer)) {
-    completeBossStep(step);
+    startBossSuccessEffect(step);
     return;
   }
-  state.feedback = { stageId: "boss", type: "fail", message: "その答えではない。問題と呪文の一覧を確認してください。" };
+  startBossHit("その呪文では攻撃を防げなかった。");
+}
+
+function startBossSuccessEffect(step) {
+  const stepIndex = state.bossInput.length;
+  state.bossAnswerOpen = false;
+  state.feedback = { stageId: "boss", type: "success", phase: "effect", stepIndex };
   render();
+  window.setTimeout(() => {
+    if (stages[state.stageIndex]?.id !== "boss") return;
+    if (state.feedback?.stageId !== "boss" || state.feedback?.phase !== "effect" || state.bossInput.length !== stepIndex) return;
+    completeBossStep(step);
+  }, 1500);
+}
+
+function startBossHit(message) {
+  state.bossAnswerOpen = false;
+  state.feedback = { stageId: "boss", type: "fail", phase: "hit", message };
+  render();
+  window.setTimeout(() => {
+    if (stages[state.stageIndex]?.id !== "boss") return;
+    if (state.feedback?.stageId !== "boss" || state.feedback?.phase !== "hit") return;
+    state.bossInput = [];
+    state.slotInput = [];
+    state.activeSlot = 0;
+    state.slotPickerOpen = false;
+    state.bossAnswerOpen = false;
+    state.bossSlotCreationPending = false;
+    state.bossSixthSlotCreated = false;
+    state.bossColorRemoved = false;
+    state.bossPanelMode = "closed";
+    state.feedback = null;
+    render();
+  }, 1450);
 }
 
 function completeBossStep(step) {
   state.bossInput.push(step.answer);
   state.feedback = null;
+  state.bossAnswerOpen = false;
   state.slotInput = [];
   state.activeSlot = 0;
   state.slotPickerOpen = false;
@@ -2990,6 +3049,9 @@ function resetGame() {
   state.revealed = {};
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
+  state.bossAnswerOpen = false;
+  state.bossSlotCreationPending = false;
+  state.bossSixthSlotCreated = false;
   state.bossColorRemoved = false;
   saveState();
   render();
