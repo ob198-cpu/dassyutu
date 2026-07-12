@@ -13306,6 +13306,282 @@ body.late-stage-mode .phone-shell {
   }
 }
 
+/* Final battle: current action plus two compact forecasts. */
+.boss-visual-stack {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(190px, 1fr) auto;
+  gap: 7px;
+}
+
+.boss-visual-stack > .boss-current-visual .boss-action-image {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.boss-forecast-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: stretch;
+  gap: 6px;
+}
+
+.boss-forecast-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid rgba(120, 192, 185, 0.4);
+  border-radius: 5px;
+  background: rgba(3, 10, 15, 0.9);
+  color: #dcece8;
+}
+
+.boss-forecast-card.is-next-next {
+  grid-template-columns: 62px minmax(0, 1fr);
+  opacity: 0.76;
+}
+
+.boss-forecast-image {
+  height: 54px;
+  overflow: hidden;
+  border: 1px solid rgba(239, 208, 101, 0.28);
+  border-radius: 3px;
+}
+
+.boss-forecast-image .boss-action-image {
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.boss-forecast-card span {
+  display: block;
+  margin-bottom: 2px;
+  color: #e8c85d;
+  font-size: 10px;
+  font-weight: 950;
+}
+
+.boss-forecast-card p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #dcece8;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.boss-forecast-card.is-next-next p {
+  font-size: 8px;
+}
+
+.boss-effect-next {
+  width: min(240px, 100%) !important;
+  min-height: 42px;
+  justify-self: center;
+  margin-top: 4px;
+}
+
+.boss-current-copy.is-effect-mode {
+  gap: 7px;
+  justify-content: center;
+}
+
+.boss-current-copy.is-effect-mode .boss-intent-text {
+  display: none;
+}
+
+.boss-current-copy.is-effect-mode .boss-current-meta {
+  display: none;
+}
+
+.boss-sixth-slot-builder {
+  align-items: flex-start;
+  min-height: 74px;
+  padding-bottom: 27px;
+}
+
+.boss-sixth-slot-builder > span {
+  flex: 0 1 46px;
+}
+
+.boss-sixth-slot-builder .boss-missing-slot {
+  position: relative;
+  border-style: dashed;
+  border-color: rgba(118, 229, 196, 0.7);
+  background: rgba(62, 121, 111, 0.08);
+}
+
+.boss-tsukemono-block-icon {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  width: 14px;
+  height: 12px;
+  transform: translateX(-50%);
+  border: 1px solid #8fd8c4;
+  background: linear-gradient(135deg, #7fa99f 0 48%, #58776f 49% 100%);
+  box-shadow: 3px -3px 0 -1px #b3d8cf;
+}
+
+.boss-missing-slot small {
+  position: absolute;
+  top: calc(100% + 20px);
+  left: 50%;
+  width: 94px;
+  transform: translateX(-50%);
+  color: #a9d9cd;
+  font-size: 8px;
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.boss-color-removal {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin: 4px auto;
+  padding: 10px 14px;
+  border: 1px solid rgba(174, 244, 219, 0.45);
+  border-radius: 5px;
+  background: rgba(0, 18, 17, 0.62);
+}
+
+.boss-color-source {
+  display: flex;
+  gap: 8px;
+}
+
+.boss-color-source > span {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  min-width: 40px;
+  animation: bossKanjiDrain 2.2s ease-in-out both;
+  animation-delay: calc(var(--remove-order) * 180ms);
+}
+
+.boss-color-source b {
+  color: #fff1c2;
+  font-size: clamp(26px, 4vw, 42px);
+  line-height: 1;
+}
+
+.boss-color-source i {
+  color: #ff7e70;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 950;
+  animation: bossColorVanish 2.2s ease-in-out both;
+  animation-delay: calc(var(--remove-order) * 180ms);
+}
+
+.boss-color-arrow {
+  color: #9fe4d2;
+  font-size: 17px;
+}
+
+.boss-color-result {
+  display: flex;
+  gap: 8px;
+}
+
+.boss-color-result span {
+  min-width: 36px;
+  color: #caffef;
+  font-size: clamp(25px, 3.8vw, 40px);
+  line-height: 1;
+  text-shadow: 0 0 16px rgba(88, 255, 205, 0.55);
+  animation: bossResultReveal 0.55s ease-out both;
+}
+
+.boss-color-result span:nth-child(1) { animation-delay: 1.15s; }
+.boss-color-result span:nth-child(2) { animation-delay: 1.35s; }
+.boss-color-result span:nth-child(3) { animation-delay: 1.55s; }
+.boss-color-result span:nth-child(4) { animation-delay: 1.75s; }
+
+.boss-color-removal > p {
+  margin: 0;
+  color: #d9fff4;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+@keyframes bossKanjiDrain {
+  0%, 48% { filter: none; transform: translateY(0); }
+  72%, 100% { filter: grayscale(1) brightness(0.62); transform: translateY(-2px); }
+}
+
+@keyframes bossColorVanish {
+  0%, 38% { opacity: 1; transform: scale(1); }
+  72%, 100% { opacity: 0; transform: scale(1.5) translateY(-8px); }
+}
+
+@keyframes bossResultReveal {
+  from { opacity: 0; transform: translateY(8px) scale(0.72); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .boss-current-layout {
+    grid-template-columns: minmax(300px, 0.98fr) minmax(300px, 1.02fr);
+  }
+
+  .boss-visual-stack {
+    grid-template-rows: minmax(174px, 1fr) auto;
+    gap: 5px;
+  }
+
+  .boss-forecast-card {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 4px;
+    padding: 3px;
+  }
+
+  .boss-forecast-card.is-next-next {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .boss-forecast-image {
+    height: 42px;
+  }
+
+  .boss-forecast-card span {
+    font-size: 8px;
+  }
+
+  .boss-forecast-card p,
+  .boss-forecast-card.is-next-next p {
+    font-size: 7px;
+  }
+
+  .boss-step-effect {
+    gap: 5px;
+    padding: 9px;
+  }
+
+  .boss-step-effect strong {
+    font-size: clamp(16px, 2.4vw, 22px);
+  }
+
+  .boss-color-removal {
+    padding: 6px 10px;
+  }
+
+  .boss-color-source b,
+  .boss-color-result span {
+    font-size: 24px;
+  }
+}
+
 /* Stage 03: answer numbers are the controls, followed by an explicit confirmation screen. */
 .stage3-answer-option {
   display: grid;

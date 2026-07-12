@@ -194,8 +194,8 @@ const bossBattle = [
   { slots: 3, answer: "フユウ", after: "『二脚地動を放つ』両の前足により地面を叩き揺らす弱攻撃。空中の相手へは無効" },
   { slots: 4, answer: "ヘンガオ", after: "ラスボスは小幡の方へ向かった<br>『三石化線を放つ』3秒目が合うと石化する視線を送る" },
   { slots: 4, answer: "ツケモノ", after: "ラスボスは大技前の溜めをしていて動かない" },
-  { slots: 6, answer: "ゴクロウサマ", after: "ラスボスは動かない" },
-  { slots: 3, answer: "カタメ", after: "『百黙絶静を放つ』百発百中の即死攻撃。放たれれば全空間が消滅し沈黙する" },
+  { slots: 6, answer: "ゴクロウサマ", after: "『百黙絶静を放つ』百発百中の即死攻撃。放たれれば全空間が消滅し沈黙する" },
+  { slots: 3, answer: "カタメ", after: "『一犬糸争を放つ』糸のように繊細で鋭い爪による弱攻撃" },
   { slots: 6, answer: "タイムマシン", after: "『零式空間を放つ』空間から出る事を不可能にする念。現在異空間にいる者にのみ有効" },
   { slots: 10, answer: "バタフライエフェクト", after: "" },
 ];
@@ -2653,7 +2653,7 @@ function checkStage(stage, value) {
 function getBossAttackText(step, index) {
   if (!step.after) return "";
   if (index === 5 && state.bossColorRemoved) {
-    return "『一犬糸争を放つ』「百黙絶静」から白・黒・色・青が消えた攻撃。カタメで防ぐ！";
+    return "『一犬糸争を放つ』糸のように繊細で鋭い爪による弱攻撃。カタメで防ぐ！";
   }
   return step.after;
 }
@@ -2663,9 +2663,9 @@ const bossActionDescriptions = [
   "両の前足で地面を叩き、「二脚地動」で周囲を揺らそうとしている",
   "小幡の方へ向き、目が合うと石化する「三石化線」を放とうとしている",
   "大技を放つため、動かずに力を溜めようとしている",
-  "動かないまま、破滅的な大技の準備を続けようとしている",
-  "百発百中の即死攻撃「百黙絶静」を放とうとしている",
-  "出口を封じる「零式空間」を放とうとしている",
+  "「百黙絶静」を放とうとしている。百発百中の即死攻撃で、放たれれば全空間が消滅し沈黙する",
+  "「一犬糸争」を放とうとしている",
+  "「零式空間」を放とうとしている。空間から出る事を不可能にする念で、現在異空間にいる者にのみ有効",
   "最後の抵抗をしようとしている。仲間を思い出し、とびきりの一撃を放つ時だ",
 ];
 
@@ -2673,17 +2673,14 @@ const bossSuccessEffects = [
   "バリが鋭い爪の攻撃を弾いた！",
   "フユウで地面から離れ、揺れをかわした！",
   "ヘンガオで視線をそらし、石化を防いだ！",
-  "ツケモノが新しい呪文枠を作れる状態にした！",
+  "ラスボスは大技前の溜めを続け、こちらの呪文には反応しない。",
   "ゴクロウサマが「百黙絶静」から色を消した！",
-  "カタメで変化した攻撃を防いだ！",
-  "タイムマシンが封鎖される直前の空間へ移動した！",
+  "カタメで「一犬糸争」を防いだ！",
+  "タイムマシンで一時的に未来空間へ移動し、零式空間の対象から外れた！",
   "バタフライエフェクトが未来を変え、とびきりの一撃を放った！",
 ];
 
 function getBossActionDescription(index) {
-  if (index === 5 && state.bossColorRemoved) {
-    return "「百黙絶静」から白・黒・色・青が消えて生まれた「一犬糸争」を放とうとしている";
-  }
   return bossActionDescriptions[index] || "最後の攻撃を放とうとしている";
 }
 
@@ -2691,6 +2688,48 @@ function renderBossActionImage(index) {
   const column = index % 4;
   const row = Math.floor(index / 4);
   return `<div class="boss-action-image" role="img" aria-label="ラスボスの第${index + 1}行動" style="background-position:${column * 33.3333}% ${row * 100}%;"></div>`;
+}
+
+function renderBossForecast(index, label, className) {
+  if (index >= bossBattle.length) return "";
+  return `
+    <article class="boss-forecast-card ${className}">
+      <div class="boss-forecast-image">${renderBossActionImage(index)}</div>
+      <div><span>${label}</span><p>ラスボスは${getBossActionDescription(index)}</p></div>
+    </article>
+  `;
+}
+
+function renderBossColorRemovalEffect() {
+  const changes = [
+    ["百", "白", "一"],
+    ["黙", "黒", "犬"],
+    ["絶", "色", "糸"],
+    ["静", "青", "争"],
+  ];
+  return `
+    <div class="boss-color-removal" aria-label="百黙絶静から白黒色青が消えて一犬糸争になる">
+      <div class="boss-color-source">
+        ${changes.map(([source, removed], index) => `<span style="--remove-order:${index}"><b>${source}</b><i>−${removed}</i></span>`).join("")}
+      </div>
+      <div class="boss-color-arrow" aria-hidden="true">↓</div>
+      <strong class="boss-color-result">${changes.map(([, , result]) => `<span>${result}</span>`).join("")}</strong>
+      <p>百から白、黙から黒、絶から色、静から青が消えた</p>
+    </div>
+  `;
+}
+
+function renderBossSixthSlotBuilder() {
+  return `
+    <div class="boss-direct-slots boss-sixth-slot-builder" aria-label="6文字目が未完成の回答欄">
+      ${Array.from({ length: 5 }).map(() => "<span></span>").join("")}
+      <span class="boss-missing-slot" aria-label="6文字目の枠を置ける場所">
+        <i class="boss-tsukemono-block-icon" aria-hidden="true"></i>
+        <small>↑ ブロックを置ける</small>
+      </span>
+    </div>
+    <button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノで6文字目の枠を作る</button>
+  `;
 }
 
 function renderBoss(stage) {
@@ -2753,17 +2792,25 @@ function renderBossProblemPanel(stage) {
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="問題を閉じる">×</button>
       </div>
       <div class="boss-current-layout">
-        <div class="boss-current-visual">
-          ${renderBossActionImage(index)}
-          <span class="boss-current-step">第${index + 1}問</span>
+        <div class="boss-visual-stack">
+          <div class="boss-current-visual">
+            ${renderBossActionImage(index)}
+            <span class="boss-current-step">第${index + 1}問</span>
+          </div>
+          <div class="boss-forecast-strip" aria-label="この後の行動">
+            ${renderBossForecast(index + 1, "次の行動", "is-next")}
+            ${renderBossForecast(index + 2, "次の次の行動", "is-next-next")}
+          </div>
         </div>
-        <section class="boss-current-copy">
+        <section class="boss-current-copy ${effectActive ? "is-effect-mode" : ""}">
           <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
           <div class="boss-current-meta"><span>石板 ${slotCount}文字${needsSixthSlot ? "＋未完成の1枠" : ""}</span><span>呪文は1種類につき1回</span></div>
           ${effectActive ? `
             <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"}" aria-live="assertive">
-              <strong>${effectCopy}</strong>
-              <span>${feedback.phase === "hit" ? "戦闘は第1問からやり直しになる。" : "攻撃を切り抜けた。次の行動へ進む。"}</span>
+              <strong>${feedback.phase === "hit" ? feedback.message || effectCopy : effectCopy}</strong>
+              ${feedback.phase === "effect" && index === 4 ? renderBossColorRemovalEffect() : ""}
+              <span>${feedback.phase === "hit" ? "「最初からやり直す」を押すと第1問へ戻る。" : "演出を確認してから「次へ」を押してください。"}</span>
+              <button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : "次へ"}</button>
             </div>
           ` : `
             <div class="boss-current-actions">
@@ -2773,9 +2820,7 @@ function renderBossProblemPanel(stage) {
             ${state.bossAnswerOpen ? `
               <section class="boss-current-answer" aria-label="第${index + 1}問の呪文入力">
                 ${needsSixthSlot ? `
-                  <p>ゴクロウサマには6文字目の枠が足りない。ツケモノで枠を作る。</p>
-                  <div class="boss-direct-slots" aria-label="作成前の5文字の枠">${Array.from({ length: 5 }).map(() => "<span></span>").join("")}</div>
-                  <button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノで6文字目の枠を作る</button>
+                  ${renderBossSixthSlotBuilder()}
                 ` : `
                   <div class="boss-direct-slots" aria-label="${step.slots}文字の回答欄">${Array.from({ length: step.slots }).map(() => "<span></span>").join("")}</div>
                   <form id="bossDirectForm" class="boss-direct-form">
@@ -2808,9 +2853,7 @@ function renderBossDirectAnswer(stage) {
     return `
       <section class="boss-direct-answer boss-slot-creation" aria-label="ゴクロウサマの6文字目">
         <h3>ゴクロウサマの6文字目</h3>
-        <p>ゴクロウサマは、まだ5文字目までしか記入できない。ツケモノを使って、最後の枠を作成する。</p>
-        <div class="boss-direct-slots" aria-label="作成前の5文字の枠">${Array.from({ length: 5 }).map(() => "<span></span>").join("")}</div>
-        ${hasTsukemono ? `<button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノを使って6文字目の枠を作成</button>` : `<p class="boss-direct-locked">先にツケモノを習得して、この場所で使う。</p>`}
+        ${hasTsukemono ? renderBossSixthSlotBuilder() : `<p class="boss-direct-locked">先にツケモノを習得して、この場所で使う。</p>`}
       </section>
     `;
   }
@@ -2904,6 +2947,11 @@ function wireBoss() {
   });
   const step = bossBattle[state.bossInput.length];
   if (!step) return;
+  document.querySelector("#bossEffectNext")?.addEventListener("click", () => {
+    const feedback = state.feedback?.stageId === "boss" ? state.feedback : null;
+    if (feedback?.phase === "effect") completeBossStep(step);
+    else if (feedback?.phase === "hit") resetBossAfterHit();
+  });
   document.querySelector("#bossDirectForm")?.addEventListener("submit", (event) => {
     event.preventDefault();
     const input = document.querySelector("#bossDirectInput");
@@ -2952,7 +3000,7 @@ function castBossSpell(step) {
     return;
   }
   const value = normalizeAnswer(letters.join(""));
-  if (value === normalizeAnswer(step.answer)) {
+  if (state.bossInput.length === 3 || value === normalizeAnswer(step.answer)) {
     startBossSuccessEffect(step);
     return;
   }
@@ -2975,7 +3023,7 @@ function castBossDirectAnswer(step, value) {
     render();
     return;
   }
-  if (normalizeAnswer(value) === normalizeAnswer(step.answer)) {
+  if (state.bossInput.length === 3 || normalizeAnswer(value) === normalizeAnswer(step.answer)) {
     startBossSuccessEffect(step);
     return;
   }
@@ -2987,32 +3035,26 @@ function startBossSuccessEffect(step) {
   state.bossAnswerOpen = false;
   state.feedback = { stageId: "boss", type: "success", phase: "effect", stepIndex };
   render();
-  window.setTimeout(() => {
-    if (stages[state.stageIndex]?.id !== "boss") return;
-    if (state.feedback?.stageId !== "boss" || state.feedback?.phase !== "effect" || state.bossInput.length !== stepIndex) return;
-    completeBossStep(step);
-  }, 1500);
 }
 
 function startBossHit(message) {
   state.bossAnswerOpen = false;
   state.feedback = { stageId: "boss", type: "fail", phase: "hit", message };
   render();
-  window.setTimeout(() => {
-    if (stages[state.stageIndex]?.id !== "boss") return;
-    if (state.feedback?.stageId !== "boss" || state.feedback?.phase !== "hit") return;
-    state.bossInput = [];
-    state.slotInput = [];
-    state.activeSlot = 0;
-    state.slotPickerOpen = false;
-    state.bossAnswerOpen = false;
-    state.bossSlotCreationPending = false;
-    state.bossSixthSlotCreated = false;
-    state.bossColorRemoved = false;
-    state.bossPanelMode = "closed";
-    state.feedback = null;
-    render();
-  }, 1450);
+}
+
+function resetBossAfterHit() {
+  state.bossInput = [];
+  state.slotInput = [];
+  state.activeSlot = 0;
+  state.slotPickerOpen = false;
+  state.bossAnswerOpen = false;
+  state.bossSlotCreationPending = false;
+  state.bossSixthSlotCreated = false;
+  state.bossColorRemoved = false;
+  state.bossPanelMode = "closed";
+  state.feedback = null;
+  render();
 }
 
 function completeBossStep(step) {
