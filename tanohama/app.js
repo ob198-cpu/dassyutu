@@ -1761,11 +1761,8 @@ function renderStage3Sheet() {
           </ul>
           ${!done && !state.shopLockOpen ? `
             <div class="shop-chain-lock" aria-label="チェーンと鍵で封印されたアイテム屋">
-              <span class="shop-chain shop-chain-a" aria-hidden="true"></span>
-              <span class="shop-chain shop-chain-b" aria-hidden="true"></span>
+              <img class="shop-chain-lock-asset" src="./assets/stage03-chain-lock-real.webp" alt="" aria-hidden="true">
               <button class="shop-padlock" id="shopLockButton" type="button" aria-label="中央の鍵を調べる">
-                <span class="shop-padlock-shackle" aria-hidden="true"></span>
-                <span class="shop-padlock-body" aria-hidden="true"><i></i></span>
               </button>
             </div>
           ` : ""}

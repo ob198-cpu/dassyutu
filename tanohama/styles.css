@@ -8160,7 +8160,18 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   box-shadow: inset 0 0 42px rgba(0, 0, 0, 0.72);
 }
 
+.shop-chain-lock-asset {
+  position: absolute;
+  inset: 2%;
+  width: 96%;
+  height: 96%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 9px rgba(0, 0, 0, 0.88));
+  pointer-events: none;
+}
+
 .shop-chain {
+  display: none;
   position: absolute;
   left: -22%;
   top: 50%;
@@ -8179,18 +8190,22 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .shop-chain-b { transform: rotate(-27deg); }
 
 .shop-padlock {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   z-index: 2;
-  width: 76px;
-  height: 92px;
+  width: clamp(76px, 15%, 126px);
+  height: clamp(84px, 25%, 150px);
   border: 0;
   background: transparent;
   cursor: pointer;
   filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.72));
+  transform: translate(-50%, -42%);
   touch-action: manipulation;
 }
 
 .shop-padlock-shackle {
+  display: none;
   position: absolute;
   top: 2px;
   left: 17px;
@@ -8204,6 +8219,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 }
 
 .shop-padlock-body {
+  display: none;
   position: absolute;
   left: 7px;
   bottom: 1px;
@@ -8229,7 +8245,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .shop-padlock:hover,
 .shop-padlock:focus-visible {
   outline: none;
-  transform: scale(1.05);
+  transform: translate(-50%, -42%) scale(1.08);
   filter: drop-shadow(0 0 13px rgba(255, 221, 117, 0.58)) drop-shadow(0 8px 8px rgba(0, 0, 0, 0.72));
 }
 
