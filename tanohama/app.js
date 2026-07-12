@@ -438,7 +438,14 @@ function loadState() {
     const raw = localStorage.getItem(storeKey);
     if (raw) {
       const saved = JSON.parse(raw);
-      if (saved.feedback && saved.feedback.type === "success" && saved.feedback.phase !== "done") {
+      if (saved.feedback?.stageId === "shop" && saved.feedback.type === "success" && saved.feedback.phase === "casting") {
+        saved.feedback.phase = "done";
+        saved.cleared = Array.isArray(saved.cleared) ? saved.cleared : [];
+        saved.spells = Array.isArray(saved.spells) ? saved.spells : [];
+        if (!saved.cleared.includes("shop")) saved.cleared.push("shop");
+        if (!saved.spells.includes("ドラブレス")) saved.spells.push("ドラブレス");
+        saved.genericPanelMode = "clear";
+      } else if (saved.feedback && saved.feedback.type === "success" && saved.feedback.phase !== "done" && saved.feedback.stageId !== "shop") {
         saved.feedback = null;
       }
       return {
@@ -485,7 +492,7 @@ function loadState() {
 
 function saveState() {
   const snapshot = JSON.parse(JSON.stringify(state));
-  if (snapshot.feedback && snapshot.feedback.type === "success" && snapshot.feedback.phase !== "done") {
+  if (snapshot.feedback && snapshot.feedback.type === "success" && snapshot.feedback.phase !== "done" && snapshot.feedback.stageId !== "shop") {
     snapshot.feedback = null;
   }
   localStorage.setItem(storeKey, JSON.stringify(snapshot));
@@ -2024,8 +2031,15 @@ function finishGateSuccess(stage) {
 function renderStage(stage) {
   const done = isStageCleared(stage.id);
   const panelMode = state.genericPanelMode || "closed";
+  const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const shopSuccessPhase = stage.id === "shop" && feedback?.type === "success"
+    ? feedback.phase || "clear"
+    : stage.id === "shop" && done && panelMode === "clear"
+      ? "done"
+      : "";
+  const showShopClearedBackground = stage.id === "shop" && (done || shopSuccessPhase === "casting" || shopSuccessPhase === "done");
   const background = stage.id === "shop"
-    ? done ? "stage03-clear-premium-v2.webp" : "stage03-bg-premium.webp"
+    ? showShopClearedBackground ? "stage03-clear-premium-v2.webp" : "stage03-bg-premium.webp"
     : done ? "stage04-clear-overcome-v3.webp" : "stage04-bg-mountain-v2.webp";
   const backgroundAlt = stage.id === "shop"
     ? done ? "氷が溶け、濡れた石床の道が出口まで開いた回廊" : "凍りついた足場とアイテム屋の回廊"
@@ -2038,7 +2052,7 @@ function renderStage(stage) {
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
       ${panelMode === "problem" ? renderGenericProblemPanel(stage, done) : ""}
-      ${panelMode === "clear" && done ? renderGenericStageClear(stage) : ""}
+      ${shopSuccessPhase ? renderShopSuccessSequence(stage, shopSuccessPhase) : panelMode === "clear" && done ? renderGenericStageClear(stage) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
     </section>
   `;
@@ -2062,6 +2076,90 @@ function renderGenericProblemPanel(stage, done) {
       </div>
     </section>
   `;
+}
+
+function renderShopSuccessSequence(stage, phase) {
+  if (phase === "casting") {
+    return `
+      <section class="shop-success-sequence is-casting" aria-label="ドラブレス発動中">
+        <div class="shop-ice-transition" aria-hidden="true">
+          <span class="shop-flame-beam"></span>
+          <span class="shop-melt-glow"></span>
+          <span class="shop-steam shop-steam-a"></span>
+          <span class="shop-steam shop-steam-b"></span>
+          <span class="shop-steam shop-steam-c"></span>
+        </div>
+        <div class="shop-cast-status"><strong>ドラブレスを唱えた！</strong><span>炎が氷を溶かしている</span></div>
+      </section>
+    `;
+  }
+
+  if (phase === "done") {
+    return `
+      <section class="shop-success-sequence is-done" aria-label="ステージ3 クリア">
+        <div class="shop-completion-bar">
+          <div><span>STAGE ${stage.number} COMPLETE</span><strong>氷が溶け、先へ進めるようになった！</strong></div>
+          <button class="primary-button" id="nextButton" type="button">次のステージへ</button>
+        </div>
+      </section>
+    `;
+  }
+
+  const content = phase === "learned"
+    ? `<span>NEW SPELL</span><h2>ドラブレスを覚えた</h2><p class="shop-spell-name">☆ ドラブレス</p>`
+    : phase === "explanation"
+      ? `<span>SPELL GUIDE</span><h2>ドラブレス</h2><p>炎でどんな氷も溶かす事ができる。<br>ただし、炎は発射方向に注意。</p>`
+      : phase === "confirm"
+        ? `<span>SPELL READY</span><h2>ドラブレスを使いますか？</h2><p>凍った足場へ向けて炎を放つ。</p>`
+        : `<span>STAGE ${stage.number} CLEAR</span><h2>ステージ3 クリア</h2><p>氷を溶かせるアイテムを見つけた。</p>`;
+  const actions = phase === "confirm"
+    ? `<div class="shop-sequence-actions"><button class="primary-button" id="shopCastYes" type="button">はい</button><button class="secondary-button" id="shopCastNo" type="button">いいえ</button></div>`
+    : `<button class="primary-button" id="${phase === "learned" ? "shopLearnedNext" : phase === "explanation" ? "shopExplanationNext" : "shopClearNext"}" type="button">つぎへ</button>`;
+
+  return `
+    <section class="shop-success-sequence is-${phase}" aria-label="ステージ3 クリア進行">
+      <div class="shop-sequence-card">
+        <div class="shop-sequence-copy">${content}</div>
+        ${actions}
+      </div>
+    </section>
+  `;
+}
+
+function beginShopCast(stage) {
+  addUnique(state.spells, stage.reward);
+  addUnique(state.cleared, stage.id);
+  state.feedback = { stageId: stage.id, type: "success", phase: "casting" };
+  state.genericPanelMode = "clear";
+  render();
+  window.setTimeout(() => {
+    if (stages[state.stageIndex]?.id !== stage.id) return;
+    if (state.feedback?.stageId !== stage.id || state.feedback?.phase !== "casting") return;
+    state.feedback = { stageId: stage.id, type: "success", phase: "done" };
+    state.genericPanelMode = "clear";
+    render();
+  }, 3200);
+}
+
+function wireShopSuccessSequence(stage) {
+  document.querySelector("#shopClearNext")?.addEventListener("click", () => {
+    addUnique(state.spells, stage.reward);
+    state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
+    render();
+  });
+  document.querySelector("#shopLearnedNext")?.addEventListener("click", () => {
+    state.feedback = { stageId: stage.id, type: "success", phase: "explanation" };
+    render();
+  });
+  document.querySelector("#shopExplanationNext")?.addEventListener("click", () => {
+    state.feedback = { stageId: stage.id, type: "success", phase: "confirm" };
+    render();
+  });
+  document.querySelector("#shopCastYes")?.addEventListener("click", () => beginShopCast(stage));
+  document.querySelector("#shopCastNo")?.addEventListener("click", () => {
+    state.feedback = { stageId: stage.id, type: "success", phase: "explanation" };
+    render();
+  });
 }
 
 function renderGenericStageClear(stage) {
@@ -2170,6 +2268,7 @@ function wireStage4Memo() {
 
 function wireStage(stage, done) {
   const note = document.querySelector("#stageNote");
+  if (stage.id === "shop") wireShopSuccessSequence(stage);
   if (stage.id === "time") wireStage4Memo();
   if (stage.type === "tiles") {
     document.querySelectorAll(".tile").forEach((button) => {
@@ -2269,6 +2368,14 @@ function checkStage(stage, value) {
   if (normalizeAnswer(value) !== normalizeAnswer(stage.correct)) {
     state.feedback = { stageId: stage.id, type: "fail" };
     render();
+    return;
+  }
+  if (stage.id === "shop") {
+    resetStageInput();
+    state.feedback = { stageId: stage.id, type: "success", phase: "clear" };
+    state.genericPanelMode = "clear";
+    render();
+    burstOnce(".shop-sequence-card");
     return;
   }
   addUnique(state.cleared, stage.id);
