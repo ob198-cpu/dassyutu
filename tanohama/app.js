@@ -3639,8 +3639,7 @@ function resolveExploration(stage, choiceIndex) {
     state.sealBooks = { ...(state.sealBooks || {}), [stage.id]: true };
     saveState();
     elements.hintTitle.textContent = "魔法使いを見つけた！";
-    elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、本物の呪文を得られる」</span><button class="primary-button exploration-open-book" id="openFoundSealBook" type="button">封印の書を開く</button>`;
-    elements.hintBody.querySelector("#openFoundSealBook")?.addEventListener("click", openCurrentSealBook);
+    elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、呪文を得られる」</span><span class="exploration-book-guide">左の「封印の書」から確認できます。</span>`;
     audioDirector.playEffect("success");
     return;
   }
@@ -3650,7 +3649,7 @@ function resolveExploration(stage, choiceIndex) {
   state.fakeSpells = { ...(state.fakeSpells || {}), [stage.id]: [...new Set([...currentFakes, fakeSpell])] };
   saveState();
   elements.hintTitle.textContent = "何かを見つけた";
-  elements.hintBody.innerHTML = `<span class="exploration-result is-fake">偽の呪文「${fakeSpell}」を覚えた。力は感じない。使い道はなさそうだ。</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
+  elements.hintBody.innerHTML = `<span class="exploration-result is-fake">呪文「${fakeSpell}」を覚えた。</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
   elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
   audioDirector.playEffect("fail");
 }
