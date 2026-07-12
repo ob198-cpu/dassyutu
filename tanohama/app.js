@@ -243,6 +243,186 @@ const spellActivationText = "問題を解くと呪文が現れるかも…<br>�
 
 const storeKey = "tanohamaEscapeStateV4";
 
+const audioDirector = (() => {
+  const preferenceKey = "tanohamaSoundMutedV1";
+  const themes = {
+    intro: { bpm: 66, wave: "sine", notes: [48, 55, 60, 55, 51, 58, 63, 58], bass: [36, 39], color: 0.024 },
+    gate: { bpm: 76, wave: "triangle", notes: [50, 57, 62, 65, 57, 62, 69, 65], bass: [38, 41], color: 0.026 },
+    path: { bpm: 82, wave: "sine", notes: [45, 52, 57, 60, 52, 59, 62, 57], bass: [33, 36], color: 0.023 },
+    shop: { bpm: 72, wave: "triangle", notes: [52, 59, 64, 67, 55, 62, 67, 71], bass: [40, 43], color: 0.025 },
+    time: { bpm: 70, wave: "sine", notes: [47, 54, 59, 63, 50, 57, 62, 66], bass: [35, 38], color: 0.026 },
+    boss: { bpm: 94, wave: "sawtooth", notes: [42, 49, 54, 48, 42, 51, 56, 49], bass: [30, 31], color: 0.021 },
+    clear: { bpm: 78, wave: "triangle", notes: [60, 64, 67, 72, 64, 67, 72, 76], bass: [48, 52], color: 0.03 },
+  };
+  let context = null;
+  let masterGain = null;
+  let musicGain = null;
+  let sfxGain = null;
+  let scheduler = null;
+  let nextNoteTime = 0;
+  let noteIndex = 0;
+  let currentTheme = "intro";
+  let muted = localStorage.getItem(preferenceKey) === "1";
+
+  const midiToHz = (midi) => 440 * (2 ** ((midi - 69) / 12));
+
+  function ensureContext() {
+    if (context) return context;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return null;
+    context = new AudioContextClass();
+    masterGain = context.createGain();
+    musicGain = context.createGain();
+    sfxGain = context.createGain();
+    masterGain.gain.value = muted ? 0 : 0.78;
+    musicGain.gain.value = 0.62;
+    sfxGain.gain.value = 0.9;
+    musicGain.connect(masterGain);
+    sfxGain.connect(masterGain);
+    masterGain.connect(context.destination);
+    nextNoteTime = context.currentTime + 0.08;
+    scheduler = window.setInterval(scheduleMusic, 120);
+    return context;
+  }
+
+  async function unlock() {
+    const ctx = ensureContext();
+    if (!ctx) return false;
+    if (ctx.state === "suspended") await ctx.resume();
+    nextNoteTime = Math.max(nextNoteTime, ctx.currentTime + 0.04);
+    return true;
+  }
+
+  function scheduleOscillator(destination, frequency, start, duration, gainValue, wave = "sine", detune = 0) {
+    if (!context || !destination || muted) return;
+    const oscillator = context.createOscillator();
+    const envelope = context.createGain();
+    oscillator.type = wave;
+    oscillator.frequency.setValueAtTime(frequency, start);
+    oscillator.detune.setValueAtTime(detune, start);
+    envelope.gain.setValueAtTime(0.0001, start);
+    envelope.gain.exponentialRampToValueAtTime(Math.max(0.0002, gainValue), start + Math.min(0.05, duration * 0.18));
+    envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+    oscillator.connect(envelope);
+    envelope.connect(destination);
+    oscillator.start(start);
+    oscillator.stop(start + duration + 0.03);
+  }
+
+  function scheduleNoise(start, duration, gainValue, cutoff = 1100) {
+    if (!context || !sfxGain || muted) return;
+    const frameCount = Math.max(1, Math.floor(context.sampleRate * duration));
+    const buffer = context.createBuffer(1, frameCount, context.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let index = 0; index < frameCount; index += 1) data[index] = Math.random() * 2 - 1;
+    const source = context.createBufferSource();
+    const filter = context.createBiquadFilter();
+    const envelope = context.createGain();
+    source.buffer = buffer;
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(cutoff, start);
+    envelope.gain.setValueAtTime(gainValue, start);
+    envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+    source.connect(filter);
+    filter.connect(envelope);
+    envelope.connect(sfxGain);
+    source.start(start);
+  }
+
+  function scheduleMusic() {
+    if (!context || context.state !== "running" || muted) return;
+    const theme = themes[currentTheme] || themes.intro;
+    const beat = 60 / theme.bpm;
+    while (nextNoteTime < context.currentTime + 0.72) {
+      const midi = theme.notes[noteIndex % theme.notes.length];
+      scheduleOscillator(musicGain, midiToHz(midi), nextNoteTime, beat * 0.82, theme.color, theme.wave);
+      scheduleOscillator(musicGain, midiToHz(midi + 12), nextNoteTime + 0.015, beat * 0.66, theme.color * 0.26, "sine", 4);
+      if (noteIndex % 4 === 0) {
+        const bass = theme.bass[Math.floor(noteIndex / 4) % theme.bass.length];
+        scheduleOscillator(musicGain, midiToHz(bass), nextNoteTime, beat * 2.8, theme.color * 0.72, currentTheme === "boss" ? "sawtooth" : "sine");
+      }
+      noteIndex += 1;
+      nextNoteTime += beat;
+    }
+  }
+
+  function setStage(stageId) {
+    const nextTheme = themes[stageId] ? stageId : "intro";
+    if (nextTheme === currentTheme) return;
+    currentTheme = nextTheme;
+    noteIndex = 0;
+    if (context) nextNoteTime = context.currentTime + 0.1;
+  }
+
+  function playEffect(name) {
+    if (!context || context.state !== "running" || muted) return;
+    const now = context.currentTime + 0.01;
+    const tone = (midi, delay, duration, gain, wave = "sine") => scheduleOscillator(sfxGain, midiToHz(midi), now + delay, duration, gain, wave);
+    if (name === "click") {
+      tone(76, 0, 0.055, 0.055, "triangle");
+    } else if (name === "stage") {
+      [60, 67, 72].forEach((midi, index) => tone(midi, index * 0.07, 0.32, 0.07, "triangle"));
+    } else if (name === "select") {
+      tone(69, 0, 0.09, 0.06, "sine");
+      tone(76, 0.045, 0.12, 0.05, "sine");
+    } else if (name === "success") {
+      [60, 64, 67, 72].forEach((midi, index) => tone(midi, index * 0.11, 0.5, 0.09, "triangle"));
+    } else if (name === "fail") {
+      tone(43, 0, 0.34, 0.11, "sawtooth");
+      tone(40, 0.16, 0.38, 0.09, "square");
+    } else if (name === "spell") {
+      [72, 76, 79, 84, 88].forEach((midi, index) => tone(midi, index * 0.065, 0.42, 0.065, "sine"));
+    } else if (name === "rock") {
+      scheduleNoise(now, 0.62, 0.17, 560);
+      tone(31, 0.2, 0.65, 0.16, "sine");
+    } else if (name === "erase") {
+      scheduleNoise(now, 0.8, 0.055, 2400);
+      [72, 69, 65, 60].forEach((midi, index) => tone(midi, index * 0.14, 0.36, 0.055, "sine"));
+    } else if (name === "fire") {
+      scheduleNoise(now, 1.25, 0.11, 1700);
+      tone(40, 0, 1.18, 0.095, "sawtooth");
+      tone(52, 0.18, 0.9, 0.065, "triangle");
+    } else if (name === "time") {
+      for (let index = 0; index < 9; index += 1) tone(55 + index * 2, index * 0.07, 0.4, 0.052, "sine");
+      scheduleNoise(now + 0.18, 0.72, 0.04, 3200);
+    } else if (name === "boss-hit") {
+      scheduleNoise(now, 0.38, 0.18, 720);
+      tone(29, 0, 0.55, 0.18, "sawtooth");
+    } else if (name === "boss-guard") {
+      tone(48, 0, 0.25, 0.11, "square");
+      [67, 72, 79].forEach((midi, index) => tone(midi, 0.08 + index * 0.06, 0.38, 0.07, "triangle"));
+    } else if (name === "color-remove") {
+      [76, 73, 69, 66].forEach((midi, index) => tone(midi, index * 0.18, 0.5, 0.07, "sine"));
+      [60, 64, 67, 72].forEach((midi, index) => tone(midi, 0.9 + index * 0.1, 0.55, 0.08, "triangle"));
+    } else if (name === "clear") {
+      [60, 64, 67, 72, 76, 79, 84].forEach((midi, index) => tone(midi, index * 0.11, 0.75, 0.09, "triangle"));
+    }
+  }
+
+  function setMuted(value) {
+    muted = Boolean(value);
+    localStorage.setItem(preferenceKey, muted ? "1" : "0");
+    if (context && masterGain) {
+      masterGain.gain.cancelScheduledValues(context.currentTime);
+      masterGain.gain.setTargetAtTime(muted ? 0.0001 : 0.78, context.currentTime, 0.035);
+      if (!muted) nextNoteTime = context.currentTime + 0.06;
+    }
+  }
+
+  function toggle() {
+    setMuted(!muted);
+    if (!muted) playEffect("select");
+    return !muted;
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (!context) return;
+    if (document.hidden) context.suspend();
+  });
+
+  return { unlock, setStage, playEffect, toggle, isMuted: () => muted };
+})();
+
 // ステージ2 とちゅうメモ: ①〜④の各ステップで読み取った文字を書き留める空欄
 const stage2MemoRows = 4;
 const stage2MemoCols = 12;
@@ -408,6 +588,7 @@ const elements = {
   menuProblem: document.querySelector("#menuProblem"),
   menuMagic: document.querySelector("#menuMagic"),
   menuHint: document.querySelector("#menuHint"),
+  menuSound: document.querySelector("#menuSound"),
   dialog: document.querySelector("#docDialog"),
   docImage: document.querySelector("#docImage"),
   docTitle: document.querySelector("#docTitle"),
@@ -640,6 +821,16 @@ function resetStageInput() {
 
 let lastStageKey = null;
 
+function updateSoundControl() {
+  if (!elements.menuSound) return;
+  const enabled = !audioDirector.isMuted();
+  const status = elements.menuSound.querySelector("small");
+  if (status) status.textContent = enabled ? "ON" : "OFF";
+  elements.menuSound.classList.toggle("is-muted", !enabled);
+  elements.menuSound.setAttribute("aria-pressed", String(enabled));
+  elements.menuSound.setAttribute("aria-label", enabled ? "BGMと効果音をオフにする" : "BGMと効果音をオンにする");
+}
+
 // 直後の再描画で1回だけ再生する演出用クラス付与
 function popOnce(selector, className = "slot-pop") {
   requestAnimationFrame(() => document.querySelector(selector)?.classList.add(className));
@@ -667,6 +858,7 @@ function render() {
     }
   }
   const stage = stages[state.stageIndex] || stages[0];
+  audioDirector.setStage(state.isClear ? "clear" : stage.id);
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
   document.body.classList.toggle("stage-path-mode", !state.isClear && stage.id === "path");
@@ -693,8 +885,10 @@ function render() {
   const stageKey = state.isClear ? "clear" : `stage:${state.stageIndex}`;
   if (stageKey !== lastStageKey) {
     elements.game.firstElementChild?.classList.add("stage-enter");
+    audioDirector.playEffect(state.isClear ? "clear" : "stage");
     lastStageKey = stageKey;
   }
+  updateSoundControl();
   saveState();
 }
 
@@ -958,12 +1152,14 @@ function wirePathStage(stage, done) {
     state.slotPickerOpen = false;
     if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
       state.feedback = { stageId: stage.id, type: "fail" };
+      audioDirector.playEffect("fail");
       render();
       return;
     }
     addUnique(state.spells, stage.reward);
     state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
     state.pathPanelMode = "closed";
+    audioDirector.playEffect("success");
     resetStageInput();
     render();
     burstOnce(".path-sequence-card");
@@ -1772,6 +1968,7 @@ function renderPathSuccessStep(stage, phase) {
 }
 
 function beginPathCast(stage) {
+  audioDirector.playEffect("erase");
   state.feedback = { stageId: stage.id, type: "success", phase: "casting" };
   render();
   window.setTimeout(() => {
@@ -1780,6 +1977,7 @@ function beginPathCast(stage) {
     addUnique(state.cleared, stage.id);
     state.feedback = { stageId: stage.id, type: "success", phase: "done" };
     state.pathPanelMode = "clear";
+    audioDirector.playEffect("success");
     render();
     burstOnce(".path-clear-card");
   }, 3400);
@@ -1976,12 +2174,14 @@ function wireGateStage(stage, done) {
     if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
       state.feedback = { stageId: stage.id, type: "fail" };
       state.slotPickerOpen = false;
+      audioDirector.playEffect("fail");
       render();
       return;
     }
     state.slotPickerOpen = false;
     addUnique(state.spells, stage.reward);
     state.feedback = { stageId: stage.id, type: "success", phase: "prompt1" };
+    audioDirector.playEffect("success");
     render();
     burstOnce(".gate-choice-card");
   });
@@ -2061,6 +2261,9 @@ function positionFallingRock() {
 function beginGateDescent(stage) {
   clearGateSuccessTimers();
   const setPhase = (phase) => {
+    if (phase === "background") audioDirector.playEffect("spell");
+    if (phase === "rock") audioDirector.playEffect("rock");
+    if (phase === "prompt2") audioDirector.playEffect("success");
     state.feedback = { stageId: stage.id, type: "success", phase };
     render();
   };
@@ -2253,6 +2456,7 @@ function completeTimeStage(stage) {
   state.introReturnPhase = "";
   state.feedback = { stageId: stage.id, type: "success" };
   state.genericPanelMode = "clear";
+  audioDirector.playEffect("success");
   resetStageInput();
   render();
   burstOnce(".stage-clear-card");
@@ -2262,6 +2466,7 @@ function castSelectedTimeSpell(stage) {
   const value = Array.from({ length: 6 }, (_, index) => state.slotInput[index] || "").join("");
   const normalized = normalizeAnswer(value);
   if (normalized === normalizeAnswer("タイムマシン")) {
+    audioDirector.playEffect("time");
     state.timeSequencePhase = "casting-time";
     state.feedback = null;
     render();
@@ -2272,11 +2477,13 @@ function castSelectedTimeSpell(stage) {
     return;
   }
   if (normalized === normalizeAnswer("キミタチナラ")) {
+    audioDirector.playEffect("spell");
     completeTimeStage(stage);
     return;
   }
   state.timeSequencePhase = "cast-fail";
   state.feedback = { stageId: stage.id, type: "fail", phase: "cast" };
+  audioDirector.playEffect("fail");
   render();
   burstOnce(".time-spell-sequence-card");
 }
@@ -2319,6 +2526,7 @@ function wireTimeSuccessSequence(stage) {
 }
 
 function beginShopCast(stage) {
+  audioDirector.playEffect("fire");
   addUnique(state.spells, stage.reward);
   addUnique(state.cleared, stage.id);
   state.feedback = { stageId: stage.id, type: "success", phase: "casting" };
@@ -2329,6 +2537,7 @@ function beginShopCast(stage) {
     if (state.feedback?.stageId !== stage.id || state.feedback?.phase !== "casting") return;
     state.feedback = { stageId: stage.id, type: "success", phase: "done" };
     state.genericPanelMode = "clear";
+    audioDirector.playEffect("success");
     render();
   }, 3800);
 }
@@ -2618,6 +2827,7 @@ function wireStage(stage, done) {
 function checkStage(stage, value) {
   if (normalizeAnswer(value) !== normalizeAnswer(stage.correct)) {
     state.feedback = { stageId: stage.id, type: "fail" };
+    audioDirector.playEffect("fail");
     render();
     return;
   }
@@ -2626,6 +2836,7 @@ function checkStage(stage, value) {
     resetStageInput();
     state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
     state.genericPanelMode = "clear";
+    audioDirector.playEffect("success");
     render();
     burstOnce(".shop-sequence-card");
     return;
@@ -2637,6 +2848,7 @@ function checkStage(stage, value) {
     state.feedback = null;
     state.genericPanelMode = "clear";
     resetStageInput();
+    audioDirector.playEffect("success");
     render();
     burstOnce(".time-spell-sequence-card");
     return;
@@ -2646,6 +2858,7 @@ function checkStage(stage, value) {
   resetStageInput();
   state.feedback = { stageId: stage.id, type: "success" };
   state.genericPanelMode = "clear";
+  audioDirector.playEffect("success");
   render();
   burstOnce(".stage-clear-card");
 }
@@ -3034,12 +3247,14 @@ function startBossSuccessEffect(step) {
   const stepIndex = state.bossInput.length;
   state.bossAnswerOpen = false;
   state.feedback = { stageId: "boss", type: "success", phase: "effect", stepIndex };
+  audioDirector.playEffect(stepIndex === 4 ? "color-remove" : "boss-guard");
   render();
 }
 
 function startBossHit(message) {
   state.bossAnswerOpen = false;
   state.feedback = { stageId: "boss", type: "fail", phase: "hit", message };
+  audioDirector.playEffect("boss-hit");
   render();
 }
 
@@ -3320,6 +3535,13 @@ if (elements.reset) elements.reset.addEventListener("click", resetGame);
 if (elements.menuProblem) elements.menuProblem.addEventListener("click", focusCurrentProblem);
 if (elements.menuMagic) elements.menuMagic.addEventListener("click", focusCurrentMagic);
 if (elements.menuHint) elements.menuHint.addEventListener("click", showCurrentHint);
+if (elements.menuSound) {
+  elements.menuSound.addEventListener("click", async () => {
+    await audioDirector.unlock();
+    audioDirector.toggle();
+    updateSoundControl();
+  });
+}
 if (elements.closeDoc) elements.closeDoc.addEventListener("click", () => elements.dialog.close());
 if (elements.dialog) {
   elements.dialog.addEventListener("click", (event) => {
@@ -3332,5 +3554,12 @@ if (elements.hintDialog) {
     if (event.target === elements.hintDialog) elements.hintDialog.close();
   });
 }
+
+document.addEventListener("pointerdown", (event) => {
+  const button = event.target.closest("button");
+  audioDirector.unlock().then((ready) => {
+    if (ready && button && !button.disabled && button !== elements.menuSound) audioDirector.playEffect("click");
+  });
+}, { capture: true, passive: true });
 
 render();
