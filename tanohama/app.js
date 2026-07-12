@@ -1907,7 +1907,7 @@ function renderStage4Sheet() {
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">①</span><em class="red-word">おじさん</em>の<br>間にあるのは?</p>
           <div class="s4-scatter">
-            ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch === "E" ? stage4EMarker("た", "s4-scatter-e") : ch}</span>`).join("")}
+            ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch}</span>`).join("")}
           </div>
           <div class="s4-panel-answer">${numberRow(stage4Numbers[0], 0)}</div>
         </div>
