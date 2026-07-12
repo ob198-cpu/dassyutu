@@ -264,6 +264,10 @@ stage2Board.lower.v[10] = [{ black: -2 }, { black: -2 }];
 stage2Board.upper.v[0] = stage2Board.upper.v[0].map(({ blue, ...line }) => line);
 stage2Board.lower.v[0] = stage2Board.lower.v[0].map(({ blue, ...line }) => line);
 
+// 下段先頭の赤文字は小文字のエル。隣の青い大文字 I と区別する。
+const stage2LowerRedEl = stage2Board.lower.cells.find((cell) => cell.r === 0 && cell.c === 1);
+if (stage2LowerRedEl) stage2LowerRedEl.char = "l";
+
 function normalizeStage2Memo(value) {
   const rows = Array.isArray(value) ? value : [];
   return Array.from({ length: stage2MemoRows }, (_, r) => {
@@ -344,7 +348,9 @@ function renderStage2Board(memo, active, pickerOpen) {
         svg += `<circle class="stage2-memo-hit ${sel ? "is-selected" : ""}" cx="${cx}" cy="${cy}" r="32" fill="transparent" role="button" tabindex="0" data-memo="0:${cell.memo}" aria-label="白丸に書き込む"/>`;
       } else {
         const dimmed = Boolean(marks[`${key}:${cell.r}:${cell.c}`]);
-        svg += `<text x="${cx}" y="${cy + 2}" fill="${pal[cell.color]}" font-size="52" font-weight="900" text-anchor="middle" dominant-baseline="central" opacity="${dimmed ? 0.14 : 1}" font-family="'Hiragino Sans','Segoe UI',sans-serif">${cell.char}</text>`;
+        const isLowercaseEl = cell.char === "l";
+        const cellFont = isLowercaseEl ? "Georgia, 'Times New Roman', serif" : "'Hiragino Sans','Segoe UI',sans-serif";
+        svg += `<text x="${cx}" y="${cy + 2}" fill="${pal[cell.color]}" font-size="${isLowercaseEl ? 56 : 52}" font-weight="${isLowercaseEl ? 700 : 900}" text-anchor="middle" dominant-baseline="central" opacity="${dimmed ? 0.14 : 1}" font-family="${cellFont}">${cell.char}</text>`;
         spots += `<button class="stage2-cell-toggle ${dimmed ? "is-dimmed" : ""}" style="--spot-x:${sx}%;--spot-y:${sy}%;" type="button" data-cell="${key}:${cell.r}:${cell.c}" aria-label="${cell.char} の表示を切り替える"></button>`;
       }
     });
