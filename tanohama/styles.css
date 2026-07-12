@@ -12760,10 +12760,27 @@ body.late-stage-mode .phone-shell {
   background: transparent;
 }
 
+.stage-shop.is-shop-casting .stage-bg-art {
+  animation: shopDragonBreathImage 3.8s ease-in-out both;
+  transform-origin: 50% 78%;
+}
+
 .shop-ice-transition {
   position: absolute;
   inset: 0;
   overflow: hidden;
+}
+
+.shop-ice-transition::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 50% 88%, rgba(255, 244, 202, 0.3), transparent 30%),
+    radial-gradient(ellipse at 50% 58%, rgba(255, 112, 30, 0.2), transparent 52%);
+  mix-blend-mode: screen;
+  animation: shopHeatPulse 3.8s ease-in-out both;
 }
 
 .shop-flame-beam {
@@ -12860,6 +12877,20 @@ body.late-stage-mode .phone-shell {
   0% { opacity: 0; translate: 0 16px; }
   28% { opacity: 0.78; }
   100% { opacity: 0; translate: 10px -48px; }
+}
+
+@keyframes shopDragonBreathImage {
+  0% { filter: brightness(0.76) saturate(0.82); transform: scale(1.035); }
+  18% { filter: brightness(1.2) saturate(1.2); }
+  58% { filter: brightness(1.08) saturate(1.12); transform: scale(1); }
+  100% { filter: brightness(0.94) saturate(0.95); transform: scale(1.012); }
+}
+
+@keyframes shopHeatPulse {
+  0% { opacity: 0; }
+  16% { opacity: 0.9; }
+  52% { opacity: 0.42; }
+  100% { opacity: 0; }
 }
 
 @media (orientation: landscape) and (max-height: 500px) {

@@ -98,13 +98,13 @@ const stages = [
     number: "03",
     title: "凍った足場",
     tag: "アイテム選択",
-    mission: "足場が凍り、素足では渡れない。アイテム屋の棚から、氷を溶かせるものを選ぶ。",
+    mission: "急傾斜の通路が鏡面状の氷に覆われ、滑って登れない。アイテム屋の棚から、氷を溶かせるものを選ぶ。",
     reward: "ドラブレス",
     type: "shop",
     correct: "ドラブレス",
     successMessage: "ドラブレスの炎で氷が溶け、先へ進めるようになった！",
     scene: "ice",
-    sceneCaption: "凍った足場を渡るには、氷に効くアイテムを選ぶ必要がある。",
+    sceneCaption: "鏡面状に凍った急坂を登るには、氷に効くアイテムを選ぶ必要がある。",
     briefing: "式が指す番号は3。3番の棚には、口から火を出す道具が置かれている。",
     hints: [
       "ヒント①「文章の中に混ざった数字を、小さい順に追って読むのじゃ」",
@@ -118,7 +118,7 @@ const stages = [
       title: "ステージ3",
       subtitle: "凍った足場",
       rule: "下のカッコの数字からひらがなを取り出す。最も関係するものをアイテム680の中から選ぶ。",
-      prompt: "鉄の足場が凍っていて渡るのは危険だ。アイテム屋で氷を溶かせるものを探す。",
+      prompt: "強い傾斜の石段が厚い氷に覆われ、足を掛けても滑り落ちる。アイテム屋で氷を溶かせるものを探す。",
       shop: [
         "1. メラソード: 切ったものが燃える",
         "2. ソラブーツ: 装備すると素早くなる",
@@ -126,7 +126,7 @@ const stages = [
         "4. マジホウキ: 飛べる、掃除もできる",
       ],
       answerBoxes: 5,
-      solvedNote: "ドラブレス: 炎でどんな氷も溶かす事ができる。ただし炎は発射方向に注意。",
+      solvedNote: "ドラブレス: 龍の息のような高熱火炎を前方へ噴射し、氷を急速に融解する。大量の蒸気が発生するため発射方向に注意。",
     },
     items: [
       { name: "メラソード", detail: "切ったものが燃える", icon: "sword" },
@@ -2035,19 +2035,27 @@ function renderStage(stage) {
   const panelMode = state.genericPanelMode || "closed";
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
   const shopSuccessPhase = stage.id === "shop" && feedback?.type === "success"
-    ? feedback.phase || "clear"
+    ? feedback.phase === "clear" ? "learned" : feedback.phase || "learned"
     : stage.id === "shop" && done && panelMode === "clear"
       ? "done"
       : "";
   const showShopClearedBackground = stage.id === "shop" && (done || shopSuccessPhase === "casting" || shopSuccessPhase === "done");
   const background = stage.id === "shop"
-    ? showShopClearedBackground ? "stage03-clear-premium-v2.webp" : "stage03-bg-premium.webp"
+    ? shopSuccessPhase === "casting"
+      ? "stage03-cast-drabreath-v3.webp"
+      : showShopClearedBackground
+        ? "stage03-clear-steps-v3.webp"
+        : "stage03-bg-steep-v3.webp"
     : done ? "stage04-clear-overcome-v3.webp" : "stage04-bg-mountain-v2.webp";
   const backgroundAlt = stage.id === "shop"
-    ? done ? "氷が溶け、濡れた石床の道が出口まで開いた回廊" : "凍りついた足場とアイテム屋の回廊"
+    ? shopSuccessPhase === "casting"
+      ? "ドラブレスの高熱火炎が急な氷坂を焼き溶かし、大量の蒸気が上がる"
+      : done
+        ? "氷が溶け、登れる石段が露出した急傾斜の回廊"
+        : "鏡面状の氷に覆われ、滑って登れない急傾斜の回廊"
     : done ? "そびえ立つ山壁を乗り越え、山上の出口へ到達した" : "そびえ立つ山の壁と山上に光る出口";
   elements.game.innerHTML = `
-    <section class="stage-panel immersive-stage generic-immersive-stage stage-${stage.id} ${done ? "is-solved" : ""}" aria-label="${stage.number} / ${stage.title}">
+    <section class="stage-panel immersive-stage generic-immersive-stage stage-${stage.id} ${done ? "is-solved" : ""} ${shopSuccessPhase === "casting" ? "is-shop-casting" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world generic-stage-world">
         <img class="stage-bg-art" src="./assets/${background}" alt="${backgroundAlt}" loading="eager">
         <div class="art-vignette"></div>
@@ -2085,14 +2093,8 @@ function renderShopSuccessSequence(stage, phase) {
   if (phase === "casting") {
     return `
       <section class="shop-success-sequence is-casting" aria-label="ドラブレス発動中">
-        <div class="shop-ice-transition" aria-hidden="true">
-          <span class="shop-flame-beam"></span>
-          <span class="shop-melt-glow"></span>
-          <span class="shop-steam shop-steam-a"></span>
-          <span class="shop-steam shop-steam-b"></span>
-          <span class="shop-steam shop-steam-c"></span>
-        </div>
-        <div class="shop-cast-status"><strong>ドラブレスを唱えた！</strong><span>炎が氷を溶かしている</span></div>
+        <div class="shop-ice-transition" aria-hidden="true"></div>
+        <div class="shop-cast-status"><strong>ドラブレスを解き放った！</strong><span>高熱火炎が氷坂を割り、大量の蒸気と融水を発生させている</span></div>
       </section>
     `;
   }
@@ -2101,23 +2103,21 @@ function renderShopSuccessSequence(stage, phase) {
     return `
       <section class="shop-success-sequence is-done" aria-label="ステージ3 クリア">
         <div class="shop-completion-bar">
-          <div><span>STAGE ${stage.number} COMPLETE</span><strong>氷が溶け、先へ進めるようになった！</strong></div>
+          <div><span>STAGE ${stage.number} COMPLETE</span><strong>氷坂が溶け、登れる石段が現れた！</strong></div>
           <button class="primary-button" id="nextButton" type="button">次のステージへ</button>
         </div>
       </section>
     `;
   }
 
-  const content = phase === "learned"
-    ? `<span>NEW SPELL</span><h2>ドラブレスを覚えた</h2><p class="shop-spell-name">☆ ドラブレス</p>`
-    : phase === "explanation"
-      ? `<span>SPELL GUIDE</span><h2>ドラブレス</h2><p>炎でどんな氷も溶かす事ができる。<br>ただし、炎は発射方向に注意。</p>`
+  const content = phase === "explanation"
+      ? `<span>SPELL GUIDE</span><h2>ドラブレス</h2><p>龍の息のような高熱火炎を前方へ噴射し、氷を急速に融解する。<br>大量の蒸気が発生するため、発射方向に注意。</p>`
       : phase === "confirm"
-        ? `<span>SPELL READY</span><h2>ドラブレスを使いますか？</h2><p>凍った足場へ向けて炎を放つ。</p>`
-        : `<span>STAGE ${stage.number} CLEAR</span><h2>ステージ3 クリア</h2><p>氷を溶かせるアイテムを見つけた。</p>`;
+        ? `<span>SPELL READY</span><h2>ドラブレスを使いますか？</h2><p>鏡面状に凍った急坂へ高熱火炎を放つ。</p>`
+        : `<span>NEW SPELL</span><h2>ドラブレスを覚えた</h2><p class="shop-spell-name">☆ ドラブレス</p>`;
   const actions = phase === "confirm"
     ? `<div class="shop-sequence-actions"><button class="primary-button" id="shopCastYes" type="button">はい</button><button class="secondary-button" id="shopCastNo" type="button">いいえ</button></div>`
-    : `<button class="primary-button" id="${phase === "learned" ? "shopLearnedNext" : phase === "explanation" ? "shopExplanationNext" : "shopClearNext"}" type="button">つぎへ</button>`;
+    : `<button class="primary-button" id="${phase === "explanation" ? "shopExplanationNext" : "shopLearnedNext"}" type="button">つぎへ</button>`;
 
   return `
     <section class="shop-success-sequence is-${phase}" aria-label="ステージ3 クリア進行">
@@ -2141,15 +2141,10 @@ function beginShopCast(stage) {
     state.feedback = { stageId: stage.id, type: "success", phase: "done" };
     state.genericPanelMode = "clear";
     render();
-  }, 3200);
+  }, 3800);
 }
 
 function wireShopSuccessSequence(stage) {
-  document.querySelector("#shopClearNext")?.addEventListener("click", () => {
-    addUnique(state.spells, stage.reward);
-    state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
-    render();
-  });
   document.querySelector("#shopLearnedNext")?.addEventListener("click", () => {
     state.feedback = { stageId: stage.id, type: "success", phase: "explanation" };
     render();
@@ -2374,8 +2369,9 @@ function checkStage(stage, value) {
     return;
   }
   if (stage.id === "shop") {
+    addUnique(state.spells, stage.reward);
     resetStageInput();
-    state.feedback = { stageId: stage.id, type: "success", phase: "clear" };
+    state.feedback = { stageId: stage.id, type: "success", phase: "learned" };
     state.genericPanelMode = "clear";
     render();
     burstOnce(".shop-sequence-card");
