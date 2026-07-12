@@ -2014,16 +2014,16 @@ function finishGateSuccess(stage) {
 function renderStage(stage) {
   const done = isStageCleared(stage.id);
   const panelMode = state.genericPanelMode || "closed";
-  const background = stage.id === "shop" ? "stage03-bg-premium.webp" : "stage04-bg-premium.webp";
-  const mountainStage = stage.id === "time";
-  const iceStage = stage.id === "shop";
+  const background = stage.id === "shop"
+    ? done ? "stage03-clear-premium-v2.webp" : "stage03-bg-premium.webp"
+    : done ? "stage04-clear-mountain-v2.webp" : "stage04-bg-mountain-v2.webp";
+  const backgroundAlt = stage.id === "shop"
+    ? done ? "氷が溶け、濡れた石床の道が出口まで開いた回廊" : "凍りついた足場とアイテム屋の回廊"
+    : done ? "山壁に石段が現れ、山上の出口まで道がつながった" : "そびえ立つ山の壁と山上に光る出口";
   elements.game.innerHTML = `
-    <section class="stage-panel immersive-stage generic-immersive-stage ${done ? "is-solved" : ""}" aria-label="${stage.number} / ${stage.title}">
+    <section class="stage-panel immersive-stage generic-immersive-stage stage-${stage.id} ${done ? "is-solved" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world generic-stage-world">
-        ${mountainStage
-          ? `<div class="stage-bg-art mountain-wall-art ${done ? "is-cleared" : ""}" role="img" aria-label="${done ? "山の壁を越え、出口への道が開いた" : "そびえ立つ山の壁と出口"}"><div class="mountain-wall-ridge"></div><div class="mountain-wall-path"></div><div class="mountain-wall-exit">出口</div><div class="mountain-wall-figure"></div>${done ? `<div class="mountain-wall-bridge"></div><div class="mountain-wall-clear-light"></div>` : ""}</div>`
-          : `<img class="stage-bg-art" src="./assets/${background}" alt="${stage.number} ${stage.title}" loading="eager">`}
-        ${iceStage && done ? `<div class="ice-melt-clear-scene" role="img" aria-label="ドラブレスの炎で氷が溶け、先へ進めるようになった"><div class="ice-melt-path"></div><div class="ice-melt-flame"></div><div class="ice-melt-steam steam-a"></div><div class="ice-melt-steam steam-b"></div><div class="ice-melt-spark spark-a"></div><div class="ice-melt-spark spark-b"></div></div>` : ""}
+        <img class="stage-bg-art" src="./assets/${background}" alt="${backgroundAlt}" loading="eager">
         <div class="art-vignette"></div>
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>

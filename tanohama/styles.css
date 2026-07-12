@@ -12519,6 +12519,71 @@ body.late-stage-mode .phone-shell {
   }
 }
 
+/* Stage 03/04: dedicated production artwork replaces the former CSS mock scenes. */
+.generic-immersive-stage.stage-shop .art-vignette,
+.generic-immersive-stage.stage-time .art-vignette {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.1), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.08));
+}
+
+.generic-immersive-stage.stage-shop.is-solved .stage-clear-overlay,
+.generic-immersive-stage.stage-time.is-solved .stage-clear-overlay {
+  place-items: end center;
+  padding: 10px;
+  background: linear-gradient(180deg, transparent 48%, rgba(0, 0, 0, 0.18) 66%, rgba(0, 0, 0, 0.78));
+  pointer-events: none;
+}
+
+.generic-immersive-stage.stage-shop.is-solved .stage-clear-card,
+.generic-immersive-stage.stage-time.is-solved .stage-clear-card {
+  width: min(980px, calc(100% - 12px));
+  max-height: 42dvh;
+  padding: 10px 14px;
+  pointer-events: auto;
+  background: rgba(4, 9, 14, 0.91);
+}
+
+.generic-immersive-stage.stage-shop.is-solved .stage-clear-card h2,
+.generic-immersive-stage.stage-time.is-solved .stage-clear-card h2 {
+  margin: 2px 0 5px;
+  font-size: clamp(20px, 3vw, 30px);
+}
+
+.generic-immersive-stage.stage-shop.is-solved .clear-spell-reward,
+.generic-immersive-stage.stage-time.is-solved .clear-spell-reward {
+  gap: 3px;
+  padding: 5px 0;
+}
+
+.generic-immersive-stage.stage-shop.is-solved .clear-spell-reward strong,
+.generic-immersive-stage.stage-time.is-solved .clear-spell-reward strong {
+  font-size: clamp(18px, 2.6vw, 25px);
+}
+
+.generic-immersive-stage.stage-shop.is-solved .clear-spell-reward p,
+.generic-immersive-stage.stage-time.is-solved .clear-spell-reward p {
+  font-size: clamp(11px, 1.5vw, 14px);
+  line-height: 1.35;
+}
+
+.generic-immersive-stage.stage-shop.is-solved .clear-actions,
+.generic-immersive-stage.stage-time.is-solved .clear-actions {
+  margin-top: 7px;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .generic-immersive-stage.stage-shop.is-solved .stage-clear-card,
+  .generic-immersive-stage.stage-time.is-solved .stage-clear-card {
+    max-height: 46dvh;
+    padding: 7px 10px;
+  }
+
+  .generic-immersive-stage.stage-shop.is-solved .clear-actions button,
+  .generic-immersive-stage.stage-time.is-solved .clear-actions button {
+    min-height: 36px;
+    padding: 4px 8px;
+  }
+}
+
 /* Stage 02: keep the visible white circles and their touch targets on one SVG coordinate system. */
 .stage2-board-svg .stage2-memo-hit {
   fill: transparent;
