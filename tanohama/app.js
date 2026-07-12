@@ -280,7 +280,7 @@ function normalizeStage2Memo(value) {
   });
 }
 
-const stage4MemoShape = [[4, 2, 3], [3, 0, 0, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
+const stage4MemoShape = [[4, 2, 3], [3, 8, 8, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
 
 function normalizeStage4Memo(value) {
   const source = value && typeof value === "object" ? value : {};
@@ -1555,8 +1555,8 @@ const stage4Scatter = [
   ["G", 3, 37], ["す", 30, 38], ["F", 64, 37], ["E", 92, 37],
   ["じ", 2, 54], ["ど", 30, 55], ["さ", 63, 54], ["げ", 84, 54],
   ["の", 13, 72], ["に", 48, 72], ["う", 67, 71],
-  ["ろ", 37, 84],
-  ["お", 22, 96], ["C", 46, 96], ["D", 79, 96],
+  ["ろ", 37, 79],
+  ["お", 22, 90], ["C", 46, 90], ["D", 79, 90],
 ];
 
 const stage4Numbers = [
@@ -1573,10 +1573,16 @@ function renderStage4Sheet() {
       <span class="s4-num-label">${group.label}</span>
       ${group.boxes
         .map(
-          (box, groupIndex) => `<span class="s4-num-box ${box.length ? "" : "is-empty"}">
+          (box, groupIndex) => {
+            const inputLength = stage4MemoShape[questionIndex]?.[groupIndex] || box.length;
+            const inputLabel = box.length
+              ? `${group.label} ${box.map(([n]) => n).join("、")}に対応する文字`
+              : `${group.label} 中央メモ ${groupIndex}`;
+            return `<span class="s4-num-box ${box.length ? "" : "is-empty"}">
             <span class="s4-num-source">${box.length ? box.map(([n, c], i) => `${i ? "<i>,</i>" : ""}<b class="n-${c}">${n}</b>`).join("") : "-"}</span>
-            ${box.length ? `<input class="s4-map-input" type="text" maxlength="${box.length}" inputmode="text" autocomplete="off" data-s4-group="${questionIndex}:${groupIndex}" value="${escapeAttribute(memo.cells[questionIndex][groupIndex].join(""))}" aria-label="${group.label} ${box.map(([n]) => n).join("、")}に対応する文字" />` : ""}
-          </span>`,
+            ${inputLength ? `<input class="s4-map-input" type="text" maxlength="${inputLength}" inputmode="text" autocomplete="off" data-s4-group="${questionIndex}:${groupIndex}" value="${escapeAttribute(memo.cells[questionIndex][groupIndex].join(""))}" aria-label="${inputLabel}" />` : ""}
+          </span>`;
+          },
         )
         .join("")}
     </div>
@@ -1602,7 +1608,7 @@ function renderStage4Sheet() {
           <div class="s4-panel-answer">${numberRow(stage4Numbers[1], 1)}</div>
         </div>
         <div class="s4-panel">
-          <p class="s4-panel-note">?に言葉を入れ、四角で囲まれた文字のみ繋げて読む</p>
+          <p class="s4-panel-note"><span class="sheet-qnum">③</span>?に言葉を入れ、四角で囲まれた文字のみ繋げて読む</p>
           <div class="s4-this-grid">
             <div class="s4-word-pair s4-word-pair-left">
               <span class="s4-boxed s4-red">THIS</span>
@@ -1621,7 +1627,7 @@ function renderStage4Sheet() {
           <div class="s4-panel-answer">${numberRow(stage4Numbers[2], 2)}</div>
         </div>
         <div class="s4-panel">
-          <p class="s4-panel-note">④投げられた球が、放物線の<em class="red-word">頂点</em>で真下へ落下する時、球が通る言葉を繋いで読め</p>
+          <p class="s4-panel-note"><span class="sheet-qnum">④</span>投げられた球が、放物線の<em class="red-word">頂点</em>で真下へ落下する時、球が通る言葉を繋いで読め</p>
           <img class="s4-art" src="./assets/stage04-art.webp" alt="放物線と散らばった文字の図(原本)" loading="lazy" />
           <div class="s4-panel-answer">${numberRow(stage4Numbers[3], 3)}</div>
         </div>
