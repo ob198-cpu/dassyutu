@@ -13015,6 +13015,32 @@ button.s4-map-input.is-active {
   overflow: hidden;
 }
 
+.boss-review-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.boss-review-nav button {
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid rgba(239, 208, 101, 0.65);
+  border-radius: 4px;
+  background: #09141d;
+  color: #fff3bd;
+  font: inherit;
+  font-weight: 900;
+}
+
+.boss-review-notice {
+  padding: 12px;
+  border: 1px solid rgba(239, 208, 101, 0.4);
+  color: #fff3bd;
+  text-align: center;
+  font-weight: 900;
+}
+
 .boss-current-layout {
   flex: 1 1 auto;
   min-height: 0;

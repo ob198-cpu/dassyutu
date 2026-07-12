@@ -3148,9 +3148,12 @@ function renderBossSpellBookPanel(stage) {
 }
 
 function renderBossProblemPanel(stage) {
-  const index = Math.min(state.bossInput.length, bossBattle.length - 1);
+  const currentIndex = Math.min(state.bossInput.length, bossBattle.length - 1);
+  const requestedReviewIndex = Number.isInteger(state.bossReviewIndex) ? state.bossReviewIndex : currentIndex;
+  const index = Math.min(Math.max(requestedReviewIndex, 0), currentIndex);
+  const reviewingPast = index < currentIndex;
   const step = bossBattle[index];
-  const feedback = state.feedback?.stageId === "boss" ? state.feedback : null;
+  const feedback = reviewingPast ? null : state.feedback?.stageId === "boss" ? state.feedback : null;
   const effectActive = feedback?.phase === "effect" || feedback?.phase === "hit";
   const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
   const slotCount = needsSixthSlot ? 5 : step.slots;
@@ -3163,6 +3166,10 @@ function renderBossProblemPanel(stage) {
     <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""}" aria-label="ラスボス 第${index + 1}問">
       <div class="immersive-panel-head">
         <div><span>FINAL BATTLE ${index + 1} / ${bossBattle.length}</span><strong>ラスボスの行動を見て呪文を選べ</strong></div>
+        <div class="boss-review-nav" aria-label="過去の問題を見る">
+          ${index > 0 ? `<button id="bossReviewPrev" type="button" aria-label="前の問題を見る">←</button>` : ""}
+          ${reviewingPast ? `<button id="bossReviewCurrent" type="button">現在の問題へ →</button>` : ""}
+        </div>
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="問題を閉じる">×</button>
       </div>
       <div class="boss-current-layout">
@@ -3178,7 +3185,9 @@ function renderBossProblemPanel(stage) {
         <section class="boss-current-copy ${effectActive ? "is-effect-mode" : ""}">
           <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
           <div class="boss-current-meta"><span>石板 ${slotCount}文字${needsSixthSlot ? "＋未完成の1枠" : ""}</span><span>呪文は1種類につき1回</span></div>
-          ${effectActive ? `
+          ${reviewingPast ? `
+            <div class="boss-review-notice">回答済みの問題を表示しています。</div>
+          ` : effectActive ? `
             <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"}" aria-live="assertive">
               <strong>${feedback.phase === "hit" ? feedback.message || effectCopy : effectCopy}</strong>
               ${feedback.phase === "effect" && index === 4 ? renderBossColorRemovalEffect() : ""}
@@ -3285,6 +3294,20 @@ function renderBossSlate(step, index, solved, active) {
 
 function wireBoss() {
   wireProblems();
+  document.querySelector("#bossReviewPrev")?.addEventListener("click", () => {
+    const currentIndex = Math.min(state.bossInput.length, bossBattle.length - 1);
+    const shownIndex = Number.isInteger(state.bossReviewIndex) ? state.bossReviewIndex : currentIndex;
+    state.bossReviewIndex = Math.max(0, shownIndex - 1);
+    state.bossAnswerOpen = false;
+    state.feedback = null;
+    render();
+  });
+  document.querySelector("#bossReviewCurrent")?.addEventListener("click", () => {
+    state.bossReviewIndex = null;
+    state.bossAnswerOpen = false;
+    state.feedback = null;
+    render();
+  });
   document.querySelector("#bossIntroStart")?.addEventListener("click", () => {
     state.bossIntroOpen = false;
     state.bossPanelMode = "problem";
