@@ -260,6 +260,10 @@ const stage2Board = {"upper":{"cols":9,"rows":4,"x":[33,114,189,264,338,413,488,
 // 原本にはない右端の縦線を描かない。入力欄自体の枠だけを表示する。
 stage2Board.lower.v[10] = [{}, {}];
 
+// 左端で黒い盤面線と重なっていた青線は表示しない。
+stage2Board.upper.v[0] = stage2Board.upper.v[0].map(({ blue, ...line }) => line);
+stage2Board.lower.v[0] = stage2Board.lower.v[0].map(({ blue, ...line }) => line);
+
 function normalizeStage2Memo(value) {
   const rows = Array.isArray(value) ? value : [];
   return Array.from({ length: stage2MemoRows }, (_, r) => {
@@ -348,7 +352,9 @@ function renderStage2Board(memo, active, pickerOpen) {
 
   // 紙とピンクの盤面
   svg += `<rect x="0" y="0" width="${VBW}" height="${VBH}" fill="#f6f2ea"/>`;
-  svg += `<rect x="18" y="52" width="1194" height="616" fill="#cf9d9d" stroke="#2a56a8" stroke-width="4"/>`;
+  svg += `<rect x="18" y="52" width="1194" height="616" fill="#cf9d9d"/>`;
+  // 外枠は左辺だけを除き、上・右・下を原本どおり残す。
+  svg += `<path d="M18 52 H1212 V668 H18" fill="none" stroke="#2a56a8" stroke-width="4"/>`;
   svg += `<text x="30" y="38" fill="#2a56a8" font-size="34" font-weight="900" font-family="'Hiragino Sans','Segoe UI',sans-serif">ステージ2</text>`;
   // 凡例: ●×10 しろ + 手順
   for (let i = 0; i < 10; i++) {
