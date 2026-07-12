@@ -696,14 +696,15 @@ function loadState() {
         bossIntroOpen: Boolean(saved.bossIntroOpen),
         bossAnswerOpen: Boolean(saved.bossAnswerOpen),
         bossSlotCreationPending: Boolean(saved.bossSlotCreationPending),
-        bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) || (Array.isArray(saved.bossInput) && saved.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))),
+        bossTsukemonoActivated: Boolean(saved.bossTsukemonoActivated),
+        bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) && Boolean(saved.bossTsukemonoActivated),
         bossColorRemoved: Boolean(saved.bossColorRemoved),
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -750,6 +751,7 @@ function closeStagePanelsOnEntry(stage) {
   state.bossIntroOpen = false;
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
+  state.bossTsukemonoActivated = false;
   state.bossSixthSlotCreated = false;
   if (stage?.id === "path") {
     state.pathPanelMode = "closed";
@@ -3215,7 +3217,8 @@ function renderBossDirectAnswer(stage) {
     return `<section class="boss-direct-answer is-complete"><h3>すべての攻撃を切り抜けた</h3><p>ラスボスへの回答は完了しています。</p></section>`;
   }
   const isGokurosama = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ");
-  const hasTsukemono = state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"));
+  const learnedTsukemono = state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"));
+  const hasTsukemono = state.bossTsukemonoActivated === true;
   const feedback = state.feedback?.stageId === "boss" && state.feedback.type === "fail" ? state.feedback.message : "";
   const colorRemovalNotice = state.bossColorRemoved && normalizeAnswer(step.answer) === normalizeAnswer("カタメ")
     ? `<p class="result-message is-success boss-gokurosama-effect">ゴクロウサマを唱えた！「百黙絶静」から白・黒・色・青が消え、「一犬糸争」になった！「カタメ」で防ぐ。</p>`
@@ -3224,7 +3227,11 @@ function renderBossDirectAnswer(stage) {
     return `
       <section class="boss-direct-answer boss-slot-creation" aria-label="ゴクロウサマの6文字目">
         <h3>ゴクロウサマの6文字目</h3>
-        ${hasTsukemono ? renderBossSixthSlotBuilder() : `<p class="boss-direct-locked">先にツケモノを習得して、この場所で使う。</p>`}
+        ${hasTsukemono
+          ? renderBossSixthSlotBuilder()
+          : learnedTsukemono
+            ? `<p class="boss-direct-locked">6文字目の土台にツケモノを使う。</p><button class="primary-button" id="castTsukemonoForSlot" type="button">ツケモノを唱える</button>`
+            : `<p class="boss-direct-locked">先にツケモノを習得して、この場所で使う。</p>`}
       </section>
     `;
   }
@@ -3321,12 +3328,20 @@ function wireBoss() {
     render();
   });
   document.querySelector("#useTsukemonoSlot")?.addEventListener("click", () => {
-    if (!state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))) return;
+    if (state.bossTsukemonoActivated !== true) return;
     state.bossSlotCreationPending = false;
     state.bossSixthSlotCreated = true;
     state.bossAnswerOpen = true;
     state.feedback = null;
     state.slotInput = [];
+    render();
+  });
+  document.querySelector("#castTsukemonoForSlot")?.addEventListener("click", () => {
+    if (!state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))) return;
+    state.bossTsukemonoActivated = true;
+    state.bossSixthSlotCreated = false;
+    state.feedback = null;
+    audioDirector.playEffect("spell-cast");
     render();
   });
   const step = bossBattle[state.bossInput.length];
@@ -3436,6 +3451,7 @@ function resetBossAfterHit() {
   state.slotPickerOpen = false;
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
+  state.bossTsukemonoActivated = false;
   state.bossSixthSlotCreated = false;
   state.bossColorRemoved = false;
   state.bossPanelMode = "closed";
@@ -3454,6 +3470,7 @@ function completeBossStep(step) {
     state.bossColorRemoved = true;
   }
   if (normalizeAnswer(step.answer) === normalizeAnswer("ツケモノ")) {
+    state.bossTsukemonoActivated = false;
     state.bossSlotCreationPending = true;
     state.bossPanelMode = "problem";
     render();
@@ -3536,6 +3553,7 @@ function resetGame() {
   state.bossIntroOpen = false;
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
+  state.bossTsukemonoActivated = false;
   state.bossSixthSlotCreated = false;
   state.bossColorRemoved = false;
   saveState();
