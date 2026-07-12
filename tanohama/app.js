@@ -2494,7 +2494,7 @@ function renderTimeSuccessSequence(stage, phase) {
   }
 
   const content = phase === "learned"
-    ? `<span class="clear-kicker">NEW SPELL</span><h2>タイムマシンを覚えた</h2><p class="time-learned-spell">☆ タイムマシン</p><button class="primary-button" id="timeLearnedNext" type="button">つぎへ</button>`
+    ? `<span class="clear-kicker">NEW SPELL</span><h2>タイムマシンを覚えた</h2><button class="primary-button" id="timeLearnedNext" type="button">つぎへ</button>`
     : phase === "explanation"
       ? `<span class="clear-kicker">SPELL GUIDE</span><h2>タイムマシン</h2><p class="time-spell-explanation">一時的に未来空間へ移動し、まだ習得していない呪文を1つ唱えられる。効果は現在異空間で発動し、同時に自分も現在異空間へ戻る。</p><button class="primary-button" id="timeExplanationNext" type="button">つぎへ</button>`
       : `<span class="clear-kicker">SELECT SPELL</span><h2>どの呪文を唱えますか</h2>${renderTimeSpellChooser(phase)}`;
