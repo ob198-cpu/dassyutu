@@ -1543,13 +1543,13 @@ function renderStage4MountainSheet() {
 }
 
 const stage4Scatter = [
-  ["A", 8.5, 33], ["い", 40, 33], ["ち", 61, 32.5], ["ん", 79, 33],
-  ["う", 49, 42.5], ["か", 73, 43], ["た", 93, 43],
-  ["G", 3, 50], ["す", 30, 51], ["F", 64, 50], ["E", 92, 50],
-  ["じ", 2, 60], ["ど", 30, 60.5], ["さ", 63, 59.5], ["げ", 84, 60],
-  ["の", 13, 73], ["に", 48, 72.5], ["う", 67, 72],
-  ["ろ", 37, 79],
-  ["お", 22, 86], ["C", 46, 86], ["D", 79, 86],
+  ["A", 8.5, 5], ["い", 40, 5], ["ち", 61, 4], ["ん", 79, 5],
+  ["う", 49, 22], ["か", 73, 23], ["た", 93, 23],
+  ["G", 3, 37], ["す", 30, 38], ["F", 64, 37], ["E", 92, 37],
+  ["じ", 2, 54], ["ど", 30, 55], ["さ", 63, 54], ["げ", 84, 54],
+  ["の", 13, 72], ["に", 48, 72], ["う", 67, 71],
+  ["ろ", 37, 84],
+  ["お", 22, 96], ["C", 46, 96], ["D", 79, 96],
 ];
 
 const stage4Numbers = [
@@ -1577,7 +1577,6 @@ function renderStage4Sheet() {
   return `
     <div class="sheet stage4-sheet" role="group" aria-label="ステージ4 問題">
       <p class="s4-header">時空が歪んで、時差が発生した、①〜④の謎を解いて、時差を無くす為の手段を見つけろ</p>
-      <p class="s4-memo-guide">青・緑・黄の数字は手がかりです。各問題の下にある枠へ、対応する文字を入力してください。</p>
       <div class="s4-panels">
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">①</span><em class="red-word">おじさん</em>の<br>間にあるのは?</p>
@@ -1620,8 +1619,7 @@ function renderStage4Sheet() {
           <div class="s4-panel-answer">${numberRow(stage4Numbers[3], 3)}</div>
         </div>
       </div>
-      <p class="s4-read-order"><b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
-      <p class="sheet-elder">時差を隠す時に使うのじゃ→[ きじのくうきあしょうのみさきよらいのじさめ ]</p>
+      <p class="s4-footer-note">※<b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。※　時差を隠す時に使うのじゃ→[ きじのくうきあしょうのみさきよらいのじさめ ]</p>
     </div>
   `;
 }
@@ -2071,19 +2069,22 @@ function renderGenericProblemPanel(stage, done) {
   const timeAnswerButton = stage.id === "time" && !done
     ? `<button class="primary-button stage4-answer-open" id="timeAnswerToggle" type="button" aria-expanded="${state.timeAnswerOpen}">${state.timeAnswerOpen ? "解答欄を閉じる" : "解答する"}</button>`
     : "";
+  const isTimeStage = stage.id === "time";
   return `
-    <section class="immersive-panel generic-problem-panel" aria-label="${stage.number} 問題">
-      <div class="immersive-panel-head">
-        <div><span>STAGE ${stage.number}</span><strong>${stage.title} / 問題</strong></div>
-        <div class="immersive-panel-head-actions">
-          ${timeAnswerButton}
-          <button class="panel-close-button" id="genericClosePanel" type="button" aria-label="問題を閉じる">×</button>
-        </div>
-      </div>
+    <section class="immersive-panel generic-problem-panel ${isTimeStage ? "stage4-problem-panel" : ""}" aria-label="${stage.number} 問題">
+      ${isTimeStage
+        ? `<button class="panel-close-button stage4-panel-close" id="genericClosePanel" type="button" aria-label="問題を閉じる">×</button>`
+        : `<div class="immersive-panel-head">
+            <div><span>STAGE ${stage.number}</span><strong>${stage.title} / 問題</strong></div>
+            <div class="immersive-panel-head-actions">
+              <button class="panel-close-button" id="genericClosePanel" type="button" aria-label="問題を閉じる">×</button>
+            </div>
+          </div>`}
       <div class="immersive-panel-scroll">
         ${renderProblems(stage, done)}
         ${stage.type === "shop" ? `<div class="generic-problem-answer" aria-label="問題の回答">${shopPuzzle(stage, done)}</div>` : ""}
       </div>
+      ${isTimeStage ? timeAnswerButton : ""}
       ${stage.id === "time" && state.timeAnswerOpen && !done ? renderStage4AnswerDrawer(stage) : ""}
     </section>
   `;
