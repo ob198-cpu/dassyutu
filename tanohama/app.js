@@ -486,6 +486,8 @@ function loadState() {
         stage2Rotated: Boolean(saved.stage2Rotated),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         timeAnswerOpen: Boolean(saved.timeAnswerOpen),
+        timeSequencePhase: ["learned", "explanation", "choose", "cast-fail", "casting-time"].includes(saved.timeSequencePhase) ? saved.timeSequencePhase : "",
+        introReturnPhase: ["message", "ready"].includes(saved.introReturnPhase) ? saved.introReturnPhase : "",
         shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
@@ -498,7 +500,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), timeAnswerOpen: false, shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -694,14 +696,20 @@ function render() {
 }
 
 function renderIntro(stage) {
+  const returnedFromTimeMachine = state.introReturnPhase === "message";
   elements.game.innerHTML = `
     <section class="intro-stage intro-image-stage" aria-label="異世界へ！？">
       <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
-      <button class="primary-button intro-start-button" id="introStartButton" type="button">つぎへ</button>
+      <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？崖を越えられない。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
     </section>
   `;
   document.querySelector("#introStartButton")?.addEventListener("click", () => {
     closeInfoDialogs();
+    if (state.introReturnPhase === "message") {
+      state.introReturnPhase = "ready";
+      render();
+      return;
+    }
     addUnique(state.cleared, stage.id);
     state.stageIndex = 1;
     state.feedback = null;
@@ -2041,6 +2049,7 @@ function renderStage(stage) {
   const done = isStageCleared(stage.id);
   const panelMode = state.genericPanelMode || "closed";
   const feedback = state.feedback?.stageId === stage.id ? state.feedback : null;
+  const timeSequencePhase = stage.id === "time" ? state.timeSequencePhase || "" : "";
   const shopSuccessPhase = stage.id === "shop" && feedback?.type === "success"
     ? feedback.phase === "clear" ? "learned" : feedback.phase || "learned"
     : stage.id === "shop" && done && panelMode === "clear"
@@ -2070,7 +2079,7 @@ function renderStage(stage) {
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
       ${stage.id === "time" && !done ? `<p class="stage4-background-message">このままでは「乗り越える」ことができない</p>` : ""}
       ${panelMode === "problem" ? renderGenericProblemPanel(stage, done) : ""}
-      ${shopSuccessPhase ? renderShopSuccessSequence(stage, shopSuccessPhase) : panelMode === "clear" && done ? renderGenericStageClear(stage) : ""}
+      ${timeSequencePhase ? renderTimeSuccessSequence(stage, timeSequencePhase) : shopSuccessPhase ? renderShopSuccessSequence(stage, shopSuccessPhase) : panelMode === "clear" && done ? renderGenericStageClear(stage) : ""}
       ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
     </section>
   `;
@@ -2143,6 +2152,137 @@ function renderShopSuccessSequence(stage, phase) {
   `;
 }
 
+const timeCastTiles = ["ツ", "ケ", "モ", "ノ", "ゴ", "ク", "ロ", "ウ", "サ", "マ", "ド", "ラ", "ブ", "レ", "ス", "タ", "イ", "ム", "シ", "ン", "キ", "ミ", "チ", "ナ"];
+
+function renderTimeSpellChooser(phase) {
+  const selected = Array.from({ length: 6 }, (_, index) => state.slotInput[index] || "");
+  const activeSlot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), 5);
+  const failed = phase === "cast-fail";
+  return `
+    <div class="time-spell-chooser" aria-label="唱える呪文を文字で選ぶ">
+      <div class="stage4-answer-slots" aria-label="選択した6文字">
+        ${selected.map((character, index) => `<button class="stage4-answer-slot ${index === activeSlot ? "is-active" : ""}" type="button" data-time-cast-slot="${index}" aria-pressed="${index === activeSlot}">${character || "―"}</button>`).join("")}
+      </div>
+      <div class="stage4-answer-tiles" aria-label="文字候補">
+        ${timeCastTiles.map((tile) => `<button type="button" data-time-cast-tile="${tile}">${tile}</button>`).join("")}
+      </div>
+      <div class="stage4-answer-actions">
+        <button class="secondary-button" id="timeCastClear" type="button">全消去</button>
+        <button class="primary-button" id="timeCastSpell" type="button">この呪文を唱える</button>
+      </div>
+      ${failed ? `<p class="time-cast-result is-fail">呪文の光が一瞬だけ揺らめいた。しかし、山の壁は動かない。</p>` : ""}
+    </div>
+  `;
+}
+
+function renderTimeSuccessSequence(stage, phase) {
+  if (phase === "casting-time") {
+    return `
+      <section class="stage-clear-overlay time-spell-sequence is-casting-time" aria-live="assertive">
+        <div class="stage-clear-card time-spell-sequence-card">
+          <span class="clear-kicker">TIME MACHINE</span>
+          <h2>タイムマシンを唱えた！</h2>
+          <p class="time-cast-effect-copy">空間が巻き戻り、「ここ」という言葉が残る過去へ移動する。</p>
+          <div class="time-warp-effect" aria-hidden="true"></div>
+        </div>
+      </section>
+    `;
+  }
+
+  const content = phase === "learned"
+    ? `<span class="clear-kicker">NEW SPELL</span><h2>タイムマシンを覚えた</h2><p class="time-learned-spell">☆ タイムマシン</p><button class="primary-button" id="timeLearnedNext" type="button">つぎへ</button>`
+    : phase === "explanation"
+      ? `<span class="clear-kicker">SPELL GUIDE</span><h2>タイムマシン</h2><p class="time-spell-explanation">一時的に未来空間へ移動し、まだ習得していない呪文を1つ唱えられる。効果は現在異空間で発動し、同時に自分も現在異空間へ戻る。</p><button class="primary-button" id="timeExplanationNext" type="button">つぎへ</button>`
+      : `<span class="clear-kicker">SELECT SPELL</span><h2>どの呪文を唱えますか</h2>${renderTimeSpellChooser(phase)}`;
+
+  return `
+    <section class="stage-clear-overlay time-spell-sequence is-${phase}" aria-label="ステージ4 タイムマシン">
+      <div class="stage-clear-card time-spell-sequence-card">${content}</div>
+    </section>
+  `;
+}
+
+function returnToIntroWithTimeMachine() {
+  state.timeSequencePhase = "choose";
+  state.introReturnPhase = "message";
+  state.stageIndex = 0;
+  state.genericPanelMode = "closed";
+  state.feedback = null;
+  resetStageInput();
+  render();
+}
+
+function completeTimeStage(stage) {
+  addUnique(state.cleared, stage.id);
+  state.timeSequencePhase = "";
+  state.introReturnPhase = "";
+  state.feedback = { stageId: stage.id, type: "success" };
+  state.genericPanelMode = "clear";
+  resetStageInput();
+  render();
+  burstOnce(".stage-clear-card");
+}
+
+function castSelectedTimeSpell(stage) {
+  const value = Array.from({ length: 6 }, (_, index) => state.slotInput[index] || "").join("");
+  const normalized = normalizeAnswer(value);
+  if (normalized === normalizeAnswer("タイムマシン")) {
+    state.timeSequencePhase = "casting-time";
+    state.feedback = null;
+    render();
+    window.setTimeout(() => {
+      if (stages[state.stageIndex]?.id !== "time" || state.timeSequencePhase !== "casting-time") return;
+      returnToIntroWithTimeMachine();
+    }, 1600);
+    return;
+  }
+  if (normalized === normalizeAnswer("キミタチナラ")) {
+    completeTimeStage(stage);
+    return;
+  }
+  state.timeSequencePhase = "cast-fail";
+  state.feedback = { stageId: stage.id, type: "fail", phase: "cast" };
+  render();
+  burstOnce(".time-spell-sequence-card");
+}
+
+function wireTimeSuccessSequence(stage) {
+  document.querySelector("#timeLearnedNext")?.addEventListener("click", () => {
+    state.timeSequencePhase = "explanation";
+    render();
+  });
+  document.querySelector("#timeExplanationNext")?.addEventListener("click", () => {
+    state.timeSequencePhase = "choose";
+    resetStageInput();
+    render();
+  });
+  document.querySelectorAll("[data-time-cast-slot]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.activeSlot = Number(button.dataset.timeCastSlot);
+      render();
+    });
+  });
+  document.querySelectorAll("[data-time-cast-tile]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), 5);
+      state.slotInput = Array.from({ length: 6 }, (_, index) => state.slotInput[index] || "");
+      state.slotInput[slot] = button.dataset.timeCastTile || "";
+      const nextEmpty = state.slotInput.findIndex((value) => !value);
+      state.activeSlot = nextEmpty >= 0 ? nextEmpty : Math.min(slot + 1, 5);
+      state.timeSequencePhase = "choose";
+      state.feedback = null;
+      render();
+    });
+  });
+  document.querySelector("#timeCastClear")?.addEventListener("click", () => {
+    resetStageInput();
+    state.timeSequencePhase = "choose";
+    state.feedback = null;
+    render();
+  });
+  document.querySelector("#timeCastSpell")?.addEventListener("click", () => castSelectedTimeSpell(stage));
+}
+
 function beginShopCast(stage) {
   addUnique(state.spells, stage.reward);
   addUnique(state.cleared, stage.id);
@@ -2178,7 +2318,7 @@ function renderGenericStageClear(stage) {
   const nextLabel = state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次のステージへ";
   const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : stage.id === "shop" ? "氷が溶けた" : `${stage.title} クリア`;
   const clearMessage = stage.id === "time"
-    ? "「タイムマシン」を起動し、そびえ立つ山の壁を越えて出口へ到達した！"
+    ? "「キミタチナラ」を唱えた！ 言葉に背中を押され、そびえ立つ山の壁を乗り越えた！"
     : stage.id === "shop"
       ? "「ドラブレス」を唱えた！炎で氷が溶け、先へ進めるようになった！"
     : stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。";
@@ -2291,7 +2431,10 @@ function wireStage4Memo() {
 function wireStage(stage, done) {
   const note = document.querySelector("#stageNote");
   if (stage.id === "shop") wireShopSuccessSequence(stage);
-  if (stage.id === "time") wireStage4Memo();
+  if (stage.id === "time") {
+    wireStage4Memo();
+    wireTimeSuccessSequence(stage);
+  }
   if (stage.type === "tiles") {
     document.querySelectorAll(".tile").forEach((button) => {
       button.addEventListener("click", () => {
@@ -2435,9 +2578,19 @@ function checkStage(stage, value) {
     burstOnce(".shop-sequence-card");
     return;
   }
+  if (stage.id === "time") {
+    addUnique(state.spells, stage.reward);
+    state.timeAnswerOpen = false;
+    state.timeSequencePhase = "learned";
+    state.feedback = null;
+    state.genericPanelMode = "clear";
+    resetStageInput();
+    render();
+    burstOnce(".time-spell-sequence-card");
+    return;
+  }
   addUnique(state.cleared, stage.id);
   addUnique(state.spells, stage.reward);
-  if (stage.id === "time") state.timeAnswerOpen = false;
   resetStageInput();
   state.feedback = { stageId: stage.id, type: "success" };
   state.genericPanelMode = "clear";
@@ -2831,6 +2984,8 @@ function resetGame() {
   state.stage2Rotated = false;
   state.stage4Memo = normalizeStage4Memo(null);
   state.timeAnswerOpen = false;
+  state.timeSequencePhase = "";
+  state.introReturnPhase = "";
   state.shopPendingItem = "";
   state.revealed = {};
   state.genericPanelMode = "closed";

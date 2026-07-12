@@ -12293,6 +12293,76 @@ body.late-stage-mode .phone-shell {
   min-width: min(220px, 42%);
 }
 
+.time-spell-sequence-card {
+  width: min(760px, calc(100% - 16px)) !important;
+  display: grid;
+  gap: 12px;
+}
+
+.time-spell-sequence-card > .primary-button {
+  width: min(360px, 100%);
+  margin: 0 auto;
+}
+
+.time-learned-spell {
+  margin: 0;
+  color: #fff0a9;
+  font-size: clamp(24px, 4vw, 38px);
+  font-weight: 950;
+}
+
+.time-spell-explanation,
+.time-cast-effect-copy {
+  max-width: 620px;
+  margin: 0 auto;
+  color: #f3eddb;
+  font-size: clamp(14px, 2vw, 19px);
+  font-weight: 750;
+  line-height: 1.65;
+}
+
+.time-spell-chooser {
+  display: grid;
+  gap: 10px;
+}
+
+.time-spell-chooser .stage4-answer-tiles {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.time-cast-result {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(228, 124, 101, 0.55);
+  border-radius: 5px;
+  background: rgba(98, 25, 21, 0.36);
+  color: #ffd7c8;
+  font-weight: 850;
+}
+
+.time-warp-effect {
+  width: min(280px, 70vw);
+  aspect-ratio: 3 / 1;
+  margin: 0 auto;
+  border: 2px solid rgba(255, 231, 135, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 18px #e6c35f, inset 0 0 28px rgba(132, 215, 227, 0.7);
+  animation: time-warp-pulse 0.72s ease-in-out infinite alternate;
+}
+
+@keyframes time-warp-pulse {
+  from { transform: scaleX(0.78) rotate(-2deg); opacity: 0.58; }
+  to { transform: scaleX(1.08) rotate(2deg); opacity: 1; }
+}
+
+.intro-start-button.is-time-return-message {
+  width: min(760px, calc(100% - 24px));
+  min-height: 54px;
+  padding: 8px 18px;
+  white-space: normal;
+  line-height: 1.35;
+}
+
 @media (orientation: landscape) and (max-height: 500px) {
   .stage4-problem-panel > .stage4-panel-close {
     width: 32px;
@@ -12336,6 +12406,30 @@ body.late-stage-mode .phone-shell {
 
   .stage4-answer-actions button {
     min-height: 34px;
+  }
+
+  .time-spell-sequence-card {
+    gap: 6px;
+    padding: 9px !important;
+  }
+
+  .time-spell-sequence-card h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+
+  .time-spell-chooser {
+    gap: 5px;
+  }
+
+  .time-spell-chooser .stage4-answer-tiles {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .time-spell-chooser .stage4-answer-tiles button {
+    min-height: 27px;
+    font-size: 13px;
   }
 }
 
