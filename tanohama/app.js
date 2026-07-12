@@ -385,6 +385,10 @@ const audioDirector = (() => {
     } else if (name === "time") {
       for (let index = 0; index < 9; index += 1) tone(55 + index * 2, index * 0.07, 0.4, 0.052, "sine");
       scheduleNoise(now + 0.18, 0.72, 0.04, 3200);
+    } else if (name === "boss-intro") {
+      scheduleNoise(now, 1.15, 0.1, 820);
+      [35, 32, 29].forEach((midi, index) => tone(midi, index * 0.18, 0.72, 0.13, "sawtooth"));
+      [54, 59, 63].forEach((midi, index) => tone(midi, 0.72 + index * 0.1, 0.46, 0.065, "triangle"));
     } else if (name === "boss-hit") {
       scheduleNoise(now, 0.38, 0.18, 720);
       tone(29, 0, 0.55, 0.18, "sawtooth");
@@ -689,6 +693,7 @@ function loadState() {
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
+        bossIntroOpen: Boolean(saved.bossIntroOpen),
         bossAnswerOpen: Boolean(saved.bossAnswerOpen),
         bossSlotCreationPending: Boolean(saved.bossSlotCreationPending),
         bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) || (Array.isArray(saved.bossInput) && saved.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))),
@@ -698,7 +703,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -742,6 +747,7 @@ function closeStagePanelsOnEntry(stage) {
   state.gatePanelMode = "spell";
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
+  state.bossIntroOpen = false;
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
   state.bossSixthSlotCreated = false;
@@ -3080,17 +3086,35 @@ function renderBossSixthSlotBuilder() {
   `;
 }
 
+function renderBossIntro() {
+  return `
+    <section class="boss-intro-cinematic" aria-label="ラスボス戦 開幕">
+      <button class="panel-close-button boss-intro-close" id="bossIntroClose" type="button" aria-label="戦闘導入を閉じる">×</button>
+      <div class="boss-intro-warning" aria-hidden="true"><span></span><b>FINAL BATTLE</b><span></span></div>
+      <div class="boss-intro-shockwave" aria-hidden="true"></div>
+      <div class="boss-intro-copy">
+        <span class="boss-intro-kicker">EXIT BLOCKED</span>
+        <h2>出口の前に、巨大な影が立ちはだかった</h2>
+        <p class="boss-intro-story">山を越え、ようやく見つけた異空間の出口。光へ手を伸ばしたその瞬間、地面が激しく揺れ、出口を守る獣が闇の中から姿を現した。</p>
+        <blockquote class="boss-intro-enemy">「ここまで辿り着いたか。だが、この出口は渡さない。覚えた呪文ごと、すべて喰らい尽くしてやろう」</blockquote>
+        <blockquote class="boss-intro-guide">「来るぞ！ 敵の次の行動を見極めるんじゃ。これまで覚えた呪文を一度ずつ使い、最後の試練を切り抜けろ！」</blockquote>
+        <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">戦闘開始</button>
+      </div>
+    </section>
+  `;
+}
+
 function renderBoss(stage) {
   const mode = state.bossPanelMode || "closed";
   elements.game.innerHTML = `
-    <section class="stage-panel immersive-stage boss-immersive-stage" aria-label="${stage.number} / ${stage.title}">
+    <section class="stage-panel immersive-stage boss-immersive-stage ${state.bossIntroOpen ? "is-intro" : ""}" aria-label="${stage.number} / ${stage.title}">
       <div class="stage-world boss-stage-world">
         <img class="stage-bg-art" src="./assets/stage05-bg-premium.webp" alt="出口を守るラスボス" loading="eager">
         <div class="art-vignette"></div>
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
-      ${mode === "spells" ? renderBossSpellBookPanel(stage) : ""}
-      ${mode === "problem" || mode === "play" ? renderBossProblemPanel(stage) : ""}
+      ${state.bossIntroOpen ? renderBossIntro() : mode === "spells" ? renderBossSpellBookPanel(stage) : ""}
+      ${!state.bossIntroOpen && (mode === "problem" || mode === "play") ? renderBossProblemPanel(stage) : ""}
     </section>
   `;
   wireBoss();
@@ -3255,6 +3279,19 @@ function renderBossSlate(step, index, solved, active) {
 
 function wireBoss() {
   wireProblems();
+  document.querySelector("#bossIntroStart")?.addEventListener("click", () => {
+    state.bossIntroOpen = false;
+    state.bossPanelMode = "problem";
+    state.feedback = null;
+    audioDirector.playEffect("boss-guard");
+    render();
+  });
+  document.querySelector("#bossIntroClose")?.addEventListener("click", () => {
+    state.bossIntroOpen = false;
+    state.bossPanelMode = "closed";
+    state.feedback = null;
+    render();
+  });
   document.querySelector("#bossClosePanel")?.addEventListener("click", () => {
     state.bossPanelMode = state.bossPanelMode === "spells" ? "problem" : "closed";
     state.bossAnswerOpen = false;
@@ -3497,6 +3534,7 @@ function resetGame() {
   state.revealed = {};
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
+  state.bossIntroOpen = false;
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
   state.bossSixthSlotCreated = false;
@@ -3564,8 +3602,10 @@ function focusCurrentProblem() {
   }
 
   if (stage.id === "boss") {
-    state.bossPanelMode = "problem";
+    state.bossIntroOpen = state.bossInput.length === 0;
+    state.bossPanelMode = state.bossIntroOpen ? "closed" : "problem";
     state.feedback = null;
+    if (state.bossIntroOpen) audioDirector.playEffect("boss-intro");
     render();
     return;
   }
@@ -3628,6 +3668,7 @@ function focusCurrentMagic() {
   }
 
   if (stage.id === "boss") {
+    state.bossIntroOpen = false;
     state.bossPanelMode = "spells";
     state.slotPickerOpen = false;
     state.feedback = null;
