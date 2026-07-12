@@ -597,6 +597,7 @@ const elements = {
   spellCount: document.querySelector("#spellCount"),
   reset: document.querySelector("#menuReset"),
   menuProblem: document.querySelector("#menuProblem"),
+  menuSealBook: document.querySelector("#menuSealBook"),
   menuMagic: document.querySelector("#menuMagic"),
   menuHint: document.querySelector("#menuHint"),
   menuSound: document.querySelector("#menuSound"),
@@ -691,6 +692,8 @@ function loadState() {
         shopLockCode: typeof saved.shopLockCode === "string" ? saved.shopLockCode.replace(/\D/g, "").slice(0, 2) : "",
         shopLockError: Boolean(saved.shopLockError),
         revealed: saved.revealed && typeof saved.revealed === "object" ? saved.revealed : {},
+        sealBooks: saved.sealBooks && typeof saved.sealBooks === "object" ? saved.sealBooks : {},
+        fakeSpells: saved.fakeSpells && typeof saved.fakeSpells === "object" ? saved.fakeSpells : {},
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
         bossIntroOpen: Boolean(saved.bossIntroOpen),
@@ -704,7 +707,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false };
 }
 
 function saveState() {
@@ -3571,6 +3574,8 @@ function resetGame() {
   state.shopLockCode = "";
   state.shopLockError = false;
   state.revealed = {};
+  state.sealBooks = {};
+  state.fakeSpells = {};
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
   state.bossIntroOpen = false;
@@ -3603,6 +3608,59 @@ function showMenuMessage(title, message) {
   elements.hintTitle.textContent = title;
   elements.hintBody.textContent = message;
   if (!elements.hintDialog.open) elements.hintDialog.showModal();
+}
+
+const explorationEvents = {
+  gate: { choices: ["崩れた石柱の陰を調べる", "青い火が揺れる壁を調べる", "足元の瓦礫を調べる"], correct: 1, fakes: ["コイシコロ", "スナケムリ"] },
+  path: { choices: ["閉ざされた扉の紋章を調べる", "通路脇の空箱を調べる", "天井の亀裂を調べる"], correct: 0, fakes: ["ハコアケ", "ホコリハライ"] },
+  shop: { choices: ["鎖のかかった棚を調べる", "凍った床の反射を調べる", "壊れた看板の裏を調べる"], correct: 2, fakes: ["タナユラシ", "コオリミチ"] },
+  time: { choices: ["山壁の古い碑文を調べる", "転がった小石を調べる", "枯れた草むらを調べる"], correct: 0, fakes: ["イシコロリ", "クサムスビ"] },
+};
+
+function isExplorationStage(stage) {
+  return Boolean(stage && explorationEvents[stage.id]);
+}
+
+function openExploration() {
+  closeInfoDialogs();
+  const stage = stages[state.stageIndex] || stages[0];
+  const event = explorationEvents[stage.id];
+  if (!event) return showMenuMessage("探索", "この場所では探索イベントはありません。");
+  elements.hintTitle.textContent = `${stage.number} / ${stage.title}　探索`;
+  elements.hintBody.innerHTML = `<span class="exploration-lead">魔法使いの気配がする。調べる場所を選べ。</span><span class="exploration-choices">${event.choices.map((choice, index) => `<button class="exploration-choice" type="button" data-explore-choice="${index}">${choice}</button>`).join("")}</span>`;
+  elements.hintBody.querySelectorAll("[data-explore-choice]").forEach((button) => button.addEventListener("click", () => resolveExploration(stage, Number(button.dataset.exploreChoice))));
+  if (!elements.hintDialog.open) elements.hintDialog.showModal();
+}
+
+function resolveExploration(stage, choiceIndex) {
+  const event = explorationEvents[stage.id];
+  if (!event) return;
+  if (choiceIndex === event.correct) {
+    state.sealBooks = { ...(state.sealBooks || {}), [stage.id]: true };
+    saveState();
+    elements.hintTitle.textContent = "魔法使いを見つけた！";
+    elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、本物の呪文を得られる」</span><button class="primary-button exploration-open-book" id="openFoundSealBook" type="button">封印の書を開く</button>`;
+    elements.hintBody.querySelector("#openFoundSealBook")?.addEventListener("click", openCurrentSealBook);
+    audioDirector.playEffect("success");
+    return;
+  }
+  const wrongIndexes = event.choices.map((_, index) => index).filter((index) => index !== event.correct);
+  const fakeSpell = event.fakes[Math.max(0, wrongIndexes.indexOf(choiceIndex))] || event.fakes[0];
+  const currentFakes = Array.isArray(state.fakeSpells?.[stage.id]) ? state.fakeSpells[stage.id] : [];
+  state.fakeSpells = { ...(state.fakeSpells || {}), [stage.id]: [...new Set([...currentFakes, fakeSpell])] };
+  saveState();
+  elements.hintTitle.textContent = "何かを見つけた";
+  elements.hintBody.innerHTML = `<span class="exploration-result is-fake">偽の呪文「${fakeSpell}」を覚えた。力は感じない。使い道はなさそうだ。</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
+  elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
+  audioDirector.playEffect("fail");
+}
+
+function openCurrentSealBook() {
+  closeInfoDialogs();
+  const stage = stages[state.stageIndex] || stages[0];
+  if (!isExplorationStage(stage)) return showMenuMessage("封印の書", "この場所に対応する封印の書はありません。");
+  if (!state.sealBooks?.[stage.id]) return showMenuMessage("封印の書", "まだ封印の書を入手していない。探索で魔法使いを見つけよう。");
+  focusCurrentProblem();
 }
 
 function focusCurrentProblem() {
@@ -3753,7 +3811,8 @@ function showCurrentHint() {
 }
 
 if (elements.reset) elements.reset.addEventListener("click", resetGame);
-if (elements.menuProblem) elements.menuProblem.addEventListener("click", focusCurrentProblem);
+if (elements.menuProblem) elements.menuProblem.addEventListener("click", openExploration);
+if (elements.menuSealBook) elements.menuSealBook.addEventListener("click", openCurrentSealBook);
 if (elements.menuMagic) elements.menuMagic.addEventListener("click", focusCurrentMagic);
 if (elements.menuHint) elements.menuHint.addEventListener("click", showCurrentHint);
 if (elements.menuSound) {

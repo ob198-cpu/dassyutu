@@ -15290,3 +15290,52 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 .stage1-used-word {
   color: #d61e1e;
 }
+
+.seal-book-button {
+  background: linear-gradient(180deg, #d9c18a, #80652e);
+  color: #120e07;
+}
+
+.exploration-lead,
+.exploration-result {
+  display: block;
+  margin-bottom: 14px;
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 900;
+  line-height: 1.6;
+}
+
+.exploration-choices {
+  display: grid;
+  gap: 10px;
+}
+
+.exploration-choice {
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 16px;
+  border: 1px solid #d7b94e;
+  border-radius: 5px;
+  background: #111a20;
+  color: #fff2ba;
+  font: inherit;
+  font-size: clamp(15px, 1.8vw, 20px);
+  font-weight: 900;
+  text-align: left;
+}
+
+.exploration-choice:active {
+  background: #3b3018;
+}
+
+.exploration-result.is-correct {
+  color: #eaffdb;
+}
+
+.exploration-result.is-fake {
+  color: #ffd3cb;
+}
+
+.exploration-open-book {
+  width: 100%;
+}
