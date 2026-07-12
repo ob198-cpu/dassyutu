@@ -13036,6 +13036,75 @@ body.late-stage-mode .phone-shell {
   }
 }
 
+/* Stage 04: keep the controls inside the viewport and scroll only the puzzle. */
+.stage4-problem-panel {
+  overflow: hidden !important;
+}
+
+.stage4-problem-panel > .stage4-answer-open {
+  top: 8px !important;
+  right: 52px !important;
+  bottom: auto !important;
+  width: auto !important;
+  min-width: 100px !important;
+  max-width: 132px !important;
+  min-height: 30px !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  white-space: nowrap;
+}
+
+.stage4-problem-panel > .immersive-panel-scroll {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 4px 6px 12px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.stage4-problem-panel .sheet-problem:has(.stage4-sheet) {
+  width: 100% !important;
+  height: 140% !important;
+  min-height: 540px !important;
+  flex: 0 0 auto !important;
+  padding: 6px !important;
+}
+
+.stage4-problem-panel .stage4-sheet .s4-header {
+  min-height: 32px;
+  padding-right: 154px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .stage4-problem-panel > .stage4-answer-open {
+    top: 7px !important;
+    right: 45px !important;
+    min-width: 92px !important;
+    max-width: 112px !important;
+    min-height: 28px !important;
+    padding: 0 9px !important;
+    font-size: 11px !important;
+  }
+
+  .stage4-problem-panel .sheet-problem:has(.stage4-sheet) {
+    min-height: 540px !important;
+  }
+
+  .stage4-problem-panel .stage4-sheet .s4-header {
+    min-height: 30px;
+    padding-right: 132px !important;
+  }
+}
+
 /* Stage 03: answer numbers are the controls, followed by an explicit confirmation screen. */
 .stage3-answer-option {
   display: grid;
