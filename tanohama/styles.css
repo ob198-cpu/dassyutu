@@ -13885,17 +13885,28 @@ button.s4-map-input.is-active {
 .s4-final-answer-title {
   display: grid;
   gap: 1px;
+  width: 112px;
   color: #fff1b0;
   text-align: center;
   white-space: nowrap;
 }
 
-.s4-final-answer-title > span {
+.s4-final-answer-title > .s4-final-kana {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   font-size: 9px;
   font-weight: 900;
 }
 
+.s4-final-kana > span:last-child {
+  margin-right: 13px;
+}
+
 .s4-final-answer-title > strong {
+  width: 100%;
+  font-family: Consolas, "Courier New", monospace;
   font-size: 12px;
   line-height: 1.25;
 }
@@ -15393,7 +15404,7 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
-  aspect-ratio: 2103 / 1495;
+  aspect-ratio: 1871 / 638;
   margin: 0;
   overflow: hidden;
   border: 1px solid rgba(120, 192, 185, 0.55);
@@ -15461,7 +15472,7 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 }
 
 .s4-static-answer-grid .s4-map-input {
-  width: 78px;
+  width: 54px;
   max-width: 100%;
   min-width: 0;
   height: 23px;

@@ -1839,7 +1839,7 @@ function renderStage4FinalSection() {
       </div>
       <div class="s4-final-answer-line">
         <div class="s4-final-answer-title">
-          <span>ファイナルアンサー</span>
+          <span class="s4-final-kana"><span>ファイナル</span><span>アンサー</span></span>
           <strong>FINAL ANSWER:</strong>
         </div>
         <button class="s4-final-answer-slots" id="stage4FinalAnswerOpen" type="button" aria-label="ファイナルアンサーを入力">
@@ -1898,7 +1898,7 @@ function renderStage4Sheet() {
   return `
     <div class="sheet stage4-sheet stage4-static-sheet" role="group" aria-label="ステージ4 問題">
       <figure class="s4-static-problem-viewport">
-        <img src="./assets/stage04-problem-source.webp" alt="添付原稿を使用したステージ4の①から④までの問題紙面" />
+        <img src="./assets/stage04-problem-questions.webp" alt="添付原稿から切り抜いたステージ4の①から④までの問題部分" />
       </figure>
       <section class="s4-static-answer-area" aria-label="①から④の途中回答">
         <p>途中回答</p>
