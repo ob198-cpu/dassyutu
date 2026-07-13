@@ -3261,7 +3261,7 @@ function renderBossProblemPanel(stage) {
                 ${canCreateSixthSlot ? `
                   ${renderBossSixthSlotBuilder()}
                 ` : `
-                  <div class="boss-slate boss-current-slate" style="--boss-slot-count:${slotCount}" aria-label="${slotCount}文字の回答欄">
+                  <div class="boss-slate boss-current-slate ${slotCount >= 8 ? "is-long-spell" : ""}" style="--boss-slot-count:${slotCount}" aria-label="${slotCount}文字の回答欄">
                     ${Array.from({ length: slotCount }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
                   </div>
                   ${state.slotPickerOpen ? renderSlotPicker({ tiles: getBossTiles(index) }, state.activeSlot) : ""}

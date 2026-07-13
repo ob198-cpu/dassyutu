@@ -15425,6 +15425,19 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   min-height: 52px;
 }
 
+.boss-current-slate.is-long-spell {
+  grid-template-columns: repeat(var(--boss-slot-count), minmax(0, 1fr));
+  gap: 3px;
+}
+
+.boss-current-slate.is-long-spell .premium-slot {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  font-size: clamp(16px, 2.2vw, 22px);
+}
+
 /* Stage 04: fixed paper image plus interactive answer controls. */
 .stage4-problem-panel .sheet-problem:has(.stage4-static-sheet) {
   height: auto !important;
@@ -15549,6 +15562,15 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 
   .boss-current-slate .premium-slot {
     min-height: 42px;
+  }
+
+  .boss-current-slate.is-long-spell {
+    gap: 2px;
+  }
+
+  .boss-current-slate.is-long-spell .premium-slot {
+    min-height: 36px;
+    font-size: clamp(14px, 2vw, 18px);
   }
 }
 
