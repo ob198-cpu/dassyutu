@@ -224,17 +224,16 @@ const bossLearnedSpells = [
   },
 ];
 
-// 石板入力用の文字盤(登場する全呪文の文字を五十音順で)
-const bossTiles = [
-  "ア", "イ", "ウ", "エ", "ェ", "オ",
-  "カ", "ガ", "キ", "ク", "ケ", "ゲ", "ゴ",
-  "サ", "シ", "ス", "ゼ",
-  "タ", "ダ", "チ", "ツ", "デ", "ト", "ド",
-  "ニ", "ノ",
-  "バ", "フ", "ブ", "ヘ",
-  "マ", "ム", "メ", "モ",
-  "ユ", "ョ",
-  "ラ", "リ", "ル", "レ", "ロ", "ン",
+// 他ステージと同じく、各問で使う文字を含む少数の候補から選ぶ。
+const bossTileSets = [
+  ["バ", "リ", "フ", "ユ", "ウ", "ヘ", "ン", "ガ", "オ", "ツ"],
+  ["フ", "ユ", "ウ", "バ", "リ", "ヘ", "ン", "ガ", "オ", "ツ"],
+  ["ヘ", "ン", "ガ", "オ", "バ", "リ", "フ", "ユ", "ウ", "ツ"],
+  ["ツ", "ケ", "モ", "ノ", "バ", "リ", "フ", "ユ", "ウ", "ン"],
+  ["ゴ", "ク", "ロ", "ウ", "サ", "マ", "バ", "リ", "フ", "ン"],
+  ["カ", "タ", "メ", "バ", "リ", "フ", "ユ", "ウ", "ン", "オ"],
+  ["タ", "イ", "ム", "マ", "シ", "ン", "バ", "リ", "フ", "ウ"],
+  ["バ", "タ", "フ", "ラ", "イ", "エ", "ェ", "ク", "ト", "ン"],
 ];
 
 const spellRuleText =
@@ -3169,7 +3168,7 @@ function renderBossProblemPanel(stage) {
                   <div class="boss-slate boss-current-slate" style="--boss-slot-count:${slotCount}" aria-label="${slotCount}文字の回答欄">
                     ${Array.from({ length: slotCount }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
                   </div>
-                  ${state.slotPickerOpen ? renderSlotPicker({ tiles: bossTiles }, state.activeSlot) : ""}
+                  ${state.slotPickerOpen ? renderSlotPicker({ tiles: bossTileSets[index] }, state.activeSlot) : ""}
                   <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
                 `}
               </section>
@@ -3245,7 +3244,7 @@ function renderBossSlate(step, index, solved, active) {
       </div>
       ${active
         ? `
-          ${pickerOpen ? renderSlotPicker({ tiles: bossTiles }, activeSlot) : ""}
+          ${pickerOpen ? renderSlotPicker({ tiles: bossTileSets[index] }, activeSlot) : ""}
           <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
           ${feedback ? `<p class="result-message is-fail">${feedback.message || "何も起こらない。"}</p>` : ""}
         `

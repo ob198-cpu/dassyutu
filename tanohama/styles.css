@@ -13167,6 +13167,21 @@ button.s4-map-input.is-active {
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+/* The boss answer sits in a narrow column, so use the shared mobile picker layout. */
+.boss-current-answer .slot-choice-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.boss-current-answer .slot-choice-popover {
+  grid-area: auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.boss-current-answer .slot-choice-button {
+  min-width: 0;
+}
+
 .boss-step-effect {
   display: grid;
   gap: 8px;
