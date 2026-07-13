@@ -678,11 +678,14 @@ function loadState() {
         saved.spells = saved.spells.filter((spell) => spell !== "キミタチナラ");
         if (saved.cleared.includes("time") && !saved.spells.includes("タイムマシン")) saved.spells.push("タイムマシン");
       }
+      const savedBossInput = Array.isArray(saved.bossInput) ? saved.bossInput : [];
+      const usedTsukemonoInFourthBattle = normalizeAnswer(savedBossInput[3] || "") === normalizeAnswer("ツケモノ");
+      const savedTsukemonoActivated = usedTsukemonoInFourthBattle && Boolean(saved.bossTsukemonoActivated);
       return {
         stageIndex: Number.isInteger(saved.stageIndex) ? saved.stageIndex : 0,
         cleared: Array.isArray(saved.cleared) ? saved.cleared : [],
         spells: Array.isArray(saved.spells) ? saved.spells : [],
-        bossInput: Array.isArray(saved.bossInput) ? saved.bossInput : [],
+        bossInput: savedBossInput,
         slotInput: Array.isArray(saved.slotInput) ? saved.slotInput : [],
         activeSlot: Number.isInteger(saved.activeSlot) ? saved.activeSlot : 0,
         slotPickerOpen: Boolean(saved.slotPickerOpen),
@@ -725,16 +728,17 @@ function loadState() {
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
         bossIntroOpen: Boolean(saved.bossIntroOpen),
         bossAnswerOpen: Boolean(saved.bossAnswerOpen),
-        bossSlotCreationPending: Boolean(saved.bossSlotCreationPending),
-        bossTsukemonoActivated: Boolean(saved.bossTsukemonoActivated),
-        bossSixthSlotCreated: Boolean(saved.bossSixthSlotCreated) && Boolean(saved.bossTsukemonoActivated),
+        bossSlotCreationPending: savedTsukemonoActivated && Boolean(saved.bossSlotCreationPending),
+        bossTsukemonoActivated: savedTsukemonoActivated,
+        bossSixthSlotCreated: savedTsukemonoActivated && Boolean(saved.bossSixthSlotCreated),
         bossColorRemoved: Boolean(saved.bossColorRemoved),
+        clearPhase: ["victory", "portal", "home"].includes(saved.clearPhase) ? saved.clearPhase : "victory",
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
 }
 
 function saveState() {
@@ -3018,6 +3022,57 @@ const bossSuccessEffects = [
   "バタフライエフェクトが未来を変え、とびきりの一撃を放った！",
 ];
 
+const bossSuccessScenes = [
+  {
+    label: "防御成功",
+    title: "鋭い爪を弾き返した！",
+    story: "バリの光壁が一犬糸争を正面から受け止めた。火花を散らした爪が、ラスボスの腕ごと大きく押し戻される。",
+  },
+  {
+    label: "回避成功",
+    title: "地響きを飛び越えた！",
+    story: "フユウで身体が宙へ浮かび、二脚地動の衝撃波が足元を通り抜けた。崩れた床の上へ静かに着地する。",
+  },
+  {
+    label: "石化回避",
+    title: "魔眼の狙いをそらした！",
+    story: "ヘンガオを見たラスボスの視線が一瞬ぶれた。三石化線は壁をかすめ、こちらを石に変えることなく消えていく。",
+  },
+  {
+    label: "呪文使用",
+    title: "大技の前に一手を打った！",
+    story: "ラスボスは力を溜めたまま動かない。ここで選んだ呪文が、次の攻撃を切り抜けるための条件になる。",
+  },
+  {
+    label: "色消去成功",
+    title: "百黙絶静を書き換えた！",
+    story: "ゴクロウサマが発動。百・黙・絶・静に潜む四つの色が引き抜かれ、必殺の言葉そのものが崩れ始める。",
+  },
+  {
+    label: "防御成功",
+    title: "変化した攻撃を受け止めた！",
+    story: "弱体化した一犬糸争をカタメで真正面から防いだ。ラスボスの爪が砕け、巨体が初めて膝をつく。",
+  },
+  {
+    label: "空間回避",
+    title: "零式空間の外へ逃れた！",
+    story: "タイムマシンで一瞬だけ未来へ移動した。現在異空間を閉ざす零式空間は対象を失い、空しく消滅する。",
+  },
+  {
+    label: "最終撃破",
+    title: "未来を変える一撃が届いた！",
+    story: "仲間と積み重ねた選択が一つの力になった。バタフライエフェクトが運命を反転させ、最後の一撃が闇を貫く。",
+  },
+];
+
+function getBossSuccessScene(index, castValue) {
+  const scene = bossSuccessScenes[index] || bossSuccessScenes[bossSuccessScenes.length - 1];
+  return {
+    ...scene,
+    spell: `${castValue || bossBattle[index]?.answer || "呪文"} 発動`,
+  };
+}
+
 function getBossActionDescription(index) {
   return bossActionDescriptions[index] || "最後の攻撃を放とうとしている";
 }
@@ -3071,8 +3126,11 @@ function renderBossSixthSlotBuilder() {
 }
 
 function canCreateBossSixthSlot() {
-  const usedTsukemono = state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"));
-  return usedTsukemono && state.bossSlotCreationPending === true && !state.bossSixthSlotCreated;
+  const usedTsukemono = normalizeAnswer(state.bossInput[3] || "") === normalizeAnswer("ツケモノ");
+  return usedTsukemono
+    && state.bossTsukemonoActivated === true
+    && state.bossSlotCreationPending === true
+    && !state.bossSixthSlotCreated;
 }
 
 function renderBossIntro() {
@@ -3152,6 +3210,7 @@ function renderBossProblemPanel(stage) {
     : feedback?.phase === "hit"
       ? "呪文が外れた。ラスボスの攻撃を受けた！"
       : "";
+  const successScene = feedback?.phase === "effect" ? getBossSuccessScene(index, feedback.castValue) : null;
   return `
     <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""}" aria-label="ラスボス 第${index + 1}問">
       <div class="immersive-panel-head">
@@ -3174,15 +3233,23 @@ function renderBossProblemPanel(stage) {
         </div>
         <section class="boss-current-copy ${effectActive ? "is-effect-mode" : ""}">
           <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
-          <div class="boss-current-meta"><span>石板 ${slotCount}文字${needsSixthSlot ? "＋未完成の1枠" : ""}</span><span>呪文は1種類につき1回</span></div>
+          <div class="boss-current-meta"><span>呪文は1種類につき1回</span></div>
           ${reviewingPast ? `
             <div class="boss-review-notice">回答済みの問題を表示しています。</div>
           ` : effectActive ? `
             <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"}" aria-live="assertive">
-              <strong>${feedback.phase === "hit" ? feedback.message || effectCopy : effectCopy}</strong>
-              ${feedback.phase === "effect" && index === 4 ? renderBossColorRemovalEffect() : ""}
+              ${feedback.phase === "hit" ? `
+                <strong>${feedback.message || effectCopy}</strong>
+              ` : `
+                <div class="boss-clear-stamp"><span>FINAL BATTLE</span><b>${index + 1} / ${bossBattle.length} CLEARED</b></div>
+                <div class="boss-spell-impact" aria-hidden="true"><i></i><i></i><i></i></div>
+                <small class="boss-effect-spell">${successScene.spell}</small>
+                <strong>${successScene.title}</strong>
+                <p class="boss-effect-story">${successScene.story}</p>
+                ${index === 4 ? renderBossColorRemovalEffect() : `<p class="boss-effect-result">${effectCopy}</p>`}
+              `}
               ${feedback.phase === "hit" ? `<span>「最初からやり直す」を押すと第1問へ戻る。</span>` : ""}
-              <button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : "次へ"}</button>
+              <button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : index === bossBattle.length - 1 ? "勝利を見届ける" : "次の攻撃へ"}</button>
             </div>
           ` : `
             <div class="boss-current-actions">
@@ -3418,7 +3485,7 @@ function castBossSpell(step) {
   }
   const value = normalizeAnswer(letters.join(""));
   if (state.bossInput.length === 3 || value === normalizeAnswer(step.answer)) {
-    startBossSuccessEffect(step);
+    startBossSuccessEffect(step, letters.join(""));
     return;
   }
   const used = state.bossInput.map((spell) => normalizeAnswer(spell));
@@ -3441,16 +3508,16 @@ function castBossDirectAnswer(step, value) {
     return;
   }
   if (state.bossInput.length === 3 || normalizeAnswer(value) === normalizeAnswer(step.answer)) {
-    startBossSuccessEffect(step);
+    startBossSuccessEffect(step, value);
     return;
   }
   startBossHit("その呪文では攻撃を防げなかった。");
 }
 
-function startBossSuccessEffect(step) {
+function startBossSuccessEffect(step, castValue = step.answer) {
   const stepIndex = state.bossInput.length;
   state.bossAnswerOpen = false;
-  state.feedback = { stageId: "boss", type: "success", phase: "effect", stepIndex };
+  state.feedback = { stageId: "boss", type: "success", phase: "effect", stepIndex, castValue };
   audioDirector.playEffect(stepIndex === 4 ? "color-remove" : "boss-guard");
   render();
 }
@@ -3478,7 +3545,8 @@ function resetBossAfterHit() {
 }
 
 function completeBossStep(step) {
-  state.bossInput.push(step.answer);
+  const castValue = state.feedback?.castValue || step.answer;
+  state.bossInput.push(castValue);
   state.feedback = null;
   state.bossAnswerOpen = false;
   state.slotInput = [];
@@ -3488,8 +3556,9 @@ function completeBossStep(step) {
     state.bossColorRemoved = true;
   }
   if (normalizeAnswer(step.answer) === normalizeAnswer("ツケモノ")) {
-    state.bossTsukemonoActivated = true;
-    state.bossSlotCreationPending = true;
+    const usedTsukemono = normalizeAnswer(castValue) === normalizeAnswer("ツケモノ");
+    state.bossTsukemonoActivated = usedTsukemono;
+    state.bossSlotCreationPending = usedTsukemono;
     state.bossPanelMode = "problem";
     render();
     return;
@@ -3497,6 +3566,7 @@ function completeBossStep(step) {
   if (state.bossInput.length >= bossBattle.length) {
     addUnique(state.cleared, "boss");
     state.isClear = true;
+    state.clearPhase = "victory";
   }
   render();
   requestAnimationFrame(() => {
@@ -3506,23 +3576,72 @@ function completeBossStep(step) {
 }
 
 function renderClear() {
+  const phase = ["victory", "portal", "home"].includes(state.clearPhase) ? state.clearPhase : "victory";
+  const scenes = {
+    victory: {
+      kicker: "FINAL BATTLE COMPLETE",
+      title: "ラスボス撃破",
+      story: "バタフライエフェクトが描いた光の軌跡は、仲間たちの選択を一つに束ね、ラスボスの胸を貫いた。巨体が崩れ落ちると、閉ざされていた出口の封印が音を立てて砕けていく。",
+      quote: "「やった……！　今度こそ、出口が開いた！」",
+      button: "開いた出口へ向かう",
+      nextId: "clearToPortal",
+    },
+    portal: {
+      kicker: "THE EXIT IS OPEN",
+      title: "帰還の扉",
+      story: "闇に沈んでいた通路の奥へ、元の世界につながる光が差し込んだ。近づくほど石壁は透けて消え、代わりに焼けた肉の匂いと、途切れていた仲間たちの声が聞こえてくる。",
+      quote: "「ようやったのう。光の向こうがおぬしらの世界じゃ。胸を張って帰るんじゃぞ」",
+      button: "光の向こうへ進む",
+      nextId: "clearReturnHome",
+    },
+    home: {
+      kicker: "RETURNED TO THE ORIGINAL WORLD",
+      title: "元の世界へ帰還",
+      story: "まぶしさが静まると、そこは異空間へ飛ばされる直前の焼肉会場だった。止まっていた時計が再び動き、鉄板の音も、湯気も、何事もなかったように戻っている。けれど全員の手には、冒険で刻んだ呪文の光がかすかに残っていた。",
+      quote: "現在異空間からの脱出、完全成功。みんなで乗り越えた物語は、確かに元の世界まで届いた。",
+      button: "最初から遊ぶ",
+      nextId: "replayButton",
+    },
+  };
+  const scene = scenes[phase];
   elements.game.innerHTML = `
-    <section class="stage-panel clear-screen premium-final-clear">
+    <section class="stage-panel clear-screen premium-final-clear is-${phase}" aria-label="${scene.title}">
       <div class="stage-world final-clear-world">
         <img class="stage-bg-art" src="./assets/stage05-bg-premium.webp" alt="崩れゆく異空間" loading="eager">
         <div class="final-clear-light"></div>
+        <div class="final-clear-shards" aria-hidden="true">${Array.from({ length: 12 }).map((_, index) => `<i style="--shard:${index}"></i>`).join("")}</div>
+        <div class="final-return-portal" aria-hidden="true"><i></i><b></b><span></span></div>
       </div>
       <div class="final-clear-card">
-        <span class="clear-kicker">ESCAPE COMPLETE</span>
-        <h2>脱出成功</h2>
-        <p>とびきりの一撃がラスボスを打ち砕いた。出口の光が開き、現在異空間からの脱出に成功した。</p>
+        <span class="clear-kicker">${scene.kicker}</span>
+        <div class="final-clear-emblem" aria-hidden="true"><span></span><b>${phase === "victory" ? "VICTORY" : phase === "portal" ? "EXIT" : "HOME"}</b><span></span></div>
+        <h2>${scene.title}</h2>
+        <p>${scene.story}</p>
+        <blockquote>${scene.quote}</blockquote>
+        <div class="final-clear-progress" aria-label="帰還の進行">
+          <span class="${phase === "victory" ? "is-current" : "is-done"}">撃破</span>
+          <i></i>
+          <span class="${phase === "portal" ? "is-current" : phase === "home" ? "is-done" : ""}">出口</span>
+          <i></i>
+          <span class="${phase === "home" ? "is-current" : ""}">帰還</span>
+        </div>
         <div class="stage-actions">
-          <button class="primary-button" id="replayButton" type="button">最初から遊ぶ</button>
+          <button class="primary-button final-clear-next" id="${scene.nextId}" type="button">${scene.button}</button>
         </div>
       </div>
     </section>
   `;
-  document.querySelector("#replayButton").addEventListener("click", resetGame);
+  document.querySelector("#clearToPortal")?.addEventListener("click", () => {
+    state.clearPhase = "portal";
+    audioDirector.playEffect("spell");
+    render();
+  });
+  document.querySelector("#clearReturnHome")?.addEventListener("click", () => {
+    state.clearPhase = "home";
+    audioDirector.playEffect("clear");
+    render();
+  });
+  document.querySelector("#replayButton")?.addEventListener("click", resetGame);
 }
 
 function resetGame() {
@@ -3576,6 +3695,7 @@ function resetGame() {
   state.bossTsukemonoActivated = false;
   state.bossSixthSlotCreated = false;
   state.bossColorRemoved = false;
+  state.clearPhase = "victory";
   saveState();
   render();
 }
