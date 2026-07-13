@@ -3111,6 +3111,7 @@ function renderBoss(stage) {
         <div class="art-vignette"></div>
       </div>
       <div class="stage-corner-label"><span>${stage.number}</span><strong>${stage.title}</strong></div>
+      ${!state.bossIntroOpen && mode === "closed" ? `<button class="primary-button boss-fight-start" id="bossFightStart" type="button">ラスボスと戦う</button>` : ""}
       ${state.bossIntroOpen ? renderBossIntro() : mode === "spells" ? renderBossSpellBookPanel(stage) : ""}
       ${!state.bossIntroOpen && (mode === "problem" || mode === "play") ? renderBossProblemPanel(stage) : ""}
     </section>
@@ -3290,6 +3291,13 @@ function renderBossSlate(step, index, solved, active) {
 
 function wireBoss() {
   wireProblems();
+  document.querySelector("#bossFightStart")?.addEventListener("click", () => {
+    state.bossIntroOpen = state.bossInput.length === 0;
+    state.bossPanelMode = state.bossIntroOpen ? "closed" : "problem";
+    state.feedback = null;
+    if (state.bossIntroOpen) audioDirector.playEffect("boss-intro");
+    render();
+  });
   document.querySelector("#bossReviewPrev")?.addEventListener("click", () => {
     const currentIndex = Math.min(state.bossInput.length, bossBattle.length - 1);
     const shownIndex = Number.isInteger(state.bossReviewIndex) ? state.bossReviewIndex : currentIndex;

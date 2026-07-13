@@ -12948,6 +12948,24 @@ button.s4-map-input.is-active {
   animation: bossVignetteBeat 1.2s ease-in-out infinite alternate;
 }
 
+.boss-fight-start {
+  position: absolute;
+  z-index: 12;
+  left: 50%;
+  bottom: clamp(18px, 5vh, 52px);
+  width: min(360px, 72%);
+  min-height: 58px;
+  transform: translateX(-50%);
+  border-color: #fff0a5;
+  font-size: clamp(18px, 2.5vw, 28px);
+  box-shadow: 0 0 0 2px rgba(18, 8, 4, 0.72), 0 8px 28px rgba(0, 0, 0, 0.72), 0 0 22px rgba(226, 64, 42, 0.34);
+}
+
+.boss-fight-start:hover,
+.boss-fight-start:focus-visible {
+  transform: translateX(-50%) scale(1.03);
+}
+
 @keyframes bossIntroFade {
   from { opacity: 0; }
   to { opacity: 1; }
