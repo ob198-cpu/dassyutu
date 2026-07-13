@@ -13900,12 +13900,24 @@ button.s4-map-input.is-active {
   line-height: 1.25;
 }
 
+.s4-final-e-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  vertical-align: bottom;
+  line-height: 1;
+}
+
 .s4-final-n {
-  color: #ff625d;
+  color: inherit;
+  font-size: 0.72em;
+  line-height: 1;
 }
 
 .s4-final-e {
-  margin-inline: 1px;
+  margin-inline: 0;
+  line-height: 1;
 }
 
 .s4-final-answer-slots {
@@ -15413,17 +15425,14 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 
 .s4-static-answer-area {
   flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 4px 8px;
+  display: block;
   padding: 5px 7px;
   border: 1px solid rgba(120, 192, 185, 0.45);
   background: #071113;
 }
 
 .s4-static-answer-area > p {
-  margin: 0;
+  margin: 0 0 3px;
   color: #fff1b0;
   font-size: 11px;
   font-weight: 950;
@@ -15431,6 +15440,7 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 }
 
 .s4-static-answer-grid {
+  width: 100%;
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -15469,10 +15479,6 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 }
 
 @media (max-width: 680px) and (orientation: portrait) {
-  .s4-static-answer-area {
-    grid-template-columns: 1fr;
-  }
-
   .s4-static-answer-grid {
     grid-template-columns: 1fr;
   }

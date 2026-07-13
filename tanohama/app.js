@@ -1839,8 +1839,8 @@ function renderStage4FinalSection() {
       </div>
       <div class="s4-final-answer-line">
         <div class="s4-final-answer-title">
-          <span>ファイナルア<span class="s4-final-n">ン</span>サー</span>
-          <strong>FINAL ANSWER:</strong>
+          <span>ファイナルアンサー</span>
+          <strong>FINAL ANSW<span class="s4-final-e-stack"><span class="s4-final-n">ン</span><span class="s4-final-e">E</span></span>R:</strong>
         </div>
         <button class="s4-final-answer-slots" id="stage4FinalAnswerOpen" type="button" aria-label="ファイナルアンサーを入力">
           ${selected.map((character) => `<span>${character || "―"}</span>`).join("")}
