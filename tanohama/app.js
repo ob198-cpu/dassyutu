@@ -224,17 +224,45 @@ const bossLearnedSpells = [
   },
 ];
 
-// 他ステージと同じく、各問で使う文字を含む少数の候補から選ぶ。
-const bossTileSets = [
-  ["バ", "リ", "フ", "ユ", "ウ", "ヘ", "ン", "ガ", "オ", "ツ"],
-  ["フ", "ユ", "ウ", "バ", "リ", "ヘ", "ン", "ガ", "オ", "ツ"],
-  ["ヘ", "ン", "ガ", "オ", "バ", "リ", "フ", "ユ", "ウ", "ツ"],
-  ["ツ", "ケ", "モ", "ノ", "バ", "リ", "フ", "ユ", "ウ", "ン"],
-  ["ゴ", "ク", "ロ", "ウ", "サ", "マ", "バ", "リ", "フ", "ン"],
-  ["カ", "タ", "メ", "バ", "リ", "フ", "ユ", "ウ", "ン", "オ"],
-  ["タ", "イ", "ム", "マ", "シ", "ン", "バ", "リ", "フ", "ウ"],
-  ["バ", "タ", "フ", "ラ", "イ", "エ", "ェ", "ク", "ト", "ン"],
-];
+function getBossPastSpells() {
+  const learnedFakeNames = Object.values(state.fakeSpells || {})
+    .flatMap((names) => (Array.isArray(names) ? names : []))
+    .filter((name) => typeof name === "string" && name.trim());
+  const knownNames = new Set(bossLearnedSpells.map((spell) => spell.name));
+  const learnedFakes = [...new Set(learnedFakeNames)]
+    .filter((name) => !knownNames.has(name))
+    .map((name) => ({ name, effect: "探索中に覚えた呪文。使い道はまだ分からない。" }));
+  return [...bossLearnedSpells, ...learnedFakes];
+}
+
+function seededShuffle(values, seedText) {
+  const shuffled = [...values];
+  let seed = 2166136261;
+  for (const char of seedText) {
+    seed ^= char.charCodeAt(0);
+    seed = Math.imul(seed, 16777619);
+  }
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    seed += 0x6d2b79f5;
+    let random = seed;
+    random = Math.imul(random ^ (random >>> 15), random | 1);
+    random ^= random + Math.imul(random ^ (random >>> 7), random | 61);
+    const target = Math.floor((((random ^ (random >>> 14)) >>> 0) / 4294967296) * (index + 1));
+    [shuffled[index], shuffled[target]] = [shuffled[target], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function getBossTiles(index) {
+  const step = bossBattle[index] || bossBattle[0];
+  const pastSpells = getBossPastSpells();
+  const displayedNames = [...pastSpells, ...bossNewSpells].map((spell) => spell.name);
+  const required = [...new Set([...step.answer])];
+  const pool = [...new Set(displayedNames.flatMap((name) => [...name]))].filter((char) => !required.includes(char));
+  const seedText = `${index}:${displayedNames.join("|")}`;
+  const selected = [...required, ...seededShuffle(pool, seedText)].slice(0, 30);
+  return seededShuffle(selected, `${seedText}:layout`);
+}
 
 const spellRuleText =
   "呪文のルール: 呪文は石板にカタカナで記入し、どこに、どの様に使うかを示す。石板の数に合った文字数の呪文しか唱える事が出来ない。習得した呪文には☆マークが付き、以後使用可能となる。";
@@ -3083,6 +3111,7 @@ function renderBoss(stage) {
 }
 
 function renderBossSpellBookPanel(stage) {
+  const pastSpells = getBossPastSpells();
   return `
     <section class="immersive-panel boss-spell-book-panel" aria-label="過去と新しく覚えた呪文">
       <div class="immersive-panel-head">
@@ -3093,7 +3122,7 @@ function renderBossSpellBookPanel(stage) {
         <section class="boss-spell-book-section">
           <h3>過去の呪文</h3>
           <div class="boss-spell-book-grid">
-            ${bossLearnedSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p>${spell.explanation ? `<p class="boss-spell-explanation"><b>解説</b> ${spell.explanation}</p>` : ""}</article>`).join("")}
+            ${pastSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p>${spell.explanation ? `<p class="boss-spell-explanation"><b>解説</b> ${spell.explanation}</p>` : ""}</article>`).join("")}
           </div>
         </section>
         <section class="boss-spell-book-section">
@@ -3168,7 +3197,7 @@ function renderBossProblemPanel(stage) {
                   <div class="boss-slate boss-current-slate" style="--boss-slot-count:${slotCount}" aria-label="${slotCount}文字の回答欄">
                     ${Array.from({ length: slotCount }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
                   </div>
-                  ${state.slotPickerOpen ? renderSlotPicker({ tiles: bossTileSets[index] }, state.activeSlot) : ""}
+                  ${state.slotPickerOpen ? renderSlotPicker({ tiles: getBossTiles(index) }, state.activeSlot) : ""}
                   <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
                 `}
               </section>
@@ -3244,7 +3273,7 @@ function renderBossSlate(step, index, solved, active) {
       </div>
       ${active
         ? `
-          ${pickerOpen ? renderSlotPicker({ tiles: bossTileSets[index] }, activeSlot) : ""}
+          ${pickerOpen ? renderSlotPicker({ tiles: getBossTiles(index) }, activeSlot) : ""}
           <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
           ${feedback ? `<p class="result-message is-fail">${feedback.message || "何も起こらない。"}</p>` : ""}
         `
@@ -3393,7 +3422,7 @@ function castBossSpell(step) {
     return;
   }
   const used = state.bossInput.map((spell) => normalizeAnswer(spell));
-  const known = [...bossNewSpells, ...bossLearnedSpells].map((spell) => normalizeAnswer(spell.name));
+  const known = [...bossNewSpells, ...getBossPastSpells()].map((spell) => normalizeAnswer(spell.name));
   let message = "何も起こらない。それは呪文の形をしていないようだ。";
   if (used.includes(value)) {
     message = "その呪文はもう使ってしまった。1呪文につき1回までじゃ。";
