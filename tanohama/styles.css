@@ -12334,8 +12334,8 @@ body.late-stage-mode .phone-shell {
   min-width: 0;
   min-height: 0 !important;
   display: grid;
-  grid-template-rows: auto minmax(142px, 1fr) auto;
-  overflow: hidden;
+  grid-template-rows: auto minmax(190px, 1fr) auto;
+  overflow: visible;
   padding: 3px;
 }
 
@@ -13732,8 +13732,8 @@ button.s4-map-input.is-active {
 
 .stage4-problem-panel .sheet-problem:has(.stage4-sheet) {
   width: 100% !important;
-  height: 140% !important;
-  min-height: 540px !important;
+  height: 170% !important;
+  min-height: 700px !important;
   flex: 0 0 auto !important;
   padding: 6px !important;
 }
@@ -13758,7 +13758,7 @@ button.s4-map-input.is-active {
   }
 
   .stage4-problem-panel .sheet-problem:has(.stage4-sheet) {
-    min-height: 540px !important;
+    min-height: 700px !important;
   }
 
   .stage4-problem-panel .stage4-sheet .s4-header {
@@ -13767,44 +13767,9 @@ button.s4-map-input.is-active {
   }
 }
 
-/* Stage 04 final extraction: align the six letters above their E markers. */
+/* Stage 04: preserve the printed sheet; answers are never overlaid on its E letters. */
 .stage4-problem-panel .stage4-sheet {
   grid-template-rows: auto minmax(0, 1fr) auto auto;
-}
-
-.s4-e-marker {
-  display: inline-grid;
-  grid-template-rows: auto auto;
-  min-width: 0.9em;
-  color: inherit;
-  font: inherit;
-  line-height: 0.92;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.s4-e-marker i {
-  position: static;
-  grid-row: 1;
-  color: #ff625d;
-  font-size: 0.72em;
-  font-style: normal;
-  font-weight: 950;
-  line-height: 1;
-}
-
-.s4-e-marker b {
-  grid-row: 2;
-  color: inherit;
-  font: inherit;
-  line-height: 1;
-}
-
-.s4-scatter .s4-e-marker {
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  transform: none !important;
 }
 
 .stage4-sheet .s4-day,

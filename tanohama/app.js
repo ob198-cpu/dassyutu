@@ -1826,10 +1826,6 @@ const stage4Numbers = [
 
 const stage4FinalPhrase = Array.from("きじのくうきあしょうのみさきよらいじさめ");
 
-function stage4EMarker(letter, extraClass = "") {
-  return `<span class="s4-e-marker ${extraClass}"><i>${letter}</i><b>E</b></span>`;
-}
-
 function renderStage4FinalSection() {
   const active = new Set(Array.isArray(state.stage4FinalActive) ? state.stage4FinalActive : []);
   const selected = Array.from({ length: 6 }, (_, index) => state.slotInput[index] || "");
@@ -1844,7 +1840,7 @@ function renderStage4FinalSection() {
       <div class="s4-final-answer-line">
         <div class="s4-final-answer-title">
           <span>ファイナルア<span class="s4-final-n">ン</span>サー</span>
-          <strong>FINAL ANSW${stage4EMarker("ん", "s4-final-e")}R:</strong>
+          <strong>FINAL ANSWER:</strong>
         </div>
         <button class="s4-final-answer-slots" id="stage4FinalAnswerOpen" type="button" aria-label="ファイナルアンサーを入力">
           ${selected.map((character) => `<span>${character || "―"}</span>`).join("")}
@@ -1914,7 +1910,7 @@ function renderStage4Sheet() {
         <div class="s4-panel">
           <p class="s4-panel-title"><span class="sheet-qnum">②</span>?の中に<br>はいる言葉は、なに</p>
           <div class="s4-week-rows">
-            <p><span class="s4-day">TU${stage4EMarker("い", "s4-inline-e")}</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">かそく</span></p>
+            <p><span class="s4-day">TUE</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">かそく</span></p>
             <p><span class="s4-day">SAT</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">どそく</span></p>
             <p><span class="s4-day s4-day-red">THU</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">?</span></p>
           </div>
@@ -1930,9 +1926,9 @@ function renderStage4Sheet() {
             </div>
             <span class="s4-plus">+</span>
             <div class="s4-word-pair s4-word-pair-right">
-              <span>W${stage4EMarker("む", "s4-inline-e")}${stage4EMarker("ま", "s4-inline-e")}K</span>
+              <span>WEEK</span>
               <span class="s4-pair-label">した</span>
-              <span class="s4-ge">G${stage4EMarker("し", "s4-inline-e")}</span>
+              <span class="s4-ge">GE</span>
             </div>
             <span class="s4-eq">‖</span>
             <span class="s4-answer-of">③のこたえ</span>
