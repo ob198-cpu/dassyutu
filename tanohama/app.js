@@ -3581,51 +3581,55 @@ function renderClear() {
     victory: {
       kicker: "FINAL BATTLE COMPLETE",
       title: "ラスボス撃破",
-      story: "バタフライエフェクトが描いた光の軌跡は、仲間たちの選択を一つに束ね、ラスボスの胸を貫いた。巨体が崩れ落ちると、閉ざされていた出口の封印が音を立てて砕けていく。",
-      quote: "「やった……！　今度こそ、出口が開いた！」",
+      caption: "バタフライエフェクトの光が闇を貫き、出口を封じていた力が崩れ落ちる。",
       button: "開いた出口へ向かう",
       nextId: "clearToPortal",
+      image: "./assets/stage05-bg-premium.webp",
+      alt: "光の中で崩れ落ちるラスボス",
     },
     portal: {
       kicker: "THE EXIT IS OPEN",
       title: "帰還の扉",
-      story: "闇に沈んでいた通路の奥へ、元の世界につながる光が差し込んだ。近づくほど石壁は透けて消え、代わりに焼けた肉の匂いと、途切れていた仲間たちの声が聞こえてくる。",
-      quote: "「ようやったのう。光の向こうがおぬしらの世界じゃ。胸を張って帰るんじゃぞ」",
+      caption: "砕けた封印の先に、元の世界へ続く光の扉が現れた。",
       button: "光の向こうへ進む",
       nextId: "clearReturnHome",
+      image: "./assets/stage05-bg-premium.webp",
+      alt: "異空間に開いた帰還の扉",
     },
     home: {
-      kicker: "RETURNED TO THE ORIGINAL WORLD",
+      kicker: "ESCAPE COMPLETE",
       title: "元の世界へ帰還",
-      story: "まぶしさが静まると、そこは異空間へ飛ばされる直前の焼肉会場だった。止まっていた時計が再び動き、鉄板の音も、湯気も、何事もなかったように戻っている。けれど全員の手には、冒険で刻んだ呪文の光がかすかに残っていた。",
-      quote: "現在異空間からの脱出、完全成功。みんなで乗り越えた物語は、確かに元の世界まで届いた。",
+      caption: "光の向こうに待っていたのは、焼ける肉の音と仲間たちの笑い声だった。",
       button: "最初から遊ぶ",
       nextId: "replayButton",
+      image: "./assets/final-yakiniku-home.jpg",
+      alt: "元の世界で再び始まった焼肉",
     },
   };
   const scene = scenes[phase];
   elements.game.innerHTML = `
     <section class="stage-panel clear-screen premium-final-clear is-${phase}" aria-label="${scene.title}">
       <div class="stage-world final-clear-world">
-        <img class="stage-bg-art" src="./assets/stage05-bg-premium.webp" alt="崩れゆく異空間" loading="eager">
+        <img class="stage-bg-art" src="${scene.image}" alt="${scene.alt}" loading="eager">
         <div class="final-clear-light"></div>
         <div class="final-clear-shards" aria-hidden="true">${Array.from({ length: 12 }).map((_, index) => `<i style="--shard:${index}"></i>`).join("")}</div>
         <div class="final-return-portal" aria-hidden="true"><i></i><b></b><span></span></div>
+        <div class="final-home-steam" aria-hidden="true"><i></i><i></i><i></i></div>
       </div>
-      <div class="final-clear-card">
-        <span class="clear-kicker">${scene.kicker}</span>
-        <div class="final-clear-emblem" aria-hidden="true"><span></span><b>${phase === "victory" ? "VICTORY" : phase === "portal" ? "EXIT" : "HOME"}</b><span></span></div>
-        <h2>${scene.title}</h2>
-        <p>${scene.story}</p>
-        <blockquote>${scene.quote}</blockquote>
-        <div class="final-clear-progress" aria-label="帰還の進行">
-          <span class="${phase === "victory" ? "is-current" : "is-done"}">撃破</span>
-          <i></i>
-          <span class="${phase === "portal" ? "is-current" : phase === "home" ? "is-done" : ""}">出口</span>
-          <i></i>
-          <span class="${phase === "home" ? "is-current" : ""}">帰還</span>
+      <div class="final-scene-hud">
+        <div class="final-scene-title">
+          <span>${scene.kicker}</span>
+          <strong>${scene.title}</strong>
         </div>
-        <div class="stage-actions">
+        <div class="final-scene-progress" aria-label="帰還の進行">
+          <i class="${phase === "victory" ? "is-current" : "is-done"}"></i>
+          <i class="${phase === "portal" ? "is-current" : phase === "home" ? "is-done" : ""}"></i>
+          <i class="${phase === "home" ? "is-current" : ""}"></i>
+        </div>
+      </div>
+      <div class="final-cinematic-caption">
+        <p>${scene.caption}</p>
+        <div class="final-caption-action">
           <button class="primary-button final-clear-next" id="${scene.nextId}" type="button">${scene.button}</button>
         </div>
       </div>
