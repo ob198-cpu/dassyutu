@@ -1839,7 +1839,7 @@ function renderStage4FinalSection() {
       </div>
       <div class="s4-final-answer-line">
         <div class="s4-final-answer-title">
-          <span>ファイナルア<span class="s4-final-n">ン</span>サー</span>
+          <span>ファイナルアンサー</span>
           <strong>FINAL ANSWER:</strong>
         </div>
         <button class="s4-final-answer-slots" id="stage4FinalAnswerOpen" type="button" aria-label="ファイナルアンサーを入力">

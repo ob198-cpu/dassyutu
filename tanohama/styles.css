@@ -13883,7 +13883,6 @@ button.s4-map-input.is-active {
 }
 
 .s4-final-answer-title {
-  position: relative;
   display: grid;
   gap: 1px;
   color: #fff1b0;
@@ -13907,21 +13906,6 @@ button.s4-map-input.is-active {
   align-items: center;
   justify-content: flex-end;
   vertical-align: bottom;
-  line-height: 1;
-}
-
-.s4-final-n {
-  position: absolute;
-  left: 72%;
-  top: 11px;
-  transform: translateX(-50%);
-  color: inherit;
-  font-size: 0.72em;
-  line-height: 1;
-}
-
-.s4-final-e {
-  margin-inline: 0;
   line-height: 1;
 }
 
@@ -15449,14 +15433,13 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   width: 100%;
   min-width: 0;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
 }
 
 .s4-static-answer-grid .s4-num-row {
   min-width: 0;
-  display: grid;
-  grid-template-columns: 18px repeat(5, minmax(0, 1fr));
+  display: flex;
   align-items: stretch;
   gap: 2px;
   overflow: hidden;
@@ -15471,7 +15454,6 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 .s4-static-answer-grid .s4-num-box {
   min-width: 0 !important;
   min-height: 42px;
-  width: auto;
   min-inline-size: 0;
   grid-template-rows: 13px 23px;
   gap: 1px;
@@ -15479,11 +15461,19 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 }
 
 .s4-static-answer-grid .s4-map-input {
-  width: 100%;
+  width: 78px;
+  max-width: 100%;
   min-width: 0;
   height: 23px;
   padding: 0;
   font-size: 11px;
+  margin-inline: auto;
+}
+
+@media (max-width: 680px) and (orientation: portrait) {
+  .s4-static-answer-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
