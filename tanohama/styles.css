@@ -6742,12 +6742,24 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 }
 
 .boss-step .slot-choice-grid {
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(52px, 1fr));
+  grid-auto-rows: minmax(42px, auto);
+  gap: 7px;
 }
 
 .boss-step .slot-choice-button {
-  min-height: 40px;
-  font-size: 19px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 4px 6px;
+  font-size: 20px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .boss-step .slot-choice-grid {
+    grid-template-columns: repeat(4, minmax(52px, 1fr));
+  }
 }
 
 .boss-step .cast-button {
