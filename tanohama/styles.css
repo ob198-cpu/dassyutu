@@ -13079,6 +13079,12 @@ button.s4-map-input.is-active {
 
 .boss-current-visual {
   position: relative;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  aspect-ratio: 836 / 941;
+  justify-self: center;
+  align-self: stretch;
   min-height: 0;
   overflow: hidden;
   border: 1px solid rgba(239, 208, 101, 0.55);
@@ -13246,7 +13252,7 @@ button.s4-map-input.is-active {
 
   .boss-action-image {
     min-height: 250px;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 836 / 941;
   }
 }
 
@@ -14031,7 +14037,7 @@ button.s4-map-input.is-active {
 .boss-forecast-card {
   min-width: 0;
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
+  grid-template-columns: 62px minmax(0, 1fr);
   align-items: center;
   gap: 6px;
   padding: 5px;
@@ -14042,7 +14048,9 @@ button.s4-map-input.is-active {
 }
 
 .boss-forecast-image {
+  width: 62px;
   height: 70px;
+  aspect-ratio: 836 / 941;
   overflow: hidden;
   border: 1px solid rgba(239, 208, 101, 0.28);
   border-radius: 3px;
@@ -14230,12 +14238,13 @@ button.s4-map-input.is-active {
   }
 
   .boss-forecast-card {
-    grid-template-columns: 82px minmax(0, 1fr);
+    grid-template-columns: 38px minmax(0, 1fr);
     gap: 4px;
     padding: 3px;
   }
 
   .boss-forecast-image {
+    width: 38px;
     height: 42px;
   }
 
