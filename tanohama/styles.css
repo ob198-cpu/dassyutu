@@ -15364,6 +15364,120 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   min-height: 52px;
 }
 
+/* Stage 04: fixed paper image plus interactive answer controls. */
+.stage4-problem-panel .sheet-problem:has(.stage4-static-sheet) {
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-static-sheet) .sheet-problem {
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.generic-problem-panel .immersive-panel-scroll:has(.stage4-static-sheet) .stage4-static-sheet {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  gap: 5px;
+  overflow: visible !important;
+  padding: 4px !important;
+}
+
+.s4-static-problem-viewport {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 1386 / 610;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(120, 192, 185, 0.55);
+  border-radius: 3px;
+  background: #fff;
+}
+
+.s4-static-problem-viewport img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 115.45%;
+  max-width: none;
+  height: auto;
+  transform: translate(-6.25%, -5.76%);
+  transform-origin: top left;
+}
+
+.s4-static-answer-area {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 8px;
+  padding: 5px 7px;
+  border: 1px solid rgba(120, 192, 185, 0.45);
+  background: #071113;
+}
+
+.s4-static-answer-area > p {
+  margin: 0;
+  color: #fff1b0;
+  font-size: 11px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.s4-static-answer-grid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
+}
+
+.s4-static-answer-grid .s4-num-row {
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.s4-static-answer-grid .s4-num-label {
+  flex: 0 0 18px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.s4-static-answer-grid .s4-num-box {
+  min-width: 0 !important;
+  min-height: 42px;
+  flex: 1 1 0;
+  grid-template-rows: 13px 23px;
+  gap: 1px;
+  padding: 1px 2px;
+}
+
+.s4-static-answer-grid .s4-map-input {
+  width: 100%;
+  min-width: 0;
+  height: 23px;
+  padding: 0;
+  font-size: 11px;
+}
+
+@media (max-width: 680px) and (orientation: portrait) {
+  .s4-static-answer-area {
+    grid-template-columns: 1fr;
+  }
+
+  .s4-static-answer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (orientation: landscape) and (max-height: 500px) {
   .boss-current-slate {
     gap: 4px;

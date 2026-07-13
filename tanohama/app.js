@@ -1897,50 +1897,16 @@ function renderStage4Sheet() {
     </div>
   `;
   return `
-    <div class="sheet stage4-sheet" role="group" aria-label="ステージ4 問題">
-      <p class="s4-header">時空が歪んで、時差が発生した、①〜④の謎を解いて、時差を無くす為の手段を見つけろ</p>
-      <div class="s4-panels">
-        <div class="s4-panel">
-          <p class="s4-panel-title"><span class="sheet-qnum">①</span><em class="red-word">おじさん</em>の<br>間にあるのは?</p>
-          <div class="s4-scatter">
-            ${stage4Scatter.map(([ch, x, y]) => `<span style="left:${x}%;top:${y}%;">${ch}</span>`).join("")}
-          </div>
-          <div class="s4-panel-answer">${numberRow(stage4Numbers[0], 0)}</div>
+    <div class="sheet stage4-sheet stage4-static-sheet" role="group" aria-label="ステージ4 問題">
+      <figure class="s4-static-problem-viewport">
+        <img src="./assets/stage04-problem-clean.webp" alt="ステージ4の①から④までの問題紙面" />
+      </figure>
+      <section class="s4-static-answer-area" aria-label="①から④の途中回答">
+        <p>途中回答</p>
+        <div class="s4-static-answer-grid">
+          ${stage4Numbers.map((group, questionIndex) => numberRow(group, questionIndex)).join("")}
         </div>
-        <div class="s4-panel">
-          <p class="s4-panel-title"><span class="sheet-qnum">②</span>?の中に<br>はいる言葉は、なに</p>
-          <div class="s4-week-rows">
-            <p><span class="s4-day">TUE</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">かそく</span></p>
-            <p><span class="s4-day">SAT</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">どそく</span></p>
-            <p><span class="s4-day s4-day-red">THU</span>+<span class="s4-hatch" aria-hidden="true"></span> → <span class="s4-mini-box">?</span></p>
-          </div>
-          <div class="s4-panel-answer">${numberRow(stage4Numbers[1], 1)}</div>
-        </div>
-        <div class="s4-panel">
-          <p class="s4-panel-note"><span class="sheet-qnum">③</span>?に言葉を入れ、四角で囲まれた文字のみ繋げて読む</p>
-          <div class="s4-this-grid">
-            <div class="s4-word-pair s4-word-pair-left">
-              <span class="s4-boxed s4-red">THIS</span>
-              <span class="s4-pair-label">うえ</span>
-              <span class="s4-boxed s4-pair-answer">?</span>
-            </div>
-            <span class="s4-plus">+</span>
-            <div class="s4-word-pair s4-word-pair-right">
-              <span>WEEK</span>
-              <span class="s4-pair-label">した</span>
-              <span class="s4-ge">GE</span>
-            </div>
-            <span class="s4-eq">‖</span>
-            <span class="s4-answer-of">③のこたえ</span>
-          </div>
-          <div class="s4-panel-answer">${numberRow(stage4Numbers[2], 2)}</div>
-        </div>
-        <div class="s4-panel">
-          <p class="s4-panel-note"><span class="sheet-qnum">④</span>投げられた球が、放物線の<em class="red-word">頂点</em>で真下へ落下する時、球が通る言葉を繋いで読め</p>
-          <img class="s4-art" src="./assets/stage04-art.webp" alt="放物線と散らばった文字の図(原本)" loading="lazy" />
-          <div class="s4-panel-answer">${numberRow(stage4Numbers[3], 3)}</div>
-        </div>
-      </div>
+      </section>
       ${renderStage4ChoicePicker()}
       <p class="s4-footer-note">※<b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
       ${renderStage4FinalSection()}
