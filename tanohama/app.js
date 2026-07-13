@@ -1875,6 +1875,7 @@ function renderStage4ChoicePicker() {
       <div class="s4-choice-actions">
         <button class="secondary-button" id="stage4PickerBackspace" type="button">決定</button>
         <button class="secondary-button" id="stage4PickerClear" type="button">戻る</button>
+        <button class="secondary-button" id="stage4PickerDelete" type="button">削除</button>
       </div>
     </section>
   `;
@@ -2724,6 +2725,17 @@ function wireStage4Memo() {
   });
   document.querySelector("#stage4PickerClear")?.addEventListener("click", () => {
     state.stage4PickerOpen = false;
+    render();
+  });
+  document.querySelector("#stage4PickerDelete")?.addEventListener("click", () => {
+    const question = Math.min(Math.max(state.stage4ActiveGroup?.question || 0, 0), 3);
+    const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
+    const memo = normalizeStage4Memo(state.stage4Memo);
+    const target = memo.cells[question][group];
+    let lastFilled = target.length - 1;
+    while (lastFilled >= 0 && !target[lastFilled]) lastFilled -= 1;
+    if (lastFilled >= 0) target[lastFilled] = "";
+    state.stage4Memo = memo;
     render();
   });
   document.querySelectorAll("[data-s4-final-char]").forEach((button) => {
