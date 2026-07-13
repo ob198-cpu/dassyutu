@@ -3084,6 +3084,11 @@ function renderBossSixthSlotBuilder() {
   `;
 }
 
+function canCreateBossSixthSlot() {
+  const usedTsukemono = state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"));
+  return usedTsukemono && state.bossSlotCreationPending === true && !state.bossSixthSlotCreated;
+}
+
 function renderBossIntro() {
   return `
     <section class="boss-intro-cinematic" aria-label="ラスボス戦 開幕">
@@ -3153,6 +3158,7 @@ function renderBossProblemPanel(stage) {
   const feedback = reviewingPast ? null : state.feedback?.stageId === "boss" ? state.feedback : null;
   const effectActive = feedback?.phase === "effect" || feedback?.phase === "hit";
   const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
+  const canCreateSixthSlot = needsSixthSlot && canCreateBossSixthSlot();
   const slotCount = needsSixthSlot ? 5 : step.slots;
   const effectCopy = feedback?.phase === "effect"
     ? bossSuccessEffects[index]
@@ -3198,11 +3204,11 @@ function renderBossProblemPanel(stage) {
             </div>
             ${state.bossAnswerOpen ? `
               <section class="boss-current-answer" aria-label="第${index + 1}問の呪文入力">
-                ${needsSixthSlot ? `
+                ${canCreateSixthSlot ? `
                   ${renderBossSixthSlotBuilder()}
                 ` : `
-                  <div class="boss-slate boss-current-slate" style="--boss-slot-count:${step.slots}" aria-label="${step.slots}文字の回答欄">
-                    ${Array.from({ length: step.slots }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
+                  <div class="boss-slate boss-current-slate" style="--boss-slot-count:${slotCount}" aria-label="${slotCount}文字の回答欄">
+                    ${Array.from({ length: slotCount }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
                   </div>
                   ${state.slotPickerOpen ? renderSlotPicker({ tiles: bossTiles }, state.activeSlot) : ""}
                   <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
@@ -3355,8 +3361,9 @@ function wireBoss() {
     render();
   });
   document.querySelector("#useTsukemonoSlot")?.addEventListener("click", () => {
-    if (state.bossTsukemonoActivated !== true) return;
+    if (!canCreateBossSixthSlot()) return;
     state.bossSlotCreationPending = false;
+    state.bossTsukemonoActivated = true;
     state.bossSixthSlotCreated = true;
     state.bossAnswerOpen = true;
     state.feedback = null;
@@ -3373,6 +3380,8 @@ function wireBoss() {
   });
   const step = bossBattle[state.bossInput.length];
   if (!step) return;
+  const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
+  const inputSlotCount = needsSixthSlot && !canCreateBossSixthSlot() ? 5 : step.slots;
   document.querySelector("#bossEffectNext")?.addEventListener("click", () => {
     const feedback = state.feedback?.stageId === "boss" ? state.feedback : null;
     if (feedback?.phase === "effect") completeBossStep(step);
@@ -3391,10 +3400,10 @@ function wireBoss() {
   });
   document.querySelectorAll(".slot-choice-button").forEach((button) => {
     button.addEventListener("click", () => {
-      const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), step.slots - 1);
-      state.slotInput = Array.from({ length: step.slots }, (_, i) => state.slotInput[i] || "");
+      const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), inputSlotCount - 1);
+      state.slotInput = Array.from({ length: inputSlotCount }, (_, i) => state.slotInput[i] || "");
       state.slotInput[slot] = button.dataset.tile;
-      state.activeSlot = Math.min(slot + 1, step.slots - 1);
+      state.activeSlot = Math.min(slot + 1, inputSlotCount - 1);
       state.slotPickerOpen = false;
       state.feedback = null;
       render();
@@ -3402,14 +3411,14 @@ function wireBoss() {
     });
   });
   document.querySelector("#clearActiveSlot")?.addEventListener("click", () => {
-    const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), step.slots - 1);
-    state.slotInput = Array.from({ length: step.slots }, (_, i) => state.slotInput[i] || "");
+    const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), inputSlotCount - 1);
+    state.slotInput = Array.from({ length: inputSlotCount }, (_, i) => state.slotInput[i] || "");
     state.slotInput[slot] = "";
     state.slotPickerOpen = false;
     state.feedback = null;
     render();
   });
-  document.querySelector("#castBossSpell")?.addEventListener("click", () => castBossSpell(step));
+  document.querySelector("#castBossSpell")?.addEventListener("click", () => castBossSpell({ ...step, slots: inputSlotCount }));
 }
 
 function castBossSpell(step) {
@@ -3492,7 +3501,7 @@ function completeBossStep(step) {
     state.bossColorRemoved = true;
   }
   if (normalizeAnswer(step.answer) === normalizeAnswer("ツケモノ")) {
-    state.bossTsukemonoActivated = false;
+    state.bossTsukemonoActivated = true;
     state.bossSlotCreationPending = true;
     state.bossPanelMode = "problem";
     render();
