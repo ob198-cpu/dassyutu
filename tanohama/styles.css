@@ -13882,6 +13882,13 @@ button.s4-map-input.is-active {
   gap: 7px;
 }
 
+.s4-final-answer-line > .s4-final-answer-submit {
+  min-width: 104px;
+  min-height: 34px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
 .s4-final-answer-title {
   display: grid;
   gap: 1px;
@@ -13975,6 +13982,13 @@ button.s4-map-input.is-active {
 
   .s4-final-answer-line {
     justify-content: center;
+  }
+
+  .s4-final-answer-line > .s4-final-answer-submit {
+    min-width: 92px;
+    min-height: 30px;
+    padding: 0 9px;
+    font-size: 11px;
   }
 
   .s4-final-clue > strong {

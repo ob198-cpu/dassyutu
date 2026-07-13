@@ -1828,7 +1828,6 @@ const stage4FinalPhrase = Array.from("きじのくうきあしょうのみさき
 
 function renderStage4FinalSection() {
   const active = new Set(Array.isArray(state.stage4FinalActive) ? state.stage4FinalActive : []);
-  const selected = Array.from({ length: 6 }, (_, index) => state.slotInput[index] || "");
   return `
     <section class="s4-final-section" aria-label="ステージ4 最終手掛かり">
       <div class="s4-final-clue">
@@ -1850,9 +1849,7 @@ function renderStage4FinalSection() {
             <span aria-hidden="true">F</span><span aria-hidden="true">I</span><span aria-hidden="true">N</span><span aria-hidden="true">A</span><span aria-hidden="true">L</span><span aria-hidden="true">&nbsp;</span><span aria-hidden="true">A</span><span aria-hidden="true">N</span><span aria-hidden="true">S</span><span aria-hidden="true">W</span><span class="is-answer-e" aria-hidden="true">E</span><span aria-hidden="true">R</span><span aria-hidden="true">:</span>
           </strong>
         </div>
-        <button class="s4-final-answer-slots" id="stage4FinalAnswerOpen" type="button" aria-label="ファイナルアンサーを入力">
-          ${selected.map((character) => `<span>${character || "―"}</span>`).join("")}
-        </button>
+        <button class="primary-button stage4-answer-open s4-final-answer-submit" id="timeAnswerToggle" type="button" aria-expanded="${state.timeAnswerOpen}">${state.timeAnswerOpen ? "回答欄を閉じる" : "回答する"}</button>
       </div>
     </section>
   `;
@@ -2372,9 +2369,6 @@ function renderStage(stage) {
 }
 
 function renderGenericProblemPanel(stage, done) {
-  const timeAnswerButton = stage.id === "time" && !done
-    ? `<button class="primary-button stage4-answer-open" id="timeAnswerToggle" type="button" aria-expanded="${state.timeAnswerOpen}">${state.timeAnswerOpen ? "解答欄を閉じる" : "解答する"}</button>`
-    : "";
   const isTimeStage = stage.id === "time";
   return `
     <section class="immersive-panel generic-problem-panel ${isTimeStage ? "stage4-problem-panel" : ""}" aria-label="${stage.number} 問題">
@@ -2390,7 +2384,6 @@ function renderGenericProblemPanel(stage, done) {
         ${renderProblems(stage, done)}
         ${stage.type === "shop" ? `<div class="generic-problem-answer" aria-label="問題の回答">${shopPuzzle(stage, done)}</div>` : ""}
       </div>
-      ${isTimeStage ? timeAnswerButton : ""}
       ${stage.id === "time" && state.timeAnswerOpen && !done ? renderStage4AnswerDrawer(stage) : ""}
     </section>
   `;
@@ -2844,11 +2837,6 @@ function wireStage(stage, done) {
     });
   }
   if (stage.id === "time") {
-    document.querySelector("#stage4FinalAnswerOpen")?.addEventListener("click", () => {
-      state.timeAnswerOpen = true;
-      state.feedback = null;
-      render();
-    });
     document.querySelector("#timeAnswerToggle")?.addEventListener("click", () => {
       state.timeAnswerOpen = !state.timeAnswerOpen;
       state.feedback = null;
