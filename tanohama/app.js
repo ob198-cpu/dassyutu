@@ -3632,7 +3632,8 @@ function resolveExploration(stage, choiceIndex) {
     state.sealBooks = { ...(state.sealBooks || {}), [stage.id]: true };
     saveState();
     elements.hintTitle.textContent = "魔法使いを見つけた！";
-    elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、呪文を得られる」</span><span class="exploration-book-guide">左の「封印の書」から確認できます。</span>`;
+    elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、呪文を得られる」</span><span class="exploration-book-guide">左の「封印の書」から確認できます。</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
+    elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
     audioDirector.playEffect("success");
     return;
   }
