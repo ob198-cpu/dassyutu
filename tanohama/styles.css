@@ -13885,30 +13885,50 @@ button.s4-map-input.is-active {
 .s4-final-answer-title {
   display: grid;
   gap: 1px;
-  width: 112px;
+  width: 104px;
   color: #fff1b0;
   text-align: center;
   white-space: nowrap;
 }
 
 .s4-final-answer-title > .s4-final-kana {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(13, 8px);
   align-items: center;
-  justify-content: space-between;
   width: 100%;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 900;
 }
 
-.s4-final-kana > span:last-child {
-  margin-right: 13px;
+.s4-final-kana-prefix {
+  grid-column: 5 / 10;
+  grid-row: 1;
+  justify-self: end;
 }
 
-.s4-final-answer-title > strong {
+.s4-final-kana-char {
+  grid-row: 1;
+  display: grid;
+  place-items: center;
+}
+
+.s4-final-kana-char.is-answer-a { grid-column: 10; }
+.s4-final-kana-char.is-answer-n { grid-column: 11; }
+.s4-final-kana-char.is-answer-sa { grid-column: 12; }
+.s4-final-kana-char.is-answer-long { grid-column: 13; }
+
+.s4-final-answer-title > .s4-final-english {
+  display: grid;
+  grid-template-columns: repeat(13, 8px);
   width: 100%;
   font-family: Consolas, "Courier New", monospace;
   font-size: 12px;
   line-height: 1.25;
+}
+
+.s4-final-english > span {
+  display: grid;
+  place-items: center;
 }
 
 .s4-final-e-stack {
@@ -15463,22 +15483,28 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 }
 
 .s4-static-answer-grid .s4-num-box {
+  box-sizing: border-box;
+  flex: 0 1 54px;
+  width: 54px;
   min-width: 0 !important;
   min-height: 42px;
   min-inline-size: 0;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: 13px 23px;
+  justify-content: stretch;
   gap: 1px;
   padding: 1px 2px;
 }
 
 .s4-static-answer-grid .s4-map-input {
-  width: 54px;
-  max-width: 100%;
+  width: auto;
+  max-width: none;
   min-width: 0;
   height: 23px;
   padding: 0;
   font-size: 11px;
-  margin-inline: auto;
+  justify-self: stretch;
+  margin-inline: 0;
 }
 
 @media (max-width: 680px) and (orientation: portrait) {

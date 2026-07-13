@@ -1839,8 +1839,16 @@ function renderStage4FinalSection() {
       </div>
       <div class="s4-final-answer-line">
         <div class="s4-final-answer-title">
-          <span class="s4-final-kana"><span>ファイナル</span><span>アンサー</span></span>
-          <strong>FINAL ANSWER:</strong>
+          <span class="s4-final-kana" aria-label="ファイナルアンサー">
+            <span class="s4-final-kana-prefix">ファイナル</span>
+            <span class="s4-final-kana-char is-answer-a" aria-hidden="true">ア</span>
+            <span class="s4-final-kana-char is-answer-n" aria-hidden="true">ン</span>
+            <span class="s4-final-kana-char is-answer-sa" aria-hidden="true">サ</span>
+            <span class="s4-final-kana-char is-answer-long" aria-hidden="true">ー</span>
+          </span>
+          <strong class="s4-final-english" aria-label="FINAL ANSWER:">
+            <span aria-hidden="true">F</span><span aria-hidden="true">I</span><span aria-hidden="true">N</span><span aria-hidden="true">A</span><span aria-hidden="true">L</span><span aria-hidden="true">&nbsp;</span><span aria-hidden="true">A</span><span aria-hidden="true">N</span><span aria-hidden="true">S</span><span aria-hidden="true">W</span><span class="is-answer-e" aria-hidden="true">E</span><span aria-hidden="true">R</span><span aria-hidden="true">:</span>
+          </strong>
         </div>
         <button class="s4-final-answer-slots" id="stage4FinalAnswerOpen" type="button" aria-label="ファイナルアンサーを入力">
           ${selected.map((character) => `<span>${character || "―"}</span>`).join("")}
