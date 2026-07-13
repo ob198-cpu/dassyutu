@@ -1860,14 +1860,13 @@ function renderStage4ChoicePicker() {
     <section class="s4-choice-picker" aria-label="${questionIndex + 1}番の文字候補">
       <div class="s4-choice-head">
         <div><span>途中回答 ${questionIndex + 1}-${groupIndex + 1}</span><strong>${value || "未入力"}</strong></div>
-        <button class="text-button" id="stage4PickerClose" type="button">閉じる</button>
       </div>
       <div class="s4-choice-tiles" role="group" aria-label="選択候補">
         ${stage4ChoiceCandidates[questionIndex].map((character) => `<button type="button" data-s4-choice="${character}">${character}</button>`).join("")}
       </div>
       <div class="s4-choice-actions">
-        <button class="secondary-button" id="stage4PickerBackspace" type="button">1文字戻す</button>
-        <button class="secondary-button" id="stage4PickerClear" type="button">この欄を消す</button>
+        <button class="secondary-button" id="stage4PickerBackspace" type="button">決定</button>
+        <button class="secondary-button" id="stage4PickerClear" type="button">戻る</button>
       </div>
     </section>
   `;
@@ -2712,24 +2711,10 @@ function wireStage4Memo() {
     });
   });
   document.querySelector("#stage4PickerBackspace")?.addEventListener("click", () => {
-    const question = Math.min(Math.max(state.stage4ActiveGroup?.question || 0, 0), 3);
-    const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
-    const memo = normalizeStage4Memo(state.stage4Memo);
-    const target = memo.cells[question][group];
-    const lastFilled = target.map((character, index) => character ? index : -1).filter((index) => index >= 0).pop();
-    if (Number.isInteger(lastFilled)) target[lastFilled] = "";
-    state.stage4Memo = memo;
+    state.stage4PickerOpen = false;
     render();
   });
   document.querySelector("#stage4PickerClear")?.addEventListener("click", () => {
-    const question = Math.min(Math.max(state.stage4ActiveGroup?.question || 0, 0), 3);
-    const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
-    const memo = normalizeStage4Memo(state.stage4Memo);
-    memo.cells[question][group] = memo.cells[question][group].map(() => "");
-    state.stage4Memo = memo;
-    render();
-  });
-  document.querySelector("#stage4PickerClose")?.addEventListener("click", () => {
     state.stage4PickerOpen = false;
     render();
   });
