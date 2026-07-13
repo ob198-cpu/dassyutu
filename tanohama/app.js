@@ -1898,7 +1898,7 @@ function renderStage4Sheet() {
   return `
     <div class="sheet stage4-sheet stage4-static-sheet" role="group" aria-label="ステージ4 問題">
       <figure class="s4-static-problem-viewport">
-        <img src="./assets/stage04-problem-clean.webp" alt="ステージ4の①から④までの問題紙面" />
+        <img src="./assets/stage04-problem-source.webp" alt="添付原稿を使用したステージ4の①から④までの問題紙面" />
       </figure>
       <section class="s4-static-answer-area" aria-label="①から④の途中回答">
         <p>途中回答</p>

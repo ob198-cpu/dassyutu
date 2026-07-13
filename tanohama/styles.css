@@ -15409,7 +15409,7 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
-  aspect-ratio: 1386 / 610;
+  aspect-ratio: 2103 / 1495;
   margin: 0;
   overflow: hidden;
   border: 1px solid rgba(120, 192, 185, 0.55);
@@ -15421,10 +15421,11 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   position: absolute;
   left: 0;
   top: 0;
-  width: 115.45%;
+  width: 100%;
   max-width: none;
-  height: auto;
-  transform: translate(-6.25%, -5.76%);
+  height: 100%;
+  object-fit: contain;
+  transform: none;
   transform-origin: top left;
 }
 
