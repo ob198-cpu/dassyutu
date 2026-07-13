@@ -3201,11 +3201,11 @@ function renderBossProblemPanel(stage) {
                 ${needsSixthSlot ? `
                   ${renderBossSixthSlotBuilder()}
                 ` : `
-                  <div class="boss-direct-slots" aria-label="${step.slots}文字の回答欄">${Array.from({ length: step.slots }).map(() => "<span></span>").join("")}</div>
-                  <form id="bossDirectForm" class="boss-direct-form">
-                    <input id="bossDirectInput" type="text" maxlength="${step.slots}" autocomplete="off" inputmode="text" placeholder="カタカナで呪文を入力" aria-label="呪文を入力" />
-                    <button class="primary-button" type="submit">呪文を唱える</button>
-                  </form>
+                  <div class="boss-slate boss-current-slate" style="--boss-slot-count:${step.slots}" aria-label="${step.slots}文字の回答欄">
+                    ${Array.from({ length: step.slots }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
+                  </div>
+                  ${state.slotPickerOpen ? renderSlotPicker({ tiles: bossTiles }, state.activeSlot) : ""}
+                  <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
                 `}
               </section>
             ` : ""}
@@ -3378,15 +3378,10 @@ function wireBoss() {
     if (feedback?.phase === "effect") completeBossStep(step);
     else if (feedback?.phase === "hit") resetBossAfterHit();
   });
-  document.querySelector("#bossDirectForm")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const input = document.querySelector("#bossDirectInput");
-    castBossDirectAnswer(step, input?.value || "");
-  });
   if (state.slotPickerOpen) {
     requestAnimationFrame(() => document.querySelector(".slot-choice-popover")?.scrollIntoView({ block: "nearest" }));
   }
-  document.querySelectorAll(".boss-step.is-active .premium-slot[data-slot]").forEach((button) => {
+  document.querySelectorAll(".boss-step.is-active .premium-slot[data-slot], .boss-current-answer .premium-slot[data-slot]").forEach((button) => {
     button.addEventListener("click", () => {
       state.activeSlot = Number(button.dataset.slot);
       state.slotPickerOpen = true;
@@ -3403,7 +3398,7 @@ function wireBoss() {
       state.slotPickerOpen = false;
       state.feedback = null;
       render();
-      popOnce(`.boss-step.is-active .premium-slot[data-slot="${slot}"]`);
+      popOnce(`.premium-slot[data-slot="${slot}"]`);
     });
   });
   document.querySelector("#clearActiveSlot")?.addEventListener("click", () => {

@@ -15352,3 +15352,24 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 .exploration-open-book {
   width: 100%;
 }
+.boss-current-slate {
+  display: grid;
+  grid-template-columns: repeat(var(--boss-slot-count), minmax(42px, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+
+.boss-current-slate .premium-slot {
+  min-width: 0;
+  min-height: 52px;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .boss-current-slate {
+    gap: 4px;
+  }
+
+  .boss-current-slate .premium-slot {
+    min-height: 42px;
+  }
+}
