@@ -3237,6 +3237,7 @@ function renderBossProblemPanel(stage) {
   const effectActive = feedback?.phase === "effect" || feedback?.phase === "hit";
   const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
   const canCreateSixthSlot = needsSixthSlot && canCreateBossSixthSlot();
+  const missingTsukemonoSlot = needsSixthSlot && !canCreateSixthSlot;
   const slotCount = needsSixthSlot ? 5 : step.slots;
   const effectCopy = feedback?.phase === "effect"
     ? bossSuccessEffects[index]
@@ -3294,11 +3295,19 @@ function renderBossProblemPanel(stage) {
                 ${canCreateSixthSlot ? `
                   ${renderBossSixthSlotBuilder()}
                 ` : `
-                  <div class="boss-slate boss-current-slate ${slotCount >= 8 ? "is-long-spell" : ""}" style="--boss-slot-count:${slotCount}" aria-label="${slotCount}文字の回答欄">
+                  <div class="boss-slate boss-current-slate ${slotCount >= 8 ? "is-long-spell" : ""} ${missingTsukemonoSlot ? "has-transparent-sixth-slot" : ""}" style="--boss-slot-count:${missingTsukemonoSlot ? 6 : slotCount}" aria-label="${missingTsukemonoSlot ? "6文字の回答欄。6文字目の枠は未生成" : `${slotCount}文字の回答欄`}">
                     ${Array.from({ length: slotCount }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
+                    ${missingTsukemonoSlot ? `<span class="boss-transparent-sixth-slot" aria-label="透明な6文字目の枠"></span>` : ""}
                   </div>
                   ${state.slotPickerOpen ? renderSlotPicker({ tiles: getBossTiles(index) }, state.activeSlot) : ""}
-                  <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
+                  ${missingTsukemonoSlot ? `
+                    <div class="boss-incomplete-cast-row">
+                      <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
+                      <div class="boss-tsukemono-base-image" aria-label="ツケモノを生成できる土台">
+                        <img src="./assets/stage01-clear2.webp" alt="ツケモノの土台">
+                      </div>
+                    </div>
+                  ` : `<button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>`}
                 `}
               </section>
             ` : ""}

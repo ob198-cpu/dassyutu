@@ -15478,6 +15478,50 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   min-height: 52px;
 }
 
+.boss-transparent-sixth-slot {
+  min-width: 0;
+  min-height: 52px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.boss-incomplete-cast-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+
+.boss-incomplete-cast-row .cast-button {
+  grid-column: 1 / span 5;
+  min-width: 0;
+}
+
+.boss-tsukemono-base-image {
+  position: relative;
+  grid-column: 6;
+  min-width: 0;
+  min-height: 52px;
+  overflow: hidden;
+  border: 1px solid rgba(242, 213, 107, 0.62);
+  border-radius: 4px;
+  background: #f1ecdf;
+}
+
+.boss-tsukemono-base-image img {
+  position: absolute;
+  top: -110%;
+  left: -153%;
+  display: block;
+  width: 1036%;
+  max-width: none;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
 .boss-current-slate.is-long-spell {
   grid-template-columns: repeat(var(--boss-slot-count), minmax(0, 1fr));
   gap: 3px;
@@ -15615,6 +15659,15 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
 
   .boss-current-slate .premium-slot {
     min-height: 42px;
+  }
+
+  .boss-transparent-sixth-slot,
+  .boss-tsukemono-base-image {
+    min-height: 42px;
+  }
+
+  .boss-incomplete-cast-row {
+    gap: 4px;
   }
 
   .boss-current-slate.is-long-spell {
