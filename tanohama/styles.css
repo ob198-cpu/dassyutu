@@ -16408,3 +16408,156 @@ body.game-clear-mode #game::before {
     width: 100%;
   }
 }
+
+/* LINE in-app browser: use its visible viewport, not the toolbar-obscured layout viewport. */
+:root {
+  --app-width: 100vw;
+  --app-height: 100vh;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-height: 100dvh;
+  }
+}
+
+html.line-webview,
+html.line-webview body {
+  width: var(--app-width) !important;
+  height: var(--app-height) !important;
+  min-height: var(--app-height) !important;
+  max-height: var(--app-height) !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+html.line-webview button,
+html.line-webview input,
+html.line-webview textarea,
+html.line-webview select {
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+html.line-webview .side-menu,
+html.line-webview .rotate-guard {
+  max-height: var(--app-height) !important;
+}
+
+html.line-webview .doc-dialog,
+html.line-webview .hint-dialog,
+html.line-webview .learned-spell-viewer {
+  max-height: calc(var(--app-height) - 16px) !important;
+}
+
+@media (min-width: 681px) {
+  html.line-webview .phone-shell,
+  html.line-webview .game-card,
+  html.line-webview .stage-panel,
+  html.line-webview .premium-stage,
+  html.line-webview .immersive-stage,
+  html.line-webview .intro-stage {
+    height: var(--app-height) !important;
+    min-height: var(--app-height) !important;
+    max-height: var(--app-height) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  html.line-webview .phone-shell {
+    height: var(--app-height) !important;
+    min-height: var(--app-height) !important;
+    max-height: var(--app-height) !important;
+  }
+
+  html.line-webview .game-card,
+  html.line-webview .stage-panel,
+  html.line-webview .premium-stage,
+  html.line-webview .immersive-stage,
+  html.line-webview .intro-stage {
+    height: calc(var(--app-height) - var(--mobile-nav-h, 68px) - var(--mobile-safe-bottom, 0px)) !important;
+    min-height: calc(var(--app-height) - var(--mobile-nav-h, 68px) - var(--mobile-safe-bottom, 0px)) !important;
+    max-height: calc(var(--app-height) - var(--mobile-nav-h, 68px) - var(--mobile-safe-bottom, 0px)) !important;
+  }
+
+  html.line-webview body.stage-intro-mode .side-menu {
+    display: none !important;
+  }
+
+  html.line-webview body.stage-intro-mode .phone-shell,
+  html.line-webview body.stage-intro-mode .game-card,
+  html.line-webview body.stage-intro-mode .stage-panel,
+  html.line-webview body.stage-intro-mode .premium-stage,
+  html.line-webview body.stage-intro-mode .intro-stage {
+    width: var(--app-width) !important;
+    height: var(--app-height) !important;
+    min-height: var(--app-height) !important;
+    max-height: var(--app-height) !important;
+    margin: 0 !important;
+  }
+
+  html.line-webview body.stage-one-mode .phone-shell,
+  html.line-webview body.stage-path-mode .phone-shell,
+  html.line-webview body.late-stage-mode .phone-shell {
+    padding-top: var(--mobile-nav-h, 116px) !important;
+  }
+
+  html.line-webview body.stage-one-mode .stage-one-redesign .stage-world,
+  html.line-webview body.stage-path-mode .path-stage-background-only .stage-world {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  html.line-webview body.stage-one-mode .hint-dialog[open],
+  html.line-webview body.stage-path-mode .hint-dialog[open],
+  html.line-webview body.late-stage-mode .hint-dialog[open] {
+    position: fixed !important;
+    top: calc(var(--mobile-nav-h, 116px) + 6px) !important;
+    right: 6px !important;
+    bottom: 6px !important;
+    left: 6px !important;
+    width: auto !important;
+    height: calc(var(--app-height) - var(--mobile-nav-h, 116px) - 12px) !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+  }
+
+  html.line-webview body.stage-one-mode .learned-spell-viewer,
+  html.line-webview body.stage-path-mode .learned-spell-viewer,
+  html.line-webview body.late-stage-mode .learned-spell-viewer {
+    z-index: 140 !important;
+    top: calc(var(--mobile-nav-h, 116px) + 6px) !important;
+    right: 6px !important;
+    bottom: 6px !important;
+    left: 6px !important;
+    transform: none !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+  }
+
+  html.line-webview body.late-stage-mode .immersive-panel {
+    top: calc(var(--mobile-nav-h, 116px) + 6px) !important;
+    right: 6px !important;
+    bottom: 6px !important;
+    left: 6px !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  html.line-webview .path-problem-card .stage2-board-wrap {
+    width: min(100%, calc((var(--app-height) - 70px) * 1.8088)) !important;
+    max-height: calc(var(--app-height) - 70px) !important;
+  }
+
+  html.line-webview .path-problem-card.is-answer-open .stage2-board-wrap {
+    width: min(100%, calc((var(--app-height) - 184px) * 1.8088)) !important;
+    max-height: calc(var(--app-height) - 184px) !important;
+  }
+}

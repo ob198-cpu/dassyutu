@@ -2,9 +2,34 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const isLineWebView = /(?:^|\s)Line\//i.test(navigator.userAgent || "") || /\bLIFF\b/i.test(navigator.userAgent || "");
+        if (!isLineWebView) return;
+
+        root.classList.add("line-webview");
+        const syncLineViewport = () => {
+          const viewport = window.visualViewport;
+          const width = Math.round(viewport?.width || window.innerWidth || root.clientWidth);
+          const height = Math.round(viewport?.height || window.innerHeight || root.clientHeight);
+          if (width > 0) root.style.setProperty("--app-width", `${width}px`);
+          if (height > 0) root.style.setProperty("--app-height", `${height}px`);
+        };
+
+        syncLineViewport();
+        window.addEventListener("resize", syncLineViewport, { passive: true });
+        window.addEventListener("pageshow", syncLineViewport, { passive: true });
+        window.addEventListener("orientationchange", () => {
+          syncLineViewport();
+          window.setTimeout(syncLineViewport, 240);
+        }, { passive: true });
+        window.visualViewport?.addEventListener("resize", syncLineViewport, { passive: true });
+      })();
+    </script>
     <title>田野浜謎解き - 異空間からの脱出</title>
-    <link rel="stylesheet" href="./styles.css?v=20260715-61" />
+    <link rel="stylesheet" href="./styles.css?v=20260715-62" />
   </head>
   <body>
     <div class="rotate-guard" aria-hidden="true">
@@ -66,6 +91,6 @@
       <p id="hintBody"></p>
     </dialog>
 
-    <script src="./app.js?v=20260715-61"></script>
+    <script src="./app.js?v=20260715-62"></script>
   </body>
 </html>
