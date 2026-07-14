@@ -512,6 +512,25 @@ function normalizeStage2Memo(value) {
   });
 }
 
+function normalizeStage2Sketch(value) {
+  const strokes = Array.isArray(value) ? value : [];
+  return strokes
+    .slice(-120)
+    .map((stroke) => {
+      if (!Array.isArray(stroke)) return [];
+      return stroke
+        .slice(-600)
+        .map((point) => {
+          const x = Number(point?.[0]);
+          const y = Number(point?.[1]);
+          if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+          return [Math.min(Math.max(x, 0), 1), Math.min(Math.max(y, 0), 1)];
+        })
+        .filter(Boolean);
+    })
+    .filter((stroke) => stroke.length >= 2);
+}
+
 const stage4MemoShape = [[4, 2, 3], [3, 8, 8, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
 
 const stage4ChoiceCandidates = [
@@ -728,6 +747,8 @@ function loadState() {
         memoPickerOpen: Boolean(saved.memoPickerOpen),
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
+        stage2SketchLines: normalizeStage2Sketch(saved.stage2SketchLines),
+        stage2SketchIsolated: Boolean(saved.stage2SketchIsolated),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
           ? saved.stage4ActiveGroup
@@ -759,7 +780,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2SketchLines: [], stage2SketchIsolated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
 }
 
 function saveState() {
@@ -1049,7 +1070,10 @@ function renderPathProblemCard(stage) {
       <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
         ${(() => {
           const board = renderStage2Board(memo, active, pickerOpen);
-          return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>`;
+          return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>
+            <div class="stage2-sketch-pad ${state.stage2SketchIsolated ? "is-isolated" : ""}" id="stage2SketchPad" data-testid="stage2-sketch-pad">
+              <canvas id="stage2SketchCanvas" width="768" height="768" aria-label="指またはマウスで赤い線を描く。短くタップすると背景表示を切り替える"></canvas>
+            </div>`;
         })()}
       </div>
       <p class="stage2-board-hint">白丸をタップして文字を書き込む</p>
@@ -1107,8 +1131,93 @@ function renderPathAnswerControls(stage) {
   `;
 }
 
+function paintStage2Sketch(canvas, strokes) {
+  const context = canvas?.getContext("2d");
+  if (!context) return;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.strokeStyle = "#e01818";
+  context.lineWidth = 11;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  strokes.forEach((stroke) => {
+    if (!Array.isArray(stroke) || stroke.length < 2) return;
+    context.beginPath();
+    stroke.forEach(([x, y], index) => {
+      const px = x * canvas.width;
+      const py = y * canvas.height;
+      if (index === 0) context.moveTo(px, py);
+      else context.lineTo(px, py);
+    });
+    context.stroke();
+  });
+}
+
+function wireStage2Sketch() {
+  const pad = document.querySelector("#stage2SketchPad");
+  const canvas = document.querySelector("#stage2SketchCanvas");
+  if (!pad || !canvas) return;
+
+  let strokes = normalizeStage2Sketch(state.stage2SketchLines);
+  let activeStroke = null;
+  paintStage2Sketch(canvas, strokes);
+
+  const pointFromEvent = (event) => {
+    const bounds = canvas.getBoundingClientRect();
+    let x = bounds.width ? (event.clientX - bounds.left) / bounds.width : 0;
+    let y = bounds.height ? (event.clientY - bounds.top) / bounds.height : 0;
+    if (state.stage2Rotated) {
+      x = 1 - x;
+      y = 1 - y;
+    }
+    return [Math.min(Math.max(x, 0), 1), Math.min(Math.max(y, 0), 1)];
+  };
+
+  const finishStroke = (event, cancelled = false) => {
+    if (!activeStroke || event.pointerId !== activeStroke.pointerId) return;
+    if (canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    if (activeStroke.moved) {
+      const point = pointFromEvent(event);
+      activeStroke.points.push(point);
+      strokes = normalizeStage2Sketch([...strokes, activeStroke.points]);
+      state.stage2SketchLines = strokes;
+      paintStage2Sketch(canvas, strokes);
+      saveState();
+    } else if (!cancelled) {
+      state.stage2SketchIsolated = !state.stage2SketchIsolated;
+      pad.classList.toggle("is-isolated", state.stage2SketchIsolated);
+      saveState();
+    }
+    activeStroke = null;
+  };
+
+  canvas.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    canvas.setPointerCapture?.(event.pointerId);
+    activeStroke = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+      points: [pointFromEvent(event)],
+    };
+  });
+  canvas.addEventListener("pointermove", (event) => {
+    if (!activeStroke || event.pointerId !== activeStroke.pointerId) return;
+    const distance = Math.hypot(event.clientX - activeStroke.startX, event.clientY - activeStroke.startY);
+    if (!activeStroke.moved && distance < 4) return;
+    event.preventDefault();
+    activeStroke.moved = true;
+    activeStroke.points.push(pointFromEvent(event));
+    paintStage2Sketch(canvas, [...strokes, activeStroke.points]);
+  });
+  canvas.addEventListener("pointerup", (event) => finishStroke(event));
+  canvas.addEventListener("pointercancel", (event) => finishStroke(event, true));
+}
+
 function wirePathProblem(stage) {
   wireProblems();
+  wireStage2Sketch();
   document.querySelector("#rotateBoard")?.addEventListener("click", () => {
     state.stage2Rotated = !state.stage2Rotated;
     render();
@@ -3718,6 +3827,8 @@ function resetGame() {
   state.memoPickerOpen = false;
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
+  state.stage2SketchLines = [];
+  state.stage2SketchIsolated = false;
   state.stage4Memo = normalizeStage4Memo(null);
   state.stage4ActiveGroup = { question: 0, group: 0 };
   state.stage4PickerOpen = false;
