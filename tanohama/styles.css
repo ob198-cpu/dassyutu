@@ -8183,15 +8183,15 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .shop-padlock {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 60%;
   z-index: 2;
-  width: clamp(76px, 15%, 126px);
-  height: clamp(84px, 25%, 150px);
+  width: clamp(96px, 22%, 156px);
+  height: clamp(108px, 34%, 184px);
   border: 0;
   background: transparent;
   cursor: pointer;
   filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.72));
-  transform: translate(-50%, -42%);
+  transform: translate(-50%, -50%);
   touch-action: manipulation;
 }
 
@@ -8236,7 +8236,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 .shop-padlock:hover,
 .shop-padlock:focus-visible {
   outline: none;
-  transform: translate(-50%, -42%) scale(1.08);
+  transform: translate(-50%, -50%) scale(1.06);
   filter: drop-shadow(0 0 13px rgba(255, 221, 117, 0.58)) drop-shadow(0 8px 8px rgba(0, 0, 0, 0.72));
 }
 
@@ -8321,12 +8321,12 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
 
 @media (orientation: landscape) and (max-height: 500px) {
   .shop-padlock {
-    transform: scale(0.82);
+    transform: translate(-50%, -50%);
   }
 
   .shop-padlock:hover,
   .shop-padlock:focus-visible {
-    transform: scale(0.88);
+    transform: translate(-50%, -50%) scale(1.06);
   }
 
   .shop-lock-dialog {
