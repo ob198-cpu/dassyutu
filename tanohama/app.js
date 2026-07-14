@@ -178,7 +178,6 @@ const stages = [
     hints: [
       "ヒント①「使える呪文は1呪文につき1回まで。石板の文字数に合う呪文を選ぶのじゃ」",
       "ヒント②「獣の技をよく読むのじゃ。空中には届かぬ技もあれば、目が合わねば効かぬ技もあるぞ」",
-      "ヒント③「最後の石板は10文字。☆の一覧にある10文字の呪文はフェイクじゃ。ワシのエールと、紙の隅にとまった蝶を思い出すのじゃ」",
     ],
     problems: [{ file: "stage05-problem-clean.webp", title: "ラスボス 原問題" }],
     sourceProblemImage: "stage05-problem-clean.webp",
