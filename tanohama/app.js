@@ -223,6 +223,28 @@ const bossLearnedSpells = [
   },
 ];
 
+const explorationSpellEffects = {
+  コイシコロ: "手のひらに収まる小石を1個生成する。固さと重さは普通の小石と同じ。",
+  スナケムリ: "足元に小さな砂煙を起こし、数秒だけ周囲の視界を遮る。",
+  ハコアケ: "鍵のかかっていない箱のふたを、触れずに静かに開ける。",
+  ホコリハライ: "物に積もったほこりを払い、隠れた文字や模様を見えるようにする。",
+  タナユラシ: "目の前の棚を短く揺らし、奥に挟まった物を手前へ落とす。",
+  コオリミチ: "足元に細い氷の道を作る。平地では進みやすいが、急斜面では滑ってしまう。",
+  イシコロリ: "小石を転がし、地面の傾きや暗い場所にある段差を確かめる。",
+  クサムスビ: "近くの草を結び合わせ、短い目印や簡単なひもを作る。",
+};
+
+function getExplorationSpellEffect(name) {
+  return explorationSpellEffects[name] || "探索で見つけた、小さな効果を持つ呪文。";
+}
+
+function getLearnedExplorationSpells(stageId) {
+  const names = Array.isArray(state.fakeSpells?.[stageId]) ? state.fakeSpells[stageId] : [];
+  return [...new Set(names)]
+    .filter((name) => typeof name === "string" && name.trim())
+    .map((name) => ({ name, effect: getExplorationSpellEffect(name) }));
+}
+
 function getBossPastSpells() {
   const learnedFakeNames = Object.values(state.fakeSpells || {})
     .flatMap((names) => (Array.isArray(names) ? names : []))
@@ -230,7 +252,7 @@ function getBossPastSpells() {
   const knownNames = new Set(bossLearnedSpells.map((spell) => spell.name));
   const learnedFakes = [...new Set(learnedFakeNames)]
     .filter((name) => !knownNames.has(name))
-    .map((name) => ({ name, effect: "探索中に覚えた呪文。使い道はまだ分からない。" }));
+    .map((name) => ({ name, effect: getExplorationSpellEffect(name) }));
   return [...bossLearnedSpells, ...learnedFakes];
 }
 
@@ -2079,7 +2101,18 @@ function renderPathCastEffect(stage) {
 }
 
 function renderLearnedSpellContent(stageId) {
-  if (stageId === "gate") return renderLearnedStageOneSpells();
+  const explorationSpells = getLearnedExplorationSpells(stageId);
+  const explorationDetails = explorationSpells.length
+    ? `
+      <section class="learned-exploration-spells" aria-label="探索で覚えた呪文">
+        <h3>探索で覚えた呪文</h3>
+        <div class="learned-exploration-grid">
+          ${explorationSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+        </div>
+      </section>
+    `
+    : "";
+  if (stageId === "gate") return `${renderLearnedStageOneSpells()}${explorationDetails}`;
   const learnedStage = stages.find((stage) => stage.id === stageId);
   if (!learnedStage) return `<p class="learned-empty">この呪文はまだ確認できません。</p>`;
   return `
@@ -2088,6 +2121,7 @@ function renderLearnedSpellContent(stageId) {
       <strong>☆ ${learnedStage.reward}</strong>
       <p>${learnedStage.textProblem?.solvedNote || learnedStage.successMessage || "習得済みの呪文"}</p>
     </article>
+    ${explorationDetails}
   `;
 }
 
@@ -3765,7 +3799,7 @@ function resolveExploration(stage, choiceIndex) {
   state.fakeSpells = { ...(state.fakeSpells || {}), [stage.id]: [...new Set([...currentFakes, fakeSpell])] };
   saveState();
   elements.hintTitle.textContent = "何かを見つけた";
-  elements.hintBody.innerHTML = `<span class="exploration-result is-fake">呪文「${fakeSpell}」を覚えた。</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
+  elements.hintBody.innerHTML = `<span class="exploration-result is-fake">呪文「${fakeSpell}」を覚えた。</span><span class="exploration-spell-effect">${getExplorationSpellEffect(fakeSpell)}</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
   elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
   audioDirector.playEffect("fail");
 }

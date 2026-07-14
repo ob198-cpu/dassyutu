@@ -10038,6 +10038,59 @@ body {
   line-height: 1.6;
 }
 
+.learned-exploration-spells {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(205, 187, 122, 0.38);
+}
+
+.learned-exploration-spells h3 {
+  margin: 0 0 9px;
+  color: #ffe89a;
+  font-size: clamp(16px, 2vw, 21px);
+}
+
+.learned-exploration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.learned-exploration-grid article {
+  padding: 11px 12px;
+  border: 1px solid rgba(119, 211, 197, 0.34);
+  border-radius: 6px;
+  background: rgba(5, 19, 25, 0.86);
+}
+
+.learned-exploration-grid strong {
+  color: #fff0a6;
+}
+
+.learned-exploration-grid p {
+  margin: 5px 0 0;
+  color: #d9e5e8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.exploration-spell-effect {
+  display: block;
+  margin: -6px 0 16px;
+  padding: 10px 12px;
+  border-left: 3px solid #d7b54b;
+  background: rgba(0, 0, 0, 0.24);
+  color: #f4eed8;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+@media (max-width: 680px) {
+  .learned-exploration-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Boss uses the same overlay structure and keeps the source sheet as a reference, not the stage background. */
 .boss-battle-panel {
   padding-bottom: 0;
