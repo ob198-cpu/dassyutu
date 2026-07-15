@@ -3243,11 +3243,31 @@ const bossSuccessScenes = [
 ];
 
 function getBossSuccessScene(index, castValue) {
+  if (index === 3 && normalizeAnswer(castValue) === normalizeAnswer("ツケモノ")) {
+    return {
+      label: "足場生成",
+      title: "言葉を置く足場ができた！",
+      story: "ツケモノが石板の右端に四角い土台を生み出した。次の6文字呪文で、最後の一文字を置くための「言葉の足場」だ。",
+      spell: "ツケモノ 発動",
+    };
+  }
   const scene = bossSuccessScenes[index] || bossSuccessScenes[bossSuccessScenes.length - 1];
   return {
     ...scene,
     spell: `${castValue || bossBattle[index]?.answer || "呪文"} 発動`,
   };
+}
+
+function renderBossTsukemonoBranch() {
+  return `
+    <div class="boss-tsukemono-branch" aria-label="ツケモノで言葉の足場を生成した">
+      <div class="boss-word-platform" aria-hidden="true"><i></i><b>6</b></div>
+      <div>
+        <strong>6文字目の土台を生成</strong>
+        <p>次の呪文では、一番右の空欄にも文字を置ける。</p>
+      </div>
+    </div>
+  `;
 }
 
 function getBossActionDescription(index) {
@@ -3379,6 +3399,7 @@ function renderBossProblemPanel(stage) {
   const step = bossBattle[index];
   const feedback = reviewingPast ? null : state.feedback?.stageId === "boss" ? state.feedback : null;
   const effectActive = feedback?.phase === "effect" || feedback?.phase === "hit";
+  const tsukemonoBranch = feedback?.branch === "tsukemono";
   const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
   const canCreateSixthSlot = needsSixthSlot && canCreateBossSixthSlot();
   const missingTsukemonoSlot = needsSixthSlot && !canCreateSixthSlot;
@@ -3415,7 +3436,7 @@ function renderBossProblemPanel(stage) {
           ${reviewingPast ? `
             <div class="boss-review-notice">回答済みの問題を表示しています。</div>
           ` : effectActive ? `
-            <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"}" aria-live="assertive">
+            <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"} ${tsukemonoBranch ? "is-tsukemono-branch" : ""}" aria-live="assertive">
               ${feedback.phase === "hit" ? `
                 <strong>${feedback.message || effectCopy}</strong>
               ` : `
@@ -3424,7 +3445,7 @@ function renderBossProblemPanel(stage) {
                 <small class="boss-effect-spell">${successScene.spell}</small>
                 <strong>${successScene.title}</strong>
                 <p class="boss-effect-story">${successScene.story}</p>
-                ${index === 4 ? renderBossColorRemovalEffect() : `<p class="boss-effect-result">${effectCopy}</p>`}
+                ${tsukemonoBranch ? renderBossTsukemonoBranch() : index === 4 ? renderBossColorRemovalEffect() : `<p class="boss-effect-result">${effectCopy}</p>`}
               `}
               ${feedback.phase === "hit" ? `<span>「最初からやり直す」を押すと第1問へ戻る。</span>` : ""}
               <button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : index === bossBattle.length - 1 ? "勝利を見届ける" : "次の攻撃へ"}</button>
@@ -3702,8 +3723,11 @@ function castBossDirectAnswer(step, value) {
 
 function startBossSuccessEffect(step, castValue = step.answer) {
   const stepIndex = state.bossInput.length;
+  const branch = stepIndex === 3 && normalizeAnswer(castValue) === normalizeAnswer("ツケモノ")
+    ? "tsukemono"
+    : "default";
   state.bossAnswerOpen = false;
-  state.feedback = { stageId: "boss", type: "success", phase: "effect", stepIndex, castValue };
+  state.feedback = { stageId: "boss", type: "success", phase: "effect", branch, stepIndex, castValue };
   audioDirector.playEffect(stepIndex === 4 ? "color-remove" : "boss-guard");
   render();
 }

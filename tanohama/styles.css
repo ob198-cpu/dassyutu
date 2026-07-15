@@ -15816,6 +15816,145 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   font-weight: 900;
 }
 
+.boss-tsukemono-branch {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  width: min(100%, 470px);
+  margin: 2px auto;
+  padding: 10px 13px;
+  border: 1px solid rgba(255, 226, 127, 0.56);
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(62, 48, 25, 0.9), rgba(12, 37, 34, 0.92));
+  box-shadow: inset 0 1px 0 rgba(255, 242, 188, 0.12), 0 0 24px rgba(255, 217, 102, 0.13);
+}
+
+.boss-word-platform {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 48px;
+}
+
+.boss-word-platform i {
+  position: absolute;
+  inset: 8px 6px 5px;
+  border: 2px solid #d7b96a;
+  background:
+    linear-gradient(145deg, rgba(210, 194, 146, 0.95), rgba(83, 77, 62, 0.98));
+  box-shadow: 5px -5px 0 -2px rgba(239, 220, 160, 0.72), 0 7px 14px rgba(0, 0, 0, 0.34);
+  transform: perspective(90px) rotateX(7deg) rotateZ(-2deg);
+}
+
+.boss-word-platform b {
+  z-index: 1;
+  color: #16130d;
+  font-size: 20px;
+  line-height: 1;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.boss-tsukemono-branch > div:last-child {
+  min-width: 0;
+}
+
+.boss-tsukemono-branch strong {
+  display: block;
+  color: #ffe99c;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.boss-tsukemono-branch p {
+  margin: 3px 0 0;
+  color: #dff8ef;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+@media (orientation: landscape) and (max-height: 420px) {
+  .boss-tsukemono-branch {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 8px;
+    padding: 7px 10px;
+  }
+
+  .boss-word-platform {
+    width: 48px;
+    height: 39px;
+  }
+
+  .boss-word-platform b {
+    font-size: 17px;
+  }
+
+  .boss-tsukemono-branch strong {
+    font-size: 13px;
+  }
+
+  .boss-tsukemono-branch p {
+    font-size: 11px;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 680px) and (max-height: 360px) {
+  .boss-step-effect.is-tsukemono-branch {
+    gap: 3px;
+    padding: 5px 7px;
+    overflow: hidden;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-clear-stamp,
+  .boss-step-effect.is-tsukemono-branch .boss-spell-impact,
+  .boss-step-effect.is-tsukemono-branch .boss-effect-spell,
+  .boss-step-effect.is-tsukemono-branch .boss-effect-story {
+    display: none;
+  }
+
+  .boss-step-effect.is-tsukemono-branch > strong {
+    font-size: 15px;
+    line-height: 1.15;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-tsukemono-branch {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 6px;
+    padding: 4px 7px;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-word-platform {
+    width: 38px;
+    height: 32px;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-word-platform i {
+    inset: 6px 4px 4px;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-word-platform b {
+    font-size: 14px;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-tsukemono-branch strong {
+    font-size: 11px;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-tsukemono-branch p {
+    margin-top: 1px;
+    font-size: 9px;
+    line-height: 1.25;
+  }
+
+  .boss-step-effect.is-tsukemono-branch .boss-effect-next {
+    min-height: 34px;
+    padding-block: 4px;
+    font-size: 12px;
+  }
+}
+
 @keyframes bossImpactLine {
   0%, 100% { opacity: 0.45; transform: translate(-50%, -50%) scaleX(0.72); }
   50% { opacity: 1; transform: translate(-50%, -50%) scaleX(1); }
