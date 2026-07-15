@@ -16671,8 +16671,19 @@ html.line-webview .learned-spell-viewer {
 
 }
 
-/* Stage 01 on iPhone/Safari and in-app browsers: keep the kana board reachable. */
+/* Stage 01: keep the kana board outside the scrolling sheet in every webview. */
+body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-panel {
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  align-items: stretch !important;
+  gap: 6px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
 body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-scroll {
+  grid-row: 1;
+  min-height: 0 !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   overscroll-behavior: contain !important;
@@ -16680,11 +16691,44 @@ body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-scroll {
   touch-action: pan-y !important;
 }
 
-body.stage-one-mode .spell-device.is-problem-mode .kana-board {
+body.stage-one-mode .spell-device.is-problem-mode .gate-kana-board {
+  grid-row: 2;
+  box-sizing: border-box !important;
   flex: 0 0 56px !important;
+  width: min(100%, 724px) !important;
+  max-width: 724px !important;
   height: 56px !important;
   min-height: 56px !important;
-  scroll-margin-block: 6px;
+  margin: 0 auto !important;
+  padding: 4px 7px 5px !important;
+  display: grid !important;
+  grid-template-rows: 20px 20px !important;
+  gap: 2px !important;
+  overflow: hidden !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+body.stage-one-mode .gate-kana-board .kana-board-row {
+  height: 20px !important;
+  min-height: 20px !important;
+  display: grid !important;
+  grid-template-columns: repeat(23, minmax(0, 1fr)) !important;
+  gap: 1px !important;
+}
+
+body.stage-one-mode .gate-kana-board .kana-glyph {
+  width: 100% !important;
+  height: 20px !important;
+  min-width: 0 !important;
+  min-height: 20px !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+  line-height: 20px !important;
+}
+
+body.stage-one-mode .gate-kana-board .kana-glyph.is-composite {
+  font-size: 10px !important;
 }
 
 html.line-webview body.stage-one-mode .spell-device.is-problem-mode {
@@ -16734,7 +16778,19 @@ html.line-webview body.stage-one-mode .spell-device.is-problem-mode {
 
   body.stage-one-mode .gate-problem-answer .device-main-row {
     grid-template-columns: minmax(0, 1fr) minmax(112px, 24%) !important;
+    grid-template-rows: 38px !important;
     gap: 6px !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer .premium-slot-row {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer .cast-button {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
   }
 
   body.stage-one-mode .gate-problem-answer .premium-slot,

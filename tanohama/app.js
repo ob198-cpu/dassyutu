@@ -1726,25 +1726,6 @@ function renderGateStage(stage) {
     </section>
   `;
   wireGateStage(stage, done);
-  syncGateKanaBoardVisibility();
-}
-
-function syncGateKanaBoardVisibility() {
-  if (!state.gateAnswerOpen) return;
-
-  const reveal = () => {
-    const scroller = document.querySelector(".spell-device.is-problem-mode .gate-sheet-scroll");
-    const board = scroller?.querySelector(".kana-board");
-    if (!scroller || !board) return;
-
-    const boardBottom = board.offsetTop + board.offsetHeight;
-    const target = Math.max(0, boardBottom - scroller.clientHeight);
-    if (scroller.scrollTop < target) scroller.scrollTop = target;
-  };
-
-  requestAnimationFrame(reveal);
-  window.clearTimeout(syncGateKanaBoardVisibility.timer);
-  syncGateKanaBoardVisibility.timer = window.setTimeout(reveal, 280);
 }
 
 function renderLearnedSpellViewer() {
@@ -1887,8 +1868,8 @@ function gateProblemInscription(stage, done, hidden = false) {
     <section class="device-problem gate-problem-card gate-sheet-panel ${done ? "is-solved" : ""}" aria-label="問題文">
       <div class="gate-sheet-scroll">
         ${renderStage1Sheet()}
-        ${stage.id === "gate" ? renderKanaBoard() : ""}
       </div>
+      ${stage.id === "gate" ? renderKanaBoard() : ""}
     </section>
   `;
 }
@@ -2150,7 +2131,7 @@ function renderKanaBoard() {
     .replace(/[「」]/g, "");
   const decoded = reading === "ケモノガマチガイ";
   return `
-    <div class="kana-board" aria-label="文字盤">
+    <div class="kana-board gate-kana-board" aria-label="文字盤">
       ${stage1KanaBoardRows
         .map(
           (line, rowIndex) => `
@@ -4163,8 +4144,5 @@ document.addEventListener("pointerdown", (event) => {
     if (ready && button && !button.disabled && button !== elements.menuSound) audioDirector.playEffect("click");
   });
 }, { capture: true, passive: true });
-
-window.addEventListener("resize", syncGateKanaBoardVisibility, { passive: true });
-window.visualViewport?.addEventListener("resize", syncGateKanaBoardVisibility, { passive: true });
 
 render();
