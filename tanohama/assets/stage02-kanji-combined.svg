@@ -1,0 +1,79 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ddb3ae"/>
+      <stop offset="0.52" stop-color="#cf9d9d"/>
+      <stop offset="1" stop-color="#bd888d"/>
+    </linearGradient>
+    <radialGradient id="light" cx="50%" cy="42%" r="68%">
+      <stop offset="0" stop-color="#fff4dc" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#6d3845" stop-opacity="0.08"/>
+    </radialGradient>
+    <pattern id="fibers" width="54" height="54" patternUnits="userSpaceOnUse">
+      <path d="M3 12 C14 5 30 20 49 10 M-4 39 C13 28 31 48 58 34" fill="none" stroke="#fff4e5" stroke-opacity="0.10" stroke-width="3"/>
+      <circle cx="13" cy="31" r="2" fill="#7d4650" fill-opacity="0.10"/>
+      <circle cx="42" cy="24" r="1.5" fill="#fff7e9" fill-opacity="0.16"/>
+    </pattern>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="135%">
+      <feDropShadow dx="0" dy="7" stdDeviation="4" flood-color="#3b1620" flood-opacity="0.30"/>
+    </filter>
+    <path id="ku-region" d="M67 310 H575 V500 H476 L418 548 H334 L360 492 H205 L145 585 L56 518 Z"/>
+    <rect id="ro-region" x="150" y="474" width="250" height="220"/>
+    <rect id="mi1-region" x="876" y="338" width="164" height="116"/>
+    <rect id="mi2-region" x="870" y="530" width="170" height="112"/>
+    <rect id="mi3-region" x="828" y="742" width="212" height="108"/>
+    <rect id="re-stem-region" x="1038" y="418" width="100" height="376"/>
+    <rect id="re-hook-region" x="1012" y="726" width="188" height="168"/>
+    <clipPath id="clip-ku" clipPathUnits="userSpaceOnUse"><use href="#ku-region"/></clipPath>
+    <clipPath id="clip-ro" clipPathUnits="userSpaceOnUse"><use href="#ro-region"/></clipPath>
+    <clipPath id="clip-mi1" clipPathUnits="userSpaceOnUse"><use href="#mi1-region"/></clipPath>
+    <clipPath id="clip-mi2" clipPathUnits="userSpaceOnUse"><use href="#mi2-region"/></clipPath>
+    <clipPath id="clip-mi3" clipPathUnits="userSpaceOnUse"><use href="#mi3-region"/></clipPath>
+    <clipPath id="clip-re" clipPathUnits="userSpaceOnUse"><use href="#re-stem-region"/><use href="#re-hook-region"/></clipPath>
+    <clipPath id="clip-color-pieces" clipPathUnits="userSpaceOnUse"><use href="#ku-region"/><use href="#ro-region"/></clipPath>
+    <clipPath id="clip-paper-pieces" clipPathUnits="userSpaceOnUse"><use href="#mi1-region"/><use href="#mi2-region"/><use href="#mi3-region"/><use href="#re-stem-region"/><use href="#re-hook-region"/></clipPath>
+    <mask id="mask-color-missing" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="1200">
+      <rect width="1200" height="1200" fill="white"/>
+      <use href="#ku-region" fill="black"/>
+      <use href="#ro-region" fill="black"/>
+    </mask>
+    <mask id="mask-paper-missing" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="1200">
+      <rect width="1200" height="1200" fill="white"/>
+      <use href="#mi1-region" fill="black"/>
+      <use href="#mi2-region" fill="black"/>
+      <use href="#mi3-region" fill="black"/>
+      <use href="#re-stem-region" fill="black"/>
+      <use href="#re-hook-region" fill="black"/>
+    </mask>
+    <g id="part-ku" fill="none" stroke="currentColor" stroke-width="34" stroke-linecap="square" stroke-linejoin="miter">
+      <path d="M24 78 L76 20 H188"/>
+      <path d="M188 20 Q169 91 96 148"/>
+    </g>
+    <g id="part-ro" fill="none" stroke="currentColor" stroke-width="34" stroke-linecap="square" stroke-linejoin="miter">
+      <path d="M22 18 H178 V150 H22 Z"/>
+    </g>
+    <g id="part-mi" fill="none" stroke="currentColor" stroke-width="34" stroke-linecap="square" stroke-linejoin="miter">
+      <path d="M24 32 L154 12"/>
+      <path d="M18 84 L148 64"/>
+      <path d="M12 136 L142 116"/>
+    </g>
+    <g id="part-re" fill="none" stroke="currentColor" stroke-width="34" stroke-linecap="square" stroke-linejoin="miter">
+      <path d="M54 12 V116 Q54 161 146 108"/>
+    </g>
+  </defs>
+  <style>
+    .kanji { font-family:'Noto Sans JP','Yu Gothic','Meiryo',sans-serif; font-size:560px; font-weight:700; }
+  </style>
+  <rect width="1200" height="1200" rx="20" fill="url(#paper)"/>
+  <rect width="1200" height="1200" rx="20" fill="url(#light)"/>
+  <rect width="1200" height="1200" rx="20" fill="url(#fibers)"/>
+  <rect x="28" y="28" width="1144" height="1144" rx="12" fill="none" stroke="#224f9e" stroke-width="22"/>
+  <rect x="53" y="53" width="1094" height="1094" rx="8" fill="none" stroke="#f5d27b" stroke-opacity="0.50" stroke-width="3"/>
+  <g transform="matrix(1 0 0 1.45 0 -313)" filter="url(#shadow)">
+    <text class="kanji" x="75" y="820" fill="#171414" >色</text><text class="kanji" x="630" y="820" fill="#171414" >紙</text>
+    <text class="kanji" x="75" y="820" fill="#b66b00" clip-path="url(#clip-color-pieces)">色</text>
+    <text class="kanji" x="630" y="820" fill="#b66b00" clip-path="url(#clip-paper-pieces)">紙</text>
+  </g>
+</svg>
