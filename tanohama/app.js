@@ -585,6 +585,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   const VBH = 680;
   const marks = state.stage2CellMarks && typeof state.stage2CellMarks === "object" ? state.stage2CellMarks : {};
   const pal = stage2BoardPalette;
+  const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   let svg = "";
   let spots = "";
 
@@ -622,7 +623,7 @@ function renderStage2Board(memo, active, pickerOpen) {
         const dimmed = Boolean(marks[`${key}:${cell.r}:${cell.c}`]);
         const isLowercaseEl = cell.char === "l";
         const cellFont = isLowercaseEl ? "Georgia, 'Times New Roman', serif" : "'Hiragino Sans','Segoe UI',sans-serif";
-        svg += `<text x="${cx}" y="${cy + 2}" fill="${pal[cell.color]}" font-size="${isLowercaseEl ? 56 : 52}" font-weight="${isLowercaseEl ? 700 : 900}" text-anchor="middle" dominant-baseline="central" opacity="${dimmed ? 0.14 : 1}" font-family="${cellFont}">${cell.char}</text>`;
+        svg += `<text x="${cx}" y="${cy + 2}" fill="${textPal[cell.color]}" font-size="${isLowercaseEl ? 56 : 52}" font-weight="${isLowercaseEl ? 700 : 900}" text-anchor="middle" dominant-baseline="central" opacity="${dimmed ? 0.14 : 1}" font-family="${cellFont}">${cell.char}</text>`;
         spots += `<button class="stage2-cell-toggle ${dimmed ? "is-dimmed" : ""}" style="--spot-x:${sx}%;--spot-y:${sy}%;" type="button" data-cell="${key}:${cell.r}:${cell.c}" aria-label="${cell.char} の表示を切り替える"></button>`;
       }
     });
