@@ -16670,3 +16670,75 @@ html.line-webview .learned-spell-viewer {
   }
 
 }
+
+/* Stage 01 on iPhone/Safari and in-app browsers: keep the kana board reachable. */
+body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-scroll {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+}
+
+body.stage-one-mode .spell-device.is-problem-mode .kana-board {
+  flex: 0 0 56px !important;
+  height: 56px !important;
+  min-height: 56px !important;
+  scroll-margin-block: 6px;
+}
+
+html.line-webview body.stage-one-mode .spell-device.is-problem-mode {
+  top: 6px !important;
+  bottom: auto !important;
+  height: calc(var(--app-height) - 12px) !important;
+  min-height: 0 !important;
+  max-height: calc(var(--app-height) - 12px) !important;
+}
+
+@media (orientation: landscape) and (max-width: 680px) {
+  :root {
+    --mobile-nav-h: 76px;
+  }
+
+  body.stage-one-mode .side-menu,
+  body.stage-path-mode .side-menu,
+  body.late-stage-mode .side-menu {
+    height: var(--mobile-nav-h) !important;
+  }
+
+  body.stage-one-mode .phone-shell,
+  body.stage-path-mode .phone-shell,
+  body.late-stage-mode .phone-shell,
+  html.line-webview body.stage-one-mode .phone-shell,
+  html.line-webview body.stage-path-mode .phone-shell,
+  html.line-webview body.late-stage-mode .phone-shell {
+    padding-top: var(--mobile-nav-h) !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode,
+  html.line-webview body.stage-one-mode .spell-device.is-problem-mode {
+    top: calc(var(--mobile-nav-h) + 6px) !important;
+    bottom: auto !important;
+    height: calc(var(--app-height) - var(--mobile-nav-h) - 12px) !important;
+    min-height: 0 !important;
+    max-height: calc(var(--app-height) - var(--mobile-nav-h) - 12px) !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer {
+    padding: 4px 6px !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer-head {
+    margin-bottom: 3px !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer .device-main-row {
+    grid-template-columns: minmax(0, 1fr) minmax(112px, 24%) !important;
+    gap: 6px !important;
+  }
+
+  body.stage-one-mode .gate-problem-answer .premium-slot,
+  body.stage-one-mode .gate-problem-answer .cast-button {
+    min-height: 38px !important;
+  }
+}

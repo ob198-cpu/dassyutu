@@ -1726,6 +1726,25 @@ function renderGateStage(stage) {
     </section>
   `;
   wireGateStage(stage, done);
+  syncGateKanaBoardVisibility();
+}
+
+function syncGateKanaBoardVisibility() {
+  if (!state.gateAnswerOpen) return;
+
+  const reveal = () => {
+    const scroller = document.querySelector(".spell-device.is-problem-mode .gate-sheet-scroll");
+    const board = scroller?.querySelector(".kana-board");
+    if (!scroller || !board) return;
+
+    const boardBottom = board.offsetTop + board.offsetHeight;
+    const target = Math.max(0, boardBottom - scroller.clientHeight);
+    if (scroller.scrollTop < target) scroller.scrollTop = target;
+  };
+
+  requestAnimationFrame(reveal);
+  window.clearTimeout(syncGateKanaBoardVisibility.timer);
+  syncGateKanaBoardVisibility.timer = window.setTimeout(reveal, 280);
 }
 
 function renderLearnedSpellViewer() {
@@ -4144,5 +4163,8 @@ document.addEventListener("pointerdown", (event) => {
     if (ready && button && !button.disabled && button !== elements.menuSound) audioDirector.playEffect("click");
   });
 }, { capture: true, passive: true });
+
+window.addEventListener("resize", syncGateKanaBoardVisibility, { passive: true });
+window.visualViewport?.addEventListener("resize", syncGateKanaBoardVisibility, { passive: true });
 
 render();
