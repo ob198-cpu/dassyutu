@@ -759,6 +759,7 @@ function loadState() {
         stage2Rotated: Boolean(saved.stage2Rotated),
         stage2SketchLines: normalizeStage2Sketch(saved.stage2SketchLines),
         stage2SketchIsolated: Boolean(saved.stage2SketchIsolated),
+        stage2SketchExpanded: Boolean(saved.stage2SketchExpanded),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
           ? saved.stage4ActiveGroup
@@ -790,7 +791,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2SketchLines: [], stage2SketchIsolated: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2SketchLines: [], stage2SketchIsolated: false, stage2SketchExpanded: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
 }
 
 function saveState() {
@@ -1069,24 +1070,33 @@ function renderPathProblemCard(stage) {
     : { row: 0, col: 0 };
   const pickerOpen = state.memoPickerOpen === true;
   const answerOpen = state.pathAnswerOpen === true;
+  const sketchExpanded = state.stage2SketchExpanded === true;
+  const hasSketch = normalizeStage2Sketch(state.stage2SketchLines).length > 0;
+  const sketchPad = (expanded = false) => `
+    <div class="stage2-sketch-pad ${expanded ? "is-expanded" : ""} ${state.stage2SketchIsolated ? "is-isolated" : ""}" id="stage2SketchPad" data-testid="stage2-sketch-pad">
+      <canvas id="stage2SketchCanvas" width="768" height="768" aria-label="指またはマウスで赤い線を描く。短くタップすると背景表示を切り替える"></canvas>
+    </div>`;
   return `
-    <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""}" aria-label="問題とメモ">
+    <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""} ${sketchExpanded ? "is-sketch-expanded" : ""}" aria-label="問題とメモ">
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
-        <div class="path-device-actions">
+        <div class="path-device-actions stage2-board-controls">
           <button class="secondary-button ${state.stage2Rotated ? "is-on" : ""}" id="rotateBoard" type="button" aria-pressed="${state.stage2Rotated}">⟳ 回転</button>
+          <div class="stage2-drawing-actions">
+            <button class="secondary-button" id="clearStage2Sketch" type="button" ${hasSketch ? "" : "disabled"}>消去</button>
+            <button class="secondary-button ${sketchExpanded ? "is-on" : ""}" id="toggleStage2SketchZoom" type="button" aria-pressed="${sketchExpanded}">${sketchExpanded ? "縮小" : "拡大"}</button>
+          </div>
         </div>
       </div>
-      <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
-        ${(() => {
-          const board = renderStage2Board(memo, active, pickerOpen);
-          return `${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>
-            <div class="stage2-sketch-pad ${state.stage2SketchIsolated ? "is-isolated" : ""}" id="stage2SketchPad" data-testid="stage2-sketch-pad">
-              <canvas id="stage2SketchCanvas" width="768" height="768" aria-label="指またはマウスで赤い線を描く。短くタップすると背景表示を切り替える"></canvas>
-            </div>`;
-        })()}
-      </div>
-      <p class="stage2-board-hint">白丸をタップして文字を書き込む</p>
+      ${sketchExpanded
+        ? `<div class="stage2-sketch-expanded-view">${sketchPad(true)}</div>`
+        : `<div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
+            ${(() => {
+              const board = renderStage2Board(memo, active, pickerOpen);
+              return `<div class="stage2-board-coordinate-layer">${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>${sketchPad()}</div>`;
+            })()}
+          </div>
+          <p class="stage2-board-hint">白丸をタップして文字を書き込む</p>`}
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
@@ -1175,7 +1185,7 @@ function wireStage2Sketch() {
     const bounds = canvas.getBoundingClientRect();
     let x = bounds.width ? (event.clientX - bounds.left) / bounds.width : 0;
     let y = bounds.height ? (event.clientY - bounds.top) / bounds.height : 0;
-    if (state.stage2Rotated) {
+    if (state.stage2Rotated && !pad.classList.contains("is-expanded")) {
       x = 1 - x;
       y = 1 - y;
     }
@@ -1230,6 +1240,18 @@ function wirePathProblem(stage) {
   wireStage2Sketch();
   document.querySelector("#rotateBoard")?.addEventListener("click", () => {
     state.stage2Rotated = !state.stage2Rotated;
+    render();
+  });
+  document.querySelector("#clearStage2Sketch")?.addEventListener("click", () => {
+    state.stage2SketchLines = [];
+    saveState();
+    render();
+  });
+  document.querySelector("#toggleStage2SketchZoom")?.addEventListener("click", () => {
+    state.stage2SketchExpanded = !state.stage2SketchExpanded;
+    if (state.stage2SketchExpanded) state.pathAnswerOpen = false;
+    state.memoPickerOpen = false;
+    saveState();
     render();
   });
   document.querySelectorAll("[data-memo]").forEach((button) => {
@@ -3839,6 +3861,7 @@ function resetGame() {
   state.stage2Rotated = false;
   state.stage2SketchLines = [];
   state.stage2SketchIsolated = false;
+  state.stage2SketchExpanded = false;
   state.stage4Memo = normalizeStage4Memo(null);
   state.stage4ActiveGroup = { question: 0, group: 0 };
   state.stage4PickerOpen = false;
