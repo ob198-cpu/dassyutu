@@ -1091,13 +1091,14 @@ function renderPathProblemCard(stage) {
       </div>
       ${sketchExpanded
         ? `<div class="stage2-sketch-expanded-view">${sketchPad(true)}</div>`
-        : `<div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
-            ${(() => {
-              const board = renderStage2Board(memo, active, pickerOpen);
-              return `<div class="stage2-board-coordinate-layer">${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>${sketchPad()}</div>`;
-            })()}
-          </div>
-          <p class="stage2-board-hint">白丸をタップして文字を書き込む</p>`}
+        : `<div class="stage2-board-viewport">
+            <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
+              ${(() => {
+                const board = renderStage2Board(memo, active, pickerOpen);
+                return `<div class="stage2-board-coordinate-layer">${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>${sketchPad()}</div>`;
+              })()}
+            </div>
+          </div>`}
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
@@ -1116,7 +1117,8 @@ function renderPathProblemCard(stage) {
           `
           : ""}
       </div>
-      <div class="problem-answer-launcher">
+      <div class="problem-answer-launcher stage2-problem-footer">
+        <p class="stage2-board-hint">白丸をタップして文字を書き込む</p>
         <button class="problem-answer-toggle" id="pathAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
       </div>
       ${answerOpen ? renderPathAnswerControls(stage) : ""}

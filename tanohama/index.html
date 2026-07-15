@@ -3,13 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#02050a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <script>
       (() => {
         const root = document.documentElement;
-        const isLineWebView = /(?:^|\s)Line\//i.test(navigator.userAgent || "") || /\bLIFF\b/i.test(navigator.userAgent || "");
-        if (!isLineWebView) return;
+        const userAgent = navigator.userAgent || "";
+        const isLineWebView = /(?:^|\s)Line\//i.test(userAgent) || /\bLIFF\b/i.test(userAgent);
+        const isAppleMobile = /iPhone|iPad|iPod/i.test(userAgent)
+          || (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1);
+        const isAndroidMobile = /Android/i.test(userAgent);
+        if (!isLineWebView && !isAppleMobile && !isAndroidMobile) return;
 
         root.classList.add("line-webview");
+        root.classList.toggle("line-in-app", isLineWebView);
         const syncLineViewport = () => {
           const viewport = window.visualViewport;
           const width = Math.round(viewport?.width || window.innerWidth || root.clientWidth);
@@ -29,7 +37,7 @@
       })();
     </script>
     <title>田野浜謎解き - 異空間からの脱出</title>
-    <link rel="stylesheet" href="./styles.css?v=20260715-68" />
+    <link rel="stylesheet" href="./styles.css?v=20260715-69" />
   </head>
   <body>
     <div class="rotate-guard" aria-hidden="true">
@@ -91,6 +99,6 @@
       <p id="hintBody"></p>
     </dialog>
 
-    <script src="./app.js?v=20260715-68"></script>
+    <script src="./app.js?v=20260715-69"></script>
   </body>
 </html>
