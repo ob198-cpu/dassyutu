@@ -672,7 +672,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
-  svg += `<image href="./assets/stage02-right-clue.png" x="868" y="170" width="238" height="238" preserveAspectRatio="none"/>`;
+  svg += `<image href="./assets/stage02-right-clue.webp?v=20260720-1" x="868" y="170" width="238" height="238" preserveAspectRatio="none"/>`;
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
