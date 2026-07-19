@@ -536,6 +536,16 @@ function normalizeStage2Memo(value) {
   });
 }
 
+const stage2KanjiRevealAnswer = "SIKISINI";
+
+function isStage2KanjiClueRevealed(value) {
+  const memo = normalizeStage2Memo(value);
+  return memo[0]
+    .slice(0, stage2KanjiRevealAnswer.length)
+    .join("")
+    .toUpperCase() === stage2KanjiRevealAnswer;
+}
+
 function normalizeStage2Sketch(value) {
   const strokes = Array.isArray(value) ? value : [];
   return strokes
@@ -600,6 +610,10 @@ function renderStage2Board(memo, active, pickerOpen) {
   const marks = state.stage2CellMarks && typeof state.stage2CellMarks === "object" ? state.stage2CellMarks : {};
   const pal = stage2BoardPalette;
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
+  const kanjiRevealed = isStage2KanjiClueRevealed(memo);
+  const kanjiClueAsset = kanjiRevealed
+    ? "./assets/stage02-kanji-revealed.webp?v=20260720-3"
+    : "./assets/stage02-kanji-fragments.webp?v=20260720-3";
   let svg = "";
   let spots = "";
 
@@ -672,7 +686,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
-  svg += `<image href="./assets/stage02-right-clue.webp?v=20260720-1" x="868" y="170" width="238" height="238" preserveAspectRatio="none"/>`;
+  svg += `<image class="stage2-kanji-clue ${kanjiRevealed ? "is-revealed" : ""}" href="${kanjiClueAsset}" x="868" y="170" width="238" height="238" preserveAspectRatio="xMidYMid meet"/>`;
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -1080,6 +1094,7 @@ function renderPathStage(stage) {
 
 function renderPathProblemCard(stage) {
   const memo = normalizeStage2Memo(state.stage2Memo);
+  const kanjiRevealed = isStage2KanjiClueRevealed(memo);
   const active = state.memoActive && Number.isInteger(state.memoActive.row) && Number.isInteger(state.memoActive.col)
     ? { row: Math.min(Math.max(state.memoActive.row, 0), stage2MemoRows - 1), col: Math.min(Math.max(state.memoActive.col, 0), stage2MemoCols - 1) }
     : { row: 0, col: 0 };
@@ -1088,7 +1103,7 @@ function renderPathProblemCard(stage) {
   const sketchExpanded = state.stage2SketchExpanded === true;
   const hasSketch = normalizeStage2Sketch(state.stage2SketchLines).length > 0;
   const sketchPad = (expanded = false) => `
-    <div class="stage2-sketch-pad ${expanded ? "is-expanded" : ""} ${state.stage2SketchIsolated ? "is-isolated" : ""}" id="stage2SketchPad" data-testid="stage2-sketch-pad">
+    <div class="stage2-sketch-pad ${expanded ? "is-expanded" : ""} ${state.stage2SketchIsolated ? "is-isolated" : ""} ${kanjiRevealed ? "is-kanji-revealed" : ""}" id="stage2SketchPad" data-testid="stage2-sketch-pad">
       <canvas id="stage2SketchCanvas" width="768" height="768" aria-label="指またはマウスで赤い線を描く。短くタップすると背景表示を切り替える"></canvas>
     </div>`;
   return `
@@ -1297,13 +1312,20 @@ function wirePathProblem(stage) {
   document.querySelectorAll("[data-memo-tile]").forEach((button) => {
     button.addEventListener("click", () => {
       const memo = normalizeStage2Memo(state.stage2Memo);
+      const wasKanjiRevealed = isStage2KanjiClueRevealed(memo);
       const { row, col } = state.memoActive;
       memo[row][col] = button.dataset.memoTile || "";
       state.stage2Memo = memo;
+      const kanjiRevealed = isStage2KanjiClueRevealed(memo);
       state.memoActive = { row, col: Math.min(col + 1, stage2MemoCols - 1) };
       state.memoPickerOpen = false;
       render();
       popOnce(`[data-memo="${row}:${col}"]`);
+      if (!wasKanjiRevealed && kanjiRevealed) {
+        audioDirector.playEffect("success");
+        popOnce(".stage2-kanji-clue", "stage2-kanji-reveal");
+        popOnce("#stage2SketchPad", "stage2-kanji-reveal");
+      }
     });
   });
   document.querySelector("#clearMemoCell")?.addEventListener("click", () => {

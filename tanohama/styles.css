@@ -16916,12 +16916,35 @@ html.line-webview .learned-spell-viewer {
   box-sizing: border-box;
   border: 3px solid #2a56a8;
   border-radius: 3px;
-  background: #cf9d9d url("./assets/stage02-right-clue.webp?v=20260720-1") center / 100% 100% no-repeat;
+  background: #cf9d9d url("./assets/stage02-kanji-fragments.webp?v=20260720-3") center / 100% 100% no-repeat;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+}
+
+.stage2-sketch-pad.is-expanded.is-kanji-revealed {
+  background-image: url("./assets/stage02-kanji-revealed.webp?v=20260720-3");
 }
 
 .stage2-sketch-pad.is-expanded.is-isolated {
   background: #fff;
+}
+
+.stage2-kanji-reveal {
+  animation: stage2-kanji-reveal 620ms ease-out both;
+}
+
+@keyframes stage2-kanji-reveal {
+  0% {
+    opacity: 0.2;
+    filter: brightness(2) saturate(0.5);
+  }
+  55% {
+    opacity: 1;
+    filter: brightness(1.35) saturate(1.2);
+  }
+  100% {
+    opacity: 1;
+    filter: none;
+  }
 }
 
 .path-problem-card.is-sketch-expanded .memo-board,
