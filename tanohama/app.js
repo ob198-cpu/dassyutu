@@ -213,15 +213,29 @@ const bossNewSpells = [
 ];
 
 const bossLearnedSpells = [
-  { name: "ツケモノ", effect: "謎の四角を1個生成できる。" },
-  { name: "ゴクロウサマ", effect: "「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。" },
-  { name: "ドラブレス", effect: "炎でどんな氷も溶かす事ができる。" },
+  { name: "ツケモノ", effect: "謎の四角を1個生成できる！" },
+  { name: "ゴクロウサマ", effect: "『　』内の色を消す事が出来る。内容の意味が通れば、それは現実となる！" },
+  { name: "ドラブレス", effect: "炎でどんな氷も溶かす事ができる！" },
   {
     name: "タイムマシン",
-    effect: "一時的に未来空間へ移動する。",
-    explanation: "未来空間では、まだ習得していない呪文を1つ唱えられる。「カタカナ」＋「効果！」の形式なら呪文とみなされ、未習得でも発動できる。効果は現在異空間で発動し、発動と同時に自分も現在異空間へ戻る。",
+    effect: "一時的に未来空間へ移動する！",
+    explanation: "未来空間では、まだ習得していない呪文を1つ唱えられる。『カタカナ…効果！』の形式なら呪文とみなされ、未習得でも発動できる。効果は現在異空間で発動し、発動と同時に自分も現在異空間へ戻る。",
   },
 ];
+
+function normalizeSpellEffectCopy(effect) {
+  const copy = String(effect || "").trim().replace(/[。！!]+$/u, "");
+  return copy ? `${copy}！` : "効果は不明！";
+}
+
+function renderBossSpellEntry(spell) {
+  return `
+    <article class="boss-spell-entry">
+      <p class="boss-spell-summary"><strong>☆${spell.name}</strong><span class="boss-spell-separator" aria-hidden="true">…</span><span>${normalizeSpellEffectCopy(spell.effect)}</span></p>
+      ${spell.explanation ? `<p class="boss-spell-explanation"><b>解説</b> ${spell.explanation}</p>` : ""}
+    </article>
+  `;
+}
 
 const explorationSpellEffects = {
   コイシコロ: "手のひらに収まる小石を1個生成する。固さと重さは普通の小石と同じ。",
@@ -3178,12 +3192,12 @@ function getBossAttackText(step, index) {
 }
 
 const bossActionDescriptions = [
-  "糸のように繊細で鋭い爪による弱攻撃「一犬糸争」を放とうとしている",
+  "糸のように繊細で鋭い爪による弱攻撃『一犬糸争』を放とうとしている",
   "両の前足で地面を叩き、「二脚地動」で周囲を揺らそうとしている",
   "小幡の方へ向き、目が合うと石化する「三石化線」を放とうとしている",
   "大技を放つため、動かずに力を溜めようとしている",
-  "「百黙絶静」を放とうとしている。百発百中の即死攻撃で、放たれれば全空間が消滅し沈黙する",
-  "「一犬糸争」を放とうとしている",
+  "『百黙絶静』を放とうとしている。百発百中の即死攻撃で、放たれれば全空間が消滅し沈黙する",
+  "『一犬糸争』を放とうとしている",
   "「零式空間」を放とうとしている。空間から出る事を不可能にする念で、現在異空間にいる者にのみ有効",
   "最後の抵抗をしようとしている。仲間を思い出し、とびきりの一撃を放つ時だ",
 ];
@@ -3193,8 +3207,8 @@ const bossSuccessEffects = [
   "フユウで地面から離れ、揺れをかわした！",
   "ヘンガオで白目をむき、視線を合わせず石化を防いだ！",
   "ラスボスは大技前の溜めを続け、こちらの呪文には反応しない。",
-  "ゴクロウサマが「百黙絶静」から色を消した！",
-  "カタメで「一犬糸争」を防いだ！",
+  "ゴクロウサマが『百黙絶静』の中の色を消した！",
+  "カタメで『一犬糸争』を防いだ！",
   "タイムマシンで一時的に未来空間へ移動し、零式空間の対象から外れた！",
   "バタフライエフェクトが未来を変え、とびきりの一撃を放った！",
 ];
@@ -3298,13 +3312,20 @@ function renderBossColorRemovalEffect() {
     ["静", "青", "争"],
   ];
   return `
-    <div class="boss-color-removal" aria-label="百黙絶静から白黒色青が消えて一犬糸争になる">
-      <div class="boss-color-source">
-        ${changes.map(([source, removed], index) => `<span style="--remove-order:${index}"><b>${source}</b><i>−${removed}</i></span>`).join("")}
+    <div class="boss-color-removal" aria-label="括弧内の百黙絶静から赤い白黒色青が消えて一犬糸争になる">
+      <div class="boss-color-phrase" aria-hidden="true">
+        <span class="boss-color-bracket">『</span>
+        ${changes.map(([source, removed, result], index) => `
+          <span class="boss-color-glyph" style="--remove-order:${index}">
+            <b class="boss-color-original">${source}</b>
+            <i class="boss-color-removed">${removed}</i>
+            <em class="boss-color-survivor">${result}</em>
+          </span>
+        `).join("")}
+        <span class="boss-color-bracket">』</span>
       </div>
-      <div class="boss-color-arrow" aria-hidden="true">↓</div>
-      <strong class="boss-color-result">${changes.map(([, , result]) => `<span>${result}</span>`).join("")}</strong>
-      <p>百から白、黙から黒、絶から色、静から青が消えた</p>
+      <p>『　』の中の「<strong class="boss-color-word">いろ</strong>」を消去中…</p>
+      <strong class="boss-color-result-copy">『一犬糸争』になった！</strong>
     </div>
   `;
 }
@@ -3377,13 +3398,13 @@ function renderBossSpellBookPanel(stage) {
         <section class="boss-spell-book-section">
           <h3>過去の呪文</h3>
           <div class="boss-spell-book-grid">
-            ${pastSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p>${spell.explanation ? `<p class="boss-spell-explanation"><b>解説</b> ${spell.explanation}</p>` : ""}</article>`).join("")}
+            ${pastSpells.map(renderBossSpellEntry).join("")}
           </div>
         </section>
         <section class="boss-spell-book-section">
           <h3>新しく覚えた呪文</h3>
           <div class="boss-spell-book-grid">
-            ${bossNewSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+            ${bossNewSpells.map(renderBossSpellEntry).join("")}
           </div>
         </section>
       </div>
@@ -3494,7 +3515,7 @@ function renderBossDirectAnswer(stage) {
   const hasTsukemono = state.bossTsukemonoActivated === true;
   const feedback = state.feedback?.stageId === "boss" && state.feedback.type === "fail" ? state.feedback.message : "";
   const colorRemovalNotice = state.bossColorRemoved && normalizeAnswer(step.answer) === normalizeAnswer("カタメ")
-    ? `<p class="result-message is-success boss-gokurosama-effect">ゴクロウサマを唱えた！「百黙絶静」から白・黒・色・青が消え、「一犬糸争」になった！「カタメ」で防ぐ。</p>`
+    ? `<p class="result-message is-success boss-gokurosama-effect">ゴクロウサマを唱えた！『百黙絶静』の中の色を消したことで『一犬糸争』になった！『カタメ』で防ぐ。</p>`
     : "";
   if (isGokurosama && !state.bossSixthSlotCreated) {
     return `
