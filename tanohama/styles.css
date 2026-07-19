@@ -7886,30 +7886,6 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
   height: auto;
 }
 
-.stage2-sketch-pad {
-  position: absolute;
-  z-index: 8;
-  left: 70.569%;
-  top: 25%;
-  width: 19.35%;
-  height: 35%;
-  overflow: hidden;
-  background: transparent;
-  transition: background-color 140ms ease;
-}
-
-.stage2-sketch-pad.is-isolated {
-  background: #fff;
-}
-
-.stage2-sketch-pad canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  cursor: crosshair;
-  touch-action: none;
-}
-
 .stage2-cell-toggle {
   position: absolute;
   left: var(--spot-x);
@@ -16828,7 +16804,7 @@ html.line-webview .learned-spell-viewer {
   }
 }
 
-/* Stage 02 drawing surface: share the SVG coordinate system at every aspect ratio. */
+/* Stage 02 board: share the SVG coordinate system at every aspect ratio. */
 .stage2-board-coordinate-layer {
   position: absolute;
   inset: 0;
@@ -16851,18 +16827,6 @@ html.line-webview .learned-spell-viewer {
   inset: 0;
 }
 
-.stage2-board-coordinate-layer > .stage2-sketch-pad {
-  left: 70.5691057%;
-  top: 25%;
-  width: 19.3495935%;
-  height: 35%;
-}
-
-.stage2-board-coordinate-layer > .stage2-sketch-pad.is-isolated {
-  outline: 3px solid #2a56a8;
-  outline-offset: -3px;
-}
-
 .path-problem-card .stage2-board-controls {
   display: grid !important;
   grid-template-columns: 1fr !important;
@@ -16870,17 +16834,9 @@ html.line-webview .learned-spell-viewer {
   width: 64px;
 }
 
-.path-problem-card .stage2-board-controls > #rotateBoard,
-.path-problem-card .stage2-drawing-actions,
-.path-problem-card .stage2-drawing-actions > button {
+.path-problem-card .stage2-board-controls > #rotateBoard {
   width: 100% !important;
   min-width: 0 !important;
-}
-
-.stage2-drawing-actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3px;
 }
 
 .path-problem-card .stage2-board-controls .secondary-button {
@@ -16889,43 +16845,9 @@ html.line-webview .learned-spell-viewer {
   font-size: 10px !important;
 }
 
-.path-problem-card .stage2-board-controls .secondary-button:disabled {
-  opacity: 0.42;
-  cursor: default;
-}
-
-.stage2-sketch-expanded-view {
-  flex: 1 1 auto;
-  display: grid;
-  place-items: center;
-  min-width: 0;
-  min-height: 0;
-  width: 100%;
-  padding: 6px 72px 6px 6px;
-  overflow: hidden;
-}
-
-.stage2-sketch-pad.is-expanded {
-  position: relative;
-  inset: auto;
-  width: auto;
-  max-width: 100%;
-  height: 100%;
-  max-height: 100%;
-  aspect-ratio: 1;
-  box-sizing: border-box;
-  border: 3px solid #2a56a8;
-  border-radius: 3px;
-  background: #cf9d9d url("./assets/stage02-kanji-fragments.webp?v=20260720-3") center / 100% 100% no-repeat;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
-}
-
-.stage2-sketch-pad.is-expanded.is-kanji-revealed {
-  background-image: url("./assets/stage02-kanji-revealed.webp?v=20260720-3");
-}
-
-.stage2-sketch-pad.is-expanded.is-isolated {
-  background: #fff;
+.stage2-kanji-clue.is-toggleable {
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .stage2-kanji-reveal {
@@ -16945,19 +16867,6 @@ html.line-webview .learned-spell-viewer {
     opacity: 1;
     filter: none;
   }
-}
-
-.path-problem-card.is-sketch-expanded .memo-board,
-.path-problem-card.is-sketch-expanded .problem-answer-launcher,
-.path-problem-card.is-sketch-expanded .path-problem-answer {
-  display: none !important;
-}
-
-@media (max-width: 680px) {
-  .stage2-sketch-expanded-view {
-    padding-right: 68px;
-  }
-
 }
 
 /* Stage 01: keep the kana board outside the scrolling sheet in every webview. */

@@ -546,25 +546,6 @@ function isStage2KanjiClueRevealed(value) {
     .toUpperCase() === stage2KanjiRevealAnswer;
 }
 
-function normalizeStage2Sketch(value) {
-  const strokes = Array.isArray(value) ? value : [];
-  return strokes
-    .slice(-120)
-    .map((stroke) => {
-      if (!Array.isArray(stroke)) return [];
-      return stroke
-        .slice(-600)
-        .map((point) => {
-          const x = Number(point?.[0]);
-          const y = Number(point?.[1]);
-          if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
-          return [Math.min(Math.max(x, 0), 1), Math.min(Math.max(y, 0), 1)];
-        })
-        .filter(Boolean);
-    })
-    .filter((stroke) => stroke.length >= 2);
-}
-
 const stage4MemoShape = [[4, 2, 3], [3, 8, 8, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
 
 const stage4ChoiceCandidates = [
@@ -610,10 +591,11 @@ function renderStage2Board(memo, active, pickerOpen) {
   const marks = state.stage2CellMarks && typeof state.stage2CellMarks === "object" ? state.stage2CellMarks : {};
   const pal = stage2BoardPalette;
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
-  const kanjiRevealed = isStage2KanjiClueRevealed(memo);
-  const kanjiClueAsset = kanjiRevealed
-    ? "./assets/stage02-kanji-revealed.webp?v=20260720-3"
-    : "./assets/stage02-kanji-fragments.webp?v=20260720-3";
+  const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
+  const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
+  const kanjiClueAsset = kanjiShowingRevealed
+    ? "./assets/stage02-kanji-revealed.webp?v=20260720-4"
+    : "./assets/stage02-kanji-fragments.webp?v=20260720-4";
   let svg = "";
   let spots = "";
 
@@ -686,7 +668,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
-  svg += `<image class="stage2-kanji-clue ${kanjiRevealed ? "is-revealed" : ""}" href="${kanjiClueAsset}" x="868" y="170" width="238" height="238" preserveAspectRatio="xMidYMid meet"/>`;
+  svg += `<image id="stage2KanjiToggle" class="stage2-kanji-clue ${kanjiShowingRevealed ? "is-revealed" : ""} ${kanjiUnlocked ? "is-toggleable" : ""}" href="${kanjiClueAsset}" x="868" y="170" width="238" height="238" preserveAspectRatio="xMidYMid meet" ${kanjiUnlocked ? `role="button" tabindex="0" aria-label="${kanjiShowingRevealed ? "赤い部分のみの画像に切り替える" : "完成画像に切り替える"}"` : `aria-label="色紙から抜け落ちた赤い部分"`}/>`;
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -786,9 +768,9 @@ function loadState() {
         memoPickerOpen: Boolean(saved.memoPickerOpen),
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
-        stage2SketchLines: normalizeStage2Sketch(saved.stage2SketchLines),
-        stage2SketchIsolated: Boolean(saved.stage2SketchIsolated),
-        stage2SketchExpanded: Boolean(saved.stage2SketchExpanded),
+        stage2KanjiShowingRevealed: typeof saved.stage2KanjiShowingRevealed === "boolean"
+          ? saved.stage2KanjiShowingRevealed
+          : isStage2KanjiClueRevealed(saved.stage2Memo),
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
           ? saved.stage4ActiveGroup
@@ -820,7 +802,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2SketchLines: [], stage2SketchIsolated: false, stage2SketchExpanded: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
 }
 
 function saveState() {
@@ -1094,40 +1076,27 @@ function renderPathStage(stage) {
 
 function renderPathProblemCard(stage) {
   const memo = normalizeStage2Memo(state.stage2Memo);
-  const kanjiRevealed = isStage2KanjiClueRevealed(memo);
   const active = state.memoActive && Number.isInteger(state.memoActive.row) && Number.isInteger(state.memoActive.col)
     ? { row: Math.min(Math.max(state.memoActive.row, 0), stage2MemoRows - 1), col: Math.min(Math.max(state.memoActive.col, 0), stage2MemoCols - 1) }
     : { row: 0, col: 0 };
   const pickerOpen = state.memoPickerOpen === true;
   const answerOpen = state.pathAnswerOpen === true;
-  const sketchExpanded = state.stage2SketchExpanded === true;
-  const hasSketch = normalizeStage2Sketch(state.stage2SketchLines).length > 0;
-  const sketchPad = (expanded = false) => `
-    <div class="stage2-sketch-pad ${expanded ? "is-expanded" : ""} ${state.stage2SketchIsolated ? "is-isolated" : ""} ${kanjiRevealed ? "is-kanji-revealed" : ""}" id="stage2SketchPad" data-testid="stage2-sketch-pad">
-      <canvas id="stage2SketchCanvas" width="768" height="768" aria-label="指またはマウスで赤い線を描く。短くタップすると背景表示を切り替える"></canvas>
-    </div>`;
   return `
-    <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""} ${sketchExpanded ? "is-sketch-expanded" : ""}" aria-label="問題とメモ">
+    <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""}" aria-label="問題とメモ">
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions stage2-board-controls">
           <button class="secondary-button ${state.stage2Rotated ? "is-on" : ""}" id="rotateBoard" type="button" aria-pressed="${state.stage2Rotated}">⟳ 回転</button>
-          <div class="stage2-drawing-actions">
-            <button class="secondary-button" id="clearStage2Sketch" type="button" ${hasSketch ? "" : "disabled"}>消去</button>
-            <button class="secondary-button ${sketchExpanded ? "is-on" : ""}" id="toggleStage2SketchZoom" type="button" aria-pressed="${sketchExpanded}">${sketchExpanded ? "縮小" : "拡大"}</button>
-          </div>
         </div>
       </div>
-      ${sketchExpanded
-        ? `<div class="stage2-sketch-expanded-view">${sketchPad(true)}</div>`
-        : `<div class="stage2-board-viewport">
-            <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
-              ${(() => {
-                const board = renderStage2Board(memo, active, pickerOpen);
-                return `<div class="stage2-board-coordinate-layer">${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div>${sketchPad()}</div>`;
-              })()}
-            </div>
-          </div>`}
+      <div class="stage2-board-viewport">
+        <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
+          ${(() => {
+            const board = renderStage2Board(memo, active, pickerOpen);
+            return `<div class="stage2-board-coordinate-layer">${board.svg}<div class="stage2-memo-spots" aria-label="盤面への書き込み">${board.spots}</div></div>`;
+          })()}
+        </div>
+      </div>
       <div class="memo-board memo-board-inline-only" aria-label="画像内メモ候補">
         ${pickerOpen
           ? `
@@ -1183,108 +1152,24 @@ function renderPathAnswerControls(stage) {
   `;
 }
 
-function paintStage2Sketch(canvas, strokes) {
-  const context = canvas?.getContext("2d");
-  if (!context) return;
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.strokeStyle = "#e01818";
-  context.lineWidth = 11;
-  context.lineCap = "round";
-  context.lineJoin = "round";
-  strokes.forEach((stroke) => {
-    if (!Array.isArray(stroke) || stroke.length < 2) return;
-    context.beginPath();
-    stroke.forEach(([x, y], index) => {
-      const px = x * canvas.width;
-      const py = y * canvas.height;
-      if (index === 0) context.moveTo(px, py);
-      else context.lineTo(px, py);
-    });
-    context.stroke();
-  });
-}
-
-function wireStage2Sketch() {
-  const pad = document.querySelector("#stage2SketchPad");
-  const canvas = document.querySelector("#stage2SketchCanvas");
-  if (!pad || !canvas) return;
-
-  let strokes = normalizeStage2Sketch(state.stage2SketchLines);
-  let activeStroke = null;
-  paintStage2Sketch(canvas, strokes);
-
-  const pointFromEvent = (event) => {
-    const bounds = canvas.getBoundingClientRect();
-    let x = bounds.width ? (event.clientX - bounds.left) / bounds.width : 0;
-    let y = bounds.height ? (event.clientY - bounds.top) / bounds.height : 0;
-    if (state.stage2Rotated && !pad.classList.contains("is-expanded")) {
-      x = 1 - x;
-      y = 1 - y;
-    }
-    return [Math.min(Math.max(x, 0), 1), Math.min(Math.max(y, 0), 1)];
-  };
-
-  const finishStroke = (event, cancelled = false) => {
-    if (!activeStroke || event.pointerId !== activeStroke.pointerId) return;
-    if (canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
-    if (activeStroke.moved) {
-      const point = pointFromEvent(event);
-      activeStroke.points.push(point);
-      strokes = normalizeStage2Sketch([...strokes, activeStroke.points]);
-      state.stage2SketchLines = strokes;
-      paintStage2Sketch(canvas, strokes);
-      saveState();
-    } else if (!cancelled) {
-      state.stage2SketchIsolated = !state.stage2SketchIsolated;
-      pad.classList.toggle("is-isolated", state.stage2SketchIsolated);
-      saveState();
-    }
-    activeStroke = null;
-  };
-
-  canvas.addEventListener("pointerdown", (event) => {
-    if (event.button !== 0) return;
-    event.preventDefault();
-    canvas.setPointerCapture?.(event.pointerId);
-    activeStroke = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      moved: false,
-      points: [pointFromEvent(event)],
-    };
-  });
-  canvas.addEventListener("pointermove", (event) => {
-    if (!activeStroke || event.pointerId !== activeStroke.pointerId) return;
-    const distance = Math.hypot(event.clientX - activeStroke.startX, event.clientY - activeStroke.startY);
-    if (!activeStroke.moved && distance < 4) return;
-    event.preventDefault();
-    activeStroke.moved = true;
-    activeStroke.points.push(pointFromEvent(event));
-    paintStage2Sketch(canvas, [...strokes, activeStroke.points]);
-  });
-  canvas.addEventListener("pointerup", (event) => finishStroke(event));
-  canvas.addEventListener("pointercancel", (event) => finishStroke(event, true));
-}
-
 function wirePathProblem(stage) {
   wireProblems();
-  wireStage2Sketch();
   document.querySelector("#rotateBoard")?.addEventListener("click", () => {
     state.stage2Rotated = !state.stage2Rotated;
     render();
   });
-  document.querySelector("#clearStage2Sketch")?.addEventListener("click", () => {
-    state.stage2SketchLines = [];
+  const toggleKanjiClue = () => {
+    if (!isStage2KanjiClueRevealed(state.stage2Memo)) return;
+    state.stage2KanjiShowingRevealed = !state.stage2KanjiShowingRevealed;
     saveState();
     render();
-  });
-  document.querySelector("#toggleStage2SketchZoom")?.addEventListener("click", () => {
-    state.stage2SketchExpanded = !state.stage2SketchExpanded;
-    if (state.stage2SketchExpanded) state.pathAnswerOpen = false;
-    state.memoPickerOpen = false;
-    saveState();
-    render();
+    popOnce(".stage2-kanji-clue", "stage2-kanji-reveal");
+  };
+  document.querySelector("#stage2KanjiToggle")?.addEventListener("click", toggleKanjiClue);
+  document.querySelector("#stage2KanjiToggle")?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    toggleKanjiClue();
   });
   document.querySelectorAll("[data-memo]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1317,6 +1202,7 @@ function wirePathProblem(stage) {
       memo[row][col] = button.dataset.memoTile || "";
       state.stage2Memo = memo;
       const kanjiRevealed = isStage2KanjiClueRevealed(memo);
+      if (!wasKanjiRevealed && kanjiRevealed) state.stage2KanjiShowingRevealed = true;
       state.memoActive = { row, col: Math.min(col + 1, stage2MemoCols - 1) };
       state.memoPickerOpen = false;
       render();
@@ -1324,7 +1210,6 @@ function wirePathProblem(stage) {
       if (!wasKanjiRevealed && kanjiRevealed) {
         audioDirector.playEffect("success");
         popOnce(".stage2-kanji-clue", "stage2-kanji-reveal");
-        popOnce("#stage2SketchPad", "stage2-kanji-reveal");
       }
     });
   });
@@ -3929,9 +3814,7 @@ function resetGame() {
   state.memoPickerOpen = false;
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
-  state.stage2SketchLines = [];
-  state.stage2SketchIsolated = false;
-  state.stage2SketchExpanded = false;
+  state.stage2KanjiShowingRevealed = false;
   state.stage4Memo = normalizeStage4Memo(null);
   state.stage4ActiveGroup = { question: 0, group: 0 };
   state.stage4PickerOpen = false;
