@@ -3186,6 +3186,41 @@ const bossSuccessEffects = [
   "バタフライエフェクトが未来を変え、とびきりの一撃を放った！",
 ];
 
+const bossClearVideos = [
+  { file: "boss-clear-01-bari-v1.mp4", poster: "boss-clear-01-bari-v1-poster.jpg", label: "バリで鋭い爪を弾く" },
+  { file: "boss-clear-02-fuyuu-v1.mp4", poster: "boss-clear-02-fuyuu-v1-poster.jpg", label: "フユウで地面の衝撃波を飛び越える" },
+  { file: "boss-clear-03-hengao-v1.mp4", poster: "boss-clear-03-hengao-v1-poster.jpg", label: "ヘンガオで石化の視線を外す" },
+  { file: "boss-clear-04-tsukemono-v1.mp4", poster: "boss-clear-04-tsukemono-v1-poster.jpg", label: "ツケモノで言葉の足場を作る" },
+  { file: "boss-clear-05-gokurosama-v1.mp4", poster: "boss-clear-05-gokurosama-v1-poster.jpg", label: "ゴクロウサマで百黙絶静から四つの色を消す" },
+  { file: "boss-clear-06-katame-v1.mp4", poster: "boss-clear-06-katame-v1-poster.jpg", label: "カタメで鋭い爪を防ぐ" },
+  { file: "boss-clear-07-timemachine-v1.mp4", poster: "boss-clear-07-timemachine-v1-poster.jpg", label: "タイムマシンで零式空間を回避する" },
+  { file: "boss-clear-08-butterfly-v1.mp4", poster: "boss-clear-08-butterfly-v1-poster.jpg", label: "バタフライエフェクトで最後の一撃を放つ" },
+];
+
+function renderBossClearVideo(index) {
+  const video = bossClearVideos[index] || bossClearVideos[bossClearVideos.length - 1];
+  return `
+    <div class="boss-clear-cinematic" id="bossClearCinematic" aria-label="${video.label}映像">
+      <video
+        class="boss-clear-video"
+        id="bossClearVideo"
+        poster="./assets/${video.poster}?v=20260721-5"
+        preload="auto"
+        playsinline
+        webkit-playsinline
+        autoplay
+      >
+        <source src="./assets/${video.file}?v=20260721-5" type="video/mp4">
+        この端末では正解演出の動画を再生できません。
+      </video>
+      <div class="boss-clear-video-label"><span>正解演出</span><strong>${index + 1} / ${bossBattle.length}</strong></div>
+      <button class="primary-button boss-clear-video-start" id="bossClearVideoStart" type="button" hidden>映像を再生</button>
+      <button class="boss-clear-video-skip" id="bossClearVideoSkip" type="button">演出をスキップ</button>
+      <p class="boss-clear-video-error" id="bossClearVideoError" hidden>映像を読み込めませんでした。「演出をスキップ」で解説へ進めます。</p>
+    </div>
+  `;
+}
+
 const bossSuccessScenes = [
   {
     label: "防御成功",
@@ -3436,6 +3471,7 @@ function renderBossProblemPanel(stage) {
       ? "呪文が外れた。ラスボスの攻撃を受けた！"
       : "";
   const successScene = feedback?.phase === "effect" ? getBossSuccessScene(index, feedback.castValue) : null;
+  const videoPending = feedback?.phase === "effect" && feedback?.videoFinished !== true;
   return `
     <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""}" aria-label="ラスボス 第${index + 1}問">
       <div class="immersive-panel-head">
@@ -3446,7 +3482,7 @@ function renderBossProblemPanel(stage) {
         </div>
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="問題を閉じる">×</button>
       </div>
-      <div class="boss-current-layout">
+      <div class="boss-current-layout ${videoPending ? "is-clear-cinematic" : ""}">
         <div class="boss-visual-stack">
           <div class="boss-current-visual">
             ${renderBossActionImage(index)}
@@ -3462,9 +3498,11 @@ function renderBossProblemPanel(stage) {
           ${reviewingPast ? `
             <div class="boss-review-notice">回答済みの問題を表示しています。</div>
           ` : effectActive ? `
-            <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"} ${tsukemonoBranch ? "is-tsukemono-branch" : ""}" aria-live="assertive">
+            <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"} ${tsukemonoBranch ? "is-tsukemono-branch" : ""} ${videoPending ? "has-video" : ""}" aria-live="assertive">
               ${feedback.phase === "hit" ? `
                 <strong>${feedback.message || effectCopy}</strong>
+              ` : videoPending ? `
+                ${renderBossClearVideo(index)}
               ` : `
                 <div class="boss-clear-stamp"><span>FINAL BATTLE</span><b>${index + 1} / ${bossBattle.length} CLEARED</b></div>
                 <div class="boss-spell-impact" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -3474,7 +3512,7 @@ function renderBossProblemPanel(stage) {
                 ${tsukemonoBranch ? renderBossTsukemonoBranch() : index === 4 ? renderBossColorRemovalEffect() : `<p class="boss-effect-result">${effectCopy}</p>`}
               `}
               ${feedback.phase === "hit" ? `<span>「最初からやり直す」を押すと第1問へ戻る。</span>` : ""}
-              <button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : index === bossBattle.length - 1 ? "勝利を見届ける" : "次の攻撃へ"}</button>
+              ${videoPending ? "" : `<button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : index === bossBattle.length - 1 ? "勝利を見届ける" : "次の攻撃へ"}</button>`}
             </div>
           ` : `
             <div class="boss-current-actions">
@@ -3582,6 +3620,52 @@ function renderBossSlate(step, index, solved, active) {
   `;
 }
 
+function wireBossClearVideo() {
+  const video = document.querySelector("#bossClearVideo");
+  if (!video) return;
+  const startButton = document.querySelector("#bossClearVideoStart");
+  const skipButton = document.querySelector("#bossClearVideoSkip");
+  const errorMessage = document.querySelector("#bossClearVideoError");
+  let finished = false;
+
+  const finishVideo = () => {
+    if (finished) return;
+    finished = true;
+    video.pause();
+    audioDirector.setCinematicMode(false);
+    const feedback = state.feedback?.stageId === "boss" ? state.feedback : null;
+    if (!feedback || feedback.phase !== "effect") return;
+    feedback.videoFinished = true;
+    render();
+  };
+
+  const beginPlayback = () => {
+    video.muted = audioDirector.isMuted();
+    video.volume = 0.95;
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    if (attempt?.catch) {
+      attempt.catch(() => {
+        startButton.hidden = false;
+        errorMessage.hidden = true;
+      });
+    }
+  };
+
+  video.addEventListener("playing", () => {
+    startButton.hidden = true;
+    errorMessage.hidden = true;
+  });
+  video.addEventListener("ended", finishVideo, { once: true });
+  video.addEventListener("error", () => {
+    startButton.hidden = true;
+    errorMessage.hidden = false;
+  });
+  startButton?.addEventListener("click", beginPlayback);
+  skipButton?.addEventListener("click", finishVideo);
+  beginPlayback();
+}
+
 function wireBoss() {
   wireProblems();
   document.querySelector("#bossFightStart")?.addEventListener("click", () => {
@@ -3619,6 +3703,7 @@ function wireBoss() {
     render();
   });
   document.querySelector("#bossClosePanel")?.addEventListener("click", () => {
+    audioDirector.setCinematicMode(false);
     state.bossPanelMode = state.bossPanelMode === "spells" ? "problem" : "closed";
     state.bossAnswerOpen = false;
     state.slotPickerOpen = false;
@@ -3672,6 +3757,7 @@ function wireBoss() {
     render();
   });
   const step = bossBattle[state.bossInput.length];
+  wireBossClearVideo();
   if (!step) return;
   const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
   const inputSlotCount = needsSixthSlot && !canCreateBossSixthSlot() ? 5 : step.slots;
@@ -3759,8 +3845,7 @@ function startBossSuccessEffect(step, castValue = step.answer) {
     ? "tsukemono"
     : "default";
   state.bossAnswerOpen = false;
-  state.feedback = { stageId: "boss", type: "success", phase: "effect", branch, stepIndex, castValue };
-  audioDirector.playEffect(stepIndex === 4 ? "color-remove" : "boss-guard");
+  state.feedback = { stageId: "boss", type: "success", phase: "effect", branch, stepIndex, castValue, videoFinished: false };
   render();
 }
 
@@ -3787,6 +3872,7 @@ function resetBossAfterHit() {
 }
 
 function completeBossStep(step) {
+  audioDirector.setCinematicMode(false);
   const castValue = state.feedback?.castValue || step.answer;
   state.bossInput.push(castValue);
   state.feedback = null;
@@ -3824,13 +3910,13 @@ function renderClear() {
       <video
         class="ending-cinematic-video"
         id="endingVideo"
-        poster="./assets/finale-ending-poster-v1.jpg?v=20260721-4"
+        poster="./assets/finale-ending-poster-v1.jpg?v=20260721-5"
         preload="auto"
         playsinline
         webkit-playsinline
         ${finished ? "" : "autoplay"}
       >
-        <source src="./assets/finale-ending-v1.mp4?v=20260721-4" type="video/mp4">
+        <source src="./assets/finale-ending-v1.mp4?v=20260721-5" type="video/mp4">
         この端末ではエンディング動画を再生できません。
       </video>
       <div class="ending-cinematic-vignette" aria-hidden="true"></div>
