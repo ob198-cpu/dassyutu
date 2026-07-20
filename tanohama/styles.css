@@ -24,6 +24,57 @@ body {
   margin: 0;
 }
 
+/* Boss technique titles are artwork so the embedded color radicals stay exact. */
+.boss-intent-block {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.boss-technique-title-art {
+  display: block;
+  width: min(100%, 540px);
+  height: auto;
+  max-height: 105px;
+  object-fit: contain;
+  object-position: left center;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.68));
+}
+
+.boss-technique-title-art.is-main {
+  margin: -8px 0 -4px;
+}
+
+.boss-technique-title-art.is-forecast {
+  width: min(260px, 100%);
+  max-height: 44px;
+  margin: 1px 0;
+}
+
+.boss-technique-title-art.is-effect {
+  width: min(360px, 84%);
+  max-height: 70px;
+  margin: 0 auto -4px;
+  object-position: center;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .boss-technique-title-art.is-main {
+    width: min(100%, 360px);
+    max-height: 58px;
+    margin: -5px 0 -3px;
+  }
+
+  .boss-technique-title-art.is-forecast {
+    width: min(190px, 100%);
+    max-height: 30px;
+  }
+
+  .boss-technique-title-art.is-effect {
+    max-height: 48px;
+  }
+}
+
 /* Final battle clear movies: show the spell result first, then return to the explanation. */
 .boss-current-layout.is-clear-cinematic {
   grid-template-columns: minmax(0, 1fr) !important;

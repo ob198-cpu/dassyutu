@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 180" role="img" aria-labelledby="title desc">
+  <title id="title">三石化線</title>
+  <desc id="desc">ラスボスの技名、三石化線を表す迫力ある金属文字</desc>
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8d6"/><stop offset=".46" stop-color="#e6bf63"/><stop offset="1" stop-color="#8a5518"/></linearGradient>
+    <filter id="impact" x="-20%" y="-40%" width="140%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/><feOffset dy="7" result="shadow"/><feFlood flood-color="#000" flood-opacity=".88"/><feComposite in2="shadow" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M61 139 C304 90 632 167 902 104" fill="none" stroke="#9e1717" stroke-width="23" stroke-linecap="round" opacity=".58"/>
+  <path d="M104 154 L856 154" stroke="#e2b74f" stroke-width="2" opacity=".65"/>
+  <text x="480" y="135" text-anchor="middle" font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, serif" font-size="118" font-weight="900" letter-spacing="18" fill="url(#metal)" stroke="#180b03" stroke-width="8" paint-order="stroke fill" filter="url(#impact)">三石化線</text>
+</svg>

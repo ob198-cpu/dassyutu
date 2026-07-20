@@ -3181,14 +3181,25 @@ function getBossAttackText(step, index) {
 }
 
 const bossActionDescriptions = [
-  "糸のように繊細で鋭い爪による弱攻撃『一犬糸争』を放とうとしている",
-  "両の前足で地面を叩き、「二脚地動」で周囲を揺らそうとしている",
-  "小幡の方へ向き、目が合うと石化する「三石化線」を放とうとしている",
+  "糸のように繊細で鋭い爪による弱攻撃を放とうとしている",
+  "両の前足で地面を叩き、周囲を揺らそうとしている",
+  "小幡の方へ向き、3秒間目が合うと石化する視線を放とうとしている",
   "大技を放つため、動かずに力を溜めようとしている",
-  "『百黙絶静』を放とうとしている。百発百中の即死攻撃で、放たれれば全空間が消滅し沈黙する",
-  "『一犬糸争』を放とうとしている",
-  "「零式空間」を放とうとしている。空間から出る事を不可能にする念で、現在異空間にいる者にのみ有効",
+  "百発百中の即死攻撃を放とうとしている。放たれれば全空間が消滅し沈黙する",
+  "弱体化した鋭い爪を放とうとしている",
+  "空間から出る事を不可能にする念を放とうとしている。現在異空間にいる者にのみ有効",
   "最後の抵抗をしようとしている。仲間を思い出し、とびきりの一撃を放つ時だ",
+];
+
+const bossTechniqueVisuals = [
+  { name: "一犬糸争", file: "boss-technique-ikken-shiso-v1.svg" },
+  { name: "二脚地動", file: "boss-technique-nikyaku-chido-v1.svg" },
+  { name: "三石化線", file: "boss-technique-sanseki-kasen-v1.svg" },
+  null,
+  { name: "百黙絶静", file: "boss-technique-hyakumoku-zessei-v1.svg" },
+  { name: "一犬糸争", file: "boss-technique-ikken-shiso-v1.svg" },
+  { name: "零式空間", file: "boss-technique-zeroshiki-kukan-v1.svg" },
+  null,
 ];
 
 const bossSuccessEffects = [
@@ -3320,6 +3331,12 @@ function getBossActionDescription(index) {
   return bossActionDescriptions[index] || "最後の攻撃を放とうとしている";
 }
 
+function renderBossTechniqueTitle(index, modifier = "") {
+  const technique = bossTechniqueVisuals[index];
+  if (!technique) return "";
+  return `<img class="boss-technique-title-art ${modifier}" src="./assets/${technique.file}?v=20260721-8" alt="ラスボスの技 ${technique.name}" loading="eager">`;
+}
+
 function renderBossActionImage(index) {
   const column = index % 4;
   const row = Math.floor(index / 4);
@@ -3331,7 +3348,7 @@ function renderBossForecast(index, label, className) {
   return `
     <article class="boss-forecast-card ${className}">
       <div class="boss-forecast-image">${renderBossActionImage(index)}</div>
-      <div><span>${label}</span><p>ラスボスは${getBossActionDescription(index)}</p></div>
+      <div><span>${label}</span>${renderBossTechniqueTitle(index, "is-forecast")}<p>ラスボスは${getBossActionDescription(index)}</p></div>
     </article>
   `;
 }
@@ -3530,7 +3547,10 @@ function renderBossProblemPanel(stage) {
           </div>
         </div>
         <section class="boss-current-copy ${effectActive ? "is-effect-mode" : ""}">
-          <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
+          <div class="boss-intent-block">
+            ${renderBossTechniqueTitle(index, "is-main")}
+            <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
+          </div>
           <div class="boss-current-meta"><span>呪文は1種類につき1回</span></div>
           ${reviewingPast ? `
             <div class="boss-review-notice">回答済みの問題を表示しています。</div>
@@ -3541,6 +3561,7 @@ function renderBossProblemPanel(stage) {
               ` : videoPending ? `
                 ${renderBossClearVideo(index)}
               ` : `
+                ${renderBossTechniqueTitle(index, "is-effect")}
                 <div class="boss-clear-stamp"><span>FINAL BATTLE</span><b>${index + 1} / ${bossBattle.length} CLEARED</b></div>
                 <div class="boss-spell-impact" aria-hidden="true"><i></i><i></i><i></i></div>
                 <small class="boss-effect-spell">${successScene.spell}</small>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 180" role="img" aria-labelledby="title desc">
+  <title id="title">百黙絶静</title>
+  <desc id="desc">百に含まれる白、黙に含まれる黒、絶に含まれる色、静に含まれる青だけを赤く示したラスボスの技名</desc>
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8d6"/><stop offset=".46" stop-color="#e6bf63"/><stop offset="1" stop-color="#8a5518"/></linearGradient>
+    <filter id="impact" x="-20%" y="-40%" width="140%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/><feOffset dy="7" result="shadow"/><feFlood flood-color="#000" flood-opacity=".88"/><feComposite in2="shadow" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <clipPath id="white-part"><rect x="157" y="56" width="126" height="99"/></clipPath>
+    <clipPath id="black-part"><rect x="328" y="18" width="128" height="95"/></clipPath>
+    <clipPath id="color-part"><rect x="566" y="18" width="72" height="137"/></clipPath>
+    <clipPath id="blue-part"><rect x="677" y="18" width="77" height="137"/></clipPath>
+  </defs>
+  <path d="M54 139 C280 93 649 166 908 93" fill="none" stroke="#761014" stroke-width="25" stroke-linecap="round" opacity=".62"/>
+  <path d="M104 154 L856 154" stroke="#e2b74f" stroke-width="2" opacity=".65"/>
+  <g font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, serif" font-size="118" font-weight="900" text-anchor="middle" stroke="#180b03" stroke-width="8" paint-order="stroke fill" filter="url(#impact)">
+    <text x="220" y="135" fill="url(#metal)">百</text><text x="220" y="135" fill="#ff3e36" clip-path="url(#white-part)">百</text>
+    <text x="392" y="135" fill="url(#metal)">黙</text><text x="392" y="135" fill="#ff3e36" clip-path="url(#black-part)">黙</text>
+    <text x="564" y="135" fill="url(#metal)">絶</text><text x="564" y="135" fill="#ff3e36" clip-path="url(#color-part)">絶</text>
+    <text x="736" y="135" fill="url(#metal)">静</text><text x="736" y="135" fill="#ff3e36" clip-path="url(#blue-part)">静</text>
+  </g>
+</svg>
