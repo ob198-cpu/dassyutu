@@ -3192,13 +3192,13 @@ const bossActionDescriptions = [
 ];
 
 const bossTechniqueVisuals = [
-  { name: "一犬糸争", file: "boss-technique-ikken-shiso-v1.svg" },
-  { name: "二脚地動", file: "boss-technique-nikyaku-chido-v1.svg" },
-  { name: "三石化線", file: "boss-technique-sanseki-kasen-v1.svg" },
+  { name: "一犬糸争" },
+  { name: "二脚地動" },
+  { name: "三石化線" },
   null,
-  { name: "百黙絶静", file: "boss-technique-hyakumoku-zessei-v1.svg" },
-  { name: "一犬糸争", file: "boss-technique-ikken-shiso-v1.svg" },
-  { name: "零式空間", file: "boss-technique-zeroshiki-kukan-v1.svg" },
+  { name: "百黙絶静", colorRadicals: true },
+  { name: "一犬糸争" },
+  { name: "零式空間" },
   null,
 ];
 
@@ -3334,7 +3334,39 @@ function getBossActionDescription(index) {
 function renderBossTechniqueTitle(index, modifier = "") {
   const technique = bossTechniqueVisuals[index];
   if (!technique) return "";
-  return `<img class="boss-technique-title-art ${modifier}" src="./assets/${technique.file}?v=20260721-8" alt="ラスボスの技 ${technique.name}" loading="eager">`;
+  const artworkId = `boss-technique-${index}-${modifier.replace(/[^a-z0-9-]/gi, "") || "title"}`;
+  const metalId = `${artworkId}-metal`;
+  const impactId = `${artworkId}-impact`;
+  const commonDefs = `
+    <linearGradient id="${metalId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8d6"/><stop offset=".46" stop-color="#e6bf63"/><stop offset="1" stop-color="#8a5518"/></linearGradient>
+    <filter id="${impactId}" x="-20%" y="-40%" width="140%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/><feOffset dy="7" result="shadow"/><feFlood flood-color="#000" flood-opacity=".88"/><feComposite in2="shadow" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  `;
+  const titleMarkup = technique.colorRadicals
+    ? `
+      <defs>${commonDefs}
+        <clipPath id="${artworkId}-white"><rect x="157" y="56" width="126" height="99"/></clipPath>
+        <clipPath id="${artworkId}-black"><rect x="328" y="18" width="128" height="95"/></clipPath>
+        <clipPath id="${artworkId}-color"><rect x="566" y="18" width="72" height="137"/></clipPath>
+        <clipPath id="${artworkId}-blue"><rect x="677" y="18" width="77" height="137"/></clipPath>
+      </defs>
+      <g font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, serif" font-size="118" font-weight="900" text-anchor="middle" stroke="#180b03" stroke-width="8" paint-order="stroke fill" filter="url(#${impactId})">
+        <text x="220" y="135" fill="url(#${metalId})">百</text><text x="220" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-white)">百</text>
+        <text x="392" y="135" fill="url(#${metalId})">黙</text><text x="392" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-black)">黙</text>
+        <text x="564" y="135" fill="url(#${metalId})">絶</text><text x="564" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-color)">絶</text>
+        <text x="736" y="135" fill="url(#${metalId})">静</text><text x="736" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-blue)">静</text>
+      </g>
+    `
+    : `
+      <defs>${commonDefs}</defs>
+      <text x="480" y="135" text-anchor="middle" font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, serif" font-size="118" font-weight="900" letter-spacing="18" fill="url(#${metalId})" stroke="#180b03" stroke-width="8" paint-order="stroke fill" filter="url(#${impactId})">${technique.name}</text>
+    `;
+  return `
+    <svg class="boss-technique-title-art ${modifier}" viewBox="0 0 960 180" role="img" aria-label="ラスボスの技 ${technique.name}" preserveAspectRatio="xMidYMid meet">
+      <path d="M76 141 C264 111 646 155 882 89" fill="none" stroke="#9e1717" stroke-width="23" stroke-linecap="round" opacity=".58"/>
+      <path d="M104 154 L856 154" stroke="#e2b74f" stroke-width="2" opacity=".65"/>
+      ${titleMarkup}
+    </svg>
+  `;
 }
 
 function renderBossActionImage(index) {
