@@ -14224,9 +14224,10 @@ button.s4-map-input.is-active {
 .boss-color-removal {
   display: grid;
   justify-items: center;
-  gap: 6px;
+  gap: 7px;
   margin: 4px auto;
-  padding: 10px 14px;
+  width: min(100%, 620px);
+  padding: 11px 14px;
   border: 1px solid rgba(174, 244, 219, 0.45);
   border-radius: 5px;
   background: rgba(0, 18, 17, 0.62);
@@ -14236,72 +14237,88 @@ button.s4-map-input.is-active {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  min-height: 58px;
+  gap: 4px;
+  width: 100%;
+  min-height: 54px;
+}
+
+.boss-color-equations {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  width: min(100%, 410px);
 }
 
 .boss-color-bracket {
   color: #fff1c2;
   font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-  font-size: clamp(31px, 4.4vw, 47px);
+  font-size: clamp(27px, 3.8vw, 42px);
   font-weight: 950;
   line-height: 1;
 }
 
 .boss-color-glyph {
   position: relative;
-  display: block;
-  width: clamp(38px, 5vw, 54px);
-  height: 58px;
-}
-
-.boss-color-original,
-.boss-color-survivor {
-  position: absolute;
-  inset: 2px 0 auto;
   display: grid;
   place-items: center;
+  min-width: 0;
+  height: 54px;
+}
+
+.boss-color-equation,
+.boss-color-survivor {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0;
   font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
   color: #fff1c2;
-  font-size: clamp(26px, 4vw, 42px);
+  font-size: clamp(19px, 2.7vw, 31px);
   font-style: normal;
   font-weight: 950;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .boss-color-original {
-  animation: bossOriginalReplace 2.45s ease-in-out both;
-  animation-delay: calc(var(--remove-order) * 150ms);
+  color: #fff1c2;
+}
+
+.boss-color-minus {
+  margin-inline: 2px;
+  color: rgba(255, 241, 194, 0.72);
 }
 
 .boss-color-removed {
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  bottom: 0;
-  min-width: 24px;
-  transform: translateX(-50%);
+  display: inline-block;
   color: #ff493f;
-  font-size: 12px;
+  font-size: 1em;
   font-style: normal;
   font-weight: 950;
   line-height: 1;
   text-align: center;
   text-shadow: 0 0 12px rgba(255, 48, 40, 0.82);
-  animation: bossColorVanish 2.45s ease-in-out both;
-  animation-delay: calc(var(--remove-order) * 150ms);
+  animation: bossColorTermVanish 0.85s ease-in both;
+  animation-delay: calc(0.85s + var(--remove-order) * 0.5s);
+}
+
+.boss-color-equation {
+  animation: bossEquationVanish 0.5s ease-in both;
+  animation-delay: calc(3.05s + var(--remove-order) * 0.1s);
 }
 
 .boss-color-survivor {
   opacity: 0;
   color: #caffef;
+  font-size: clamp(27px, 4vw, 42px);
   text-shadow: 0 0 16px rgba(88, 255, 205, 0.55);
   animation: bossResultReveal 0.55s ease-out both;
-  animation-delay: calc(1.35s + var(--remove-order) * 150ms);
+  animation-delay: calc(3.3s + var(--remove-order) * 0.12s);
 }
 
-.boss-color-removal > p {
+.boss-color-status {
   margin: 0;
   color: #d9fff4;
   font-size: 11px;
@@ -14313,22 +14330,60 @@ button.s4-map-input.is-active {
   text-shadow: 0 0 10px rgba(255, 48, 40, 0.72);
 }
 
+.boss-color-breakdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  width: 100%;
+  opacity: 0;
+  animation: bossResultReveal 0.55s 4s ease-out both;
+}
+
+.boss-color-breakdown span {
+  padding: 5px 6px;
+  border: 1px solid rgba(174, 244, 219, 0.22);
+  border-radius: 3px;
+  background: rgba(4, 31, 28, 0.74);
+  color: #d9fff4;
+  font-size: clamp(8px, 1.15vw, 10px);
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.boss-color-breakdown b,
+.boss-color-breakdown em {
+  color: #fff1c2;
+  font-size: 1.2em;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.boss-color-breakdown i {
+  color: #ff493f;
+  font-style: normal;
+  font-weight: 950;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
 .boss-color-result-copy {
   color: #d9fff4;
   font-size: 12px;
   font-weight: 900;
   opacity: 0;
-  animation: bossResultReveal 0.55s 2.05s ease-out both;
+  animation: bossResultReveal 0.55s 4.2s ease-out both;
 }
 
-@keyframes bossOriginalReplace {
-  0%, 46% { opacity: 1; filter: none; transform: scale(1); }
-  68%, 100% { opacity: 0; filter: grayscale(1) brightness(0.5); transform: scale(0.82); }
+@keyframes bossColorTermVanish {
+  0%, 20% { opacity: 1; filter: none; transform: translateY(0) scale(1); }
+  65% { opacity: 0.38; filter: blur(1px); transform: translateY(-7px) scale(1.18); }
+  100% { opacity: 0; filter: blur(4px); transform: translateY(-14px) scale(1.45); }
 }
 
-@keyframes bossColorVanish {
-  0%, 38% { opacity: 1; transform: translateX(-50%) scale(1); }
-  72%, 100% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(1.7); }
+@keyframes bossEquationVanish {
+  from { opacity: 1; filter: none; transform: scale(1); }
+  to { opacity: 0; filter: grayscale(1) brightness(0.5); transform: scale(0.82); }
 }
 
 @keyframes bossResultReveal {
@@ -14386,7 +14441,6 @@ button.s4-map-input.is-active {
   }
 
   .boss-color-glyph {
-    width: 34px;
     height: 43px;
   }
 
@@ -14432,7 +14486,6 @@ button.s4-map-input.is-active {
   }
 
   .boss-color-glyph {
-    width: 30px;
     height: 34px;
   }
 
@@ -14443,9 +14496,19 @@ button.s4-map-input.is-active {
   }
 
   .boss-color-removed,
-  .boss-color-removal > p,
+  .boss-color-status,
   .boss-color-result-copy {
     font-size: 8px;
+  }
+
+  .boss-color-breakdown {
+    gap: 2px;
+  }
+
+  .boss-color-breakdown span {
+    padding: 2px 3px;
+    font-size: 7px;
+    line-height: 1.2;
   }
 
   .boss-effect-next {

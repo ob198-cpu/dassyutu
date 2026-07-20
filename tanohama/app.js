@@ -3262,19 +3262,29 @@ function renderBossColorRemovalEffect() {
     ["静", "青", "争"],
   ];
   return `
-    <div class="boss-color-removal" aria-label="括弧内の百黙絶静から赤い白黒色青が消えて一犬糸争になる">
+    <div class="boss-color-removal" aria-label="百から白、黙から黒、絶から色、静から青が消え、一犬糸争になる">
       <div class="boss-color-phrase" aria-hidden="true">
         <span class="boss-color-bracket">『</span>
-        ${changes.map(([source, removed, result], index) => `
-          <span class="boss-color-glyph" style="--remove-order:${index}">
-            <b class="boss-color-original">${source}</b>
-            <i class="boss-color-removed">${removed}</i>
-            <em class="boss-color-survivor">${result}</em>
-          </span>
-        `).join("")}
+        <span class="boss-color-equations">
+          ${changes.map(([source, removed, result], index) => `
+            <span class="boss-color-glyph" style="--remove-order:${index}">
+              <span class="boss-color-equation">
+                <b class="boss-color-original">${source}</b>
+                <span class="boss-color-minus">−</span>
+                <i class="boss-color-removed">${removed}</i>
+              </span>
+              <em class="boss-color-survivor">${result}</em>
+            </span>
+          `).join("")}
+        </span>
         <span class="boss-color-bracket">』</span>
       </div>
-      <p>『　』の中の「<strong class="boss-color-word">いろ</strong>」を消去中…</p>
+      <p class="boss-color-status">括弧内の赤い「<strong class="boss-color-word">白・黒・色・青</strong>」を順に消去中…</p>
+      <div class="boss-color-breakdown" aria-label="消えた色と残った文字の対応">
+        ${changes.map(([source, removed, result]) => `
+          <span><b>${source}</b>から<i>${removed}</i>が消え、<em>${result}</em>が残る</span>
+        `).join("")}
+      </div>
       <strong class="boss-color-result-copy">『一犬糸争』になった！</strong>
     </div>
   `;
