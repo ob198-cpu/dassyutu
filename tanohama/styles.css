@@ -16845,9 +16845,38 @@ html.line-webview .learned-spell-viewer {
   font-size: 10px !important;
 }
 
-.stage2-kanji-clue.is-toggleable {
+.stage2-kanji-toggle-hit {
+  position: absolute;
+  left: 70.569%;
+  top: 25%;
+  z-index: 4;
+  width: 19.35%;
+  height: 35%;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   cursor: pointer;
+  pointer-events: auto;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stage2-kanji-toggle-hit.is-locked {
+  cursor: default;
+  pointer-events: none;
+}
+
+.stage2-kanji-clue {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .stage2-kanji-reveal {
