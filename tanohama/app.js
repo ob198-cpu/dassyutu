@@ -504,7 +504,14 @@ const audioDirector = (() => {
     if (document.hidden) context.suspend();
   });
 
-  return { unlock, setStage, playEffect, toggle, isMuted: () => muted };
+  function setCinematicMode(active) {
+    if (!context || !musicGain) return;
+    musicGain.gain.cancelScheduledValues(context.currentTime);
+    musicGain.gain.setTargetAtTime(active ? 0.0001 : 0.62, context.currentTime, 0.08);
+    if (!active) nextNoteTime = context.currentTime + 0.08;
+  }
+
+  return { unlock, setStage, playEffect, toggle, setCinematicMode, isMuted: () => muted };
 })();
 
 // ステージ2 とちゅうメモ: ①〜④の各ステップで読み取った文字を書き留める空欄
@@ -830,13 +837,13 @@ function loadState() {
         bossTsukemonoActivated: savedTsukemonoActivated,
         bossSixthSlotCreated: savedTsukemonoActivated && Boolean(saved.bossSixthSlotCreated),
         bossColorRemoved: Boolean(saved.bossColorRemoved),
-        clearPhase: ["victory", "portal", "home"].includes(saved.clearPhase) ? saved.clearPhase : "victory",
+        clearPhase: ["cinematic", "finished"].includes(saved.clearPhase) ? saved.clearPhase : "cinematic",
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic" };
 }
 
 function saveState() {
@@ -3801,7 +3808,7 @@ function completeBossStep(step) {
   if (state.bossInput.length >= bossBattle.length) {
     addUnique(state.cleared, "boss");
     state.isClear = true;
-    state.clearPhase = "victory";
+    state.clearPhase = "cinematic";
   }
   render();
   requestAnimationFrame(() => {
@@ -3811,81 +3818,114 @@ function completeBossStep(step) {
 }
 
 function renderClear() {
-  const phase = ["victory", "portal", "home"].includes(state.clearPhase) ? state.clearPhase : "victory";
-  const scenes = {
-    victory: {
-      kicker: "FINAL BATTLE COMPLETE",
-      title: "ラスボス撃破",
-      caption: "バタフライエフェクトの光が闇を貫き、出口を封じていた力が崩れ落ちる。",
-      button: "開いた出口へ向かう",
-      nextId: "clearToPortal",
-      image: "./assets/stage05-bg-premium.webp",
-      alt: "光の中で崩れ落ちるラスボス",
-    },
-    portal: {
-      kicker: "THE EXIT IS OPEN",
-      title: "帰還の扉",
-      caption: "砕けた封印の先に、元の世界へ続く光の扉が現れた。",
-      button: "光の向こうへ進む",
-      nextId: "clearReturnHome",
-      image: "./assets/stage05-bg-premium.webp",
-      alt: "異空間に開いた帰還の扉",
-    },
-    home: {
-      kicker: "ESCAPE COMPLETE",
-      title: "元の世界へ帰還",
-      caption: "光の向こうに待っていたのは、焼ける肉の音と仲間たちの笑い声だった。",
-      button: "最初から遊ぶ",
-      nextId: "replayButton",
-      image: "./assets/final-yakiniku-home.jpg",
-      alt: "元の世界で再び始まった焼肉",
-    },
-  };
-  const scene = scenes[phase];
+  const finished = state.clearPhase === "finished";
   elements.game.innerHTML = `
-    <section class="stage-panel clear-screen premium-final-clear is-${phase}" aria-label="${scene.title}">
-      <div class="stage-world final-clear-world">
-        <img class="stage-bg-art" src="${scene.image}" alt="${scene.alt}" loading="eager">
-        <div class="final-clear-light"></div>
-        <div class="final-clear-shards" aria-hidden="true">${Array.from({ length: 12 }).map((_, index) => `<i style="--shard:${index}"></i>`).join("")}</div>
-        <div class="final-return-portal" aria-hidden="true"><i></i><b></b><span></span></div>
-        <div class="final-home-steam" aria-hidden="true"><i></i><i></i><i></i></div>
-      </div>
-      <div class="final-scene-hud">
-        <div class="final-scene-title">
-          <span>${scene.kicker}</span>
-          <strong>${scene.title}</strong>
+    <section class="ending-cinematic-screen ${finished ? "is-finished" : "is-playing"}" aria-label="クリア後エンディング">
+      <video
+        class="ending-cinematic-video"
+        id="endingVideo"
+        poster="./assets/finale-ending-poster-v1.jpg?v=20260721-4"
+        preload="auto"
+        playsinline
+        webkit-playsinline
+        ${finished ? "" : "autoplay"}
+      >
+        <source src="./assets/finale-ending-v1.mp4?v=20260721-4" type="video/mp4">
+        この端末ではエンディング動画を再生できません。
+      </video>
+      <div class="ending-cinematic-vignette" aria-hidden="true"></div>
+      <button class="ending-video-skip" id="endingVideoSkip" type="button" ${finished ? "hidden" : ""}>スキップ</button>
+      <button class="primary-button ending-video-start" id="endingVideoStart" type="button" hidden>音付きエンディングを再生</button>
+      <p class="ending-video-error" id="endingVideoError" hidden>動画を読み込めませんでした。通信状態を確認して再読み込みしてください。</p>
+      <div class="ending-cinematic-actions ${finished ? "is-visible" : ""}" id="endingCinematicActions" ${finished ? "" : "hidden"}>
+        <div class="ending-cinematic-result">
+          <small>ESCAPE COMPLETE</small>
+          <strong>異空間からの脱出</strong>
         </div>
-        <div class="final-scene-progress" aria-label="帰還の進行">
-          <i class="${phase === "victory" ? "is-current" : "is-done"}"></i>
-          <i class="${phase === "portal" ? "is-current" : phase === "home" ? "is-done" : ""}"></i>
-          <i class="${phase === "home" ? "is-current" : ""}"></i>
-        </div>
-      </div>
-      <div class="final-cinematic-caption">
-        <p>${scene.caption}</p>
-        <div class="final-caption-action">
-          <button class="primary-button final-clear-next" id="${scene.nextId}" type="button">${scene.button}</button>
+        <div class="ending-cinematic-buttons">
+          <button class="secondary-button" id="endingReplay" type="button">映像をもう一度見る</button>
+          <button class="primary-button" id="replayButton" type="button">最初から遊ぶ</button>
         </div>
       </div>
     </section>
   `;
-  document.querySelector("#clearToPortal")?.addEventListener("click", () => {
-    state.clearPhase = "portal";
-    audioDirector.playEffect("spell");
-    render();
+
+  const screen = document.querySelector(".ending-cinematic-screen");
+  const video = document.querySelector("#endingVideo");
+  const skipButton = document.querySelector("#endingVideoSkip");
+  const startButton = document.querySelector("#endingVideoStart");
+  const errorMessage = document.querySelector("#endingVideoError");
+  const actions = document.querySelector("#endingCinematicActions");
+  if (!video || !screen || !actions) return;
+
+  video.muted = audioDirector.isMuted();
+  const finishEnding = () => {
+    audioDirector.setCinematicMode(false);
+    state.clearPhase = "finished";
+    saveState();
+    screen.classList.remove("is-playing");
+    screen.classList.add("is-finished");
+    skipButton?.setAttribute("hidden", "");
+    startButton?.setAttribute("hidden", "");
+    actions.hidden = false;
+    requestAnimationFrame(() => actions.classList.add("is-visible"));
+  };
+  const playEnding = () => {
+    actions.classList.remove("is-visible");
+    actions.hidden = true;
+    errorMessage?.setAttribute("hidden", "");
+    screen.classList.remove("is-finished");
+    screen.classList.add("is-playing");
+    state.clearPhase = "cinematic";
+    saveState();
+    video.currentTime = 0;
+    video.muted = audioDirector.isMuted();
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    attempt?.then(() => startButton?.setAttribute("hidden", "")).catch(() => {
+      audioDirector.setCinematicMode(false);
+      if (startButton) startButton.hidden = false;
+    });
+    if (skipButton) skipButton.hidden = false;
+  };
+
+  video.addEventListener("playing", () => {
+    audioDirector.setCinematicMode(true);
+    startButton?.setAttribute("hidden", "");
   });
-  document.querySelector("#clearReturnHome")?.addEventListener("click", () => {
-    state.clearPhase = "home";
-    audioDirector.playEffect("clear");
-    render();
+  video.addEventListener("ended", finishEnding);
+  video.addEventListener("error", () => {
+    audioDirector.setCinematicMode(false);
+    startButton?.setAttribute("hidden", "");
+    if (errorMessage) errorMessage.hidden = false;
+    if (skipButton) skipButton.hidden = false;
   });
+  startButton?.addEventListener("click", playEnding);
+  skipButton?.addEventListener("click", () => {
+    video.pause();
+    if (Number.isFinite(video.duration) && video.duration > 0) video.currentTime = Math.max(0, video.duration - 0.05);
+    finishEnding();
+  });
+  document.querySelector("#endingReplay")?.addEventListener("click", playEnding);
   document.querySelector("#replayButton")?.addEventListener("click", resetGame);
+
+  if (!finished) {
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    attempt?.catch(() => {
+      audioDirector.setCinematicMode(false);
+      if (startButton) startButton.hidden = false;
+    });
+    window.setTimeout(() => {
+      if (video.paused && video.currentTime < 0.1 && state.clearPhase !== "finished" && startButton) startButton.hidden = false;
+    }, 700);
+  }
 }
 
 function resetGame() {
   closeInfoDialogs();
   clearGateSuccessTimers();
+  audioDirector.setCinematicMode(false);
   state.stageIndex = 0;
   state.cleared = [];
   state.spells = [];
@@ -3935,7 +3975,7 @@ function resetGame() {
   state.bossTsukemonoActivated = false;
   state.bossSixthSlotCreated = false;
   state.bossColorRemoved = false;
-  state.clearPhase = "victory";
+  state.clearPhase = "cinematic";
   saveState();
   render();
 }
