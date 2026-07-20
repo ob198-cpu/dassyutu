@@ -200,7 +200,11 @@ const bossBattle = [
 ];
 
 const bossNewSpells = [
-  { name: "バリ", effect: "瞬間的なバリアで、弱攻撃を無効化する！" },
+  {
+    name: "バリ",
+    effect: "瞬間的なバリアで、弱攻撃を無効化する！",
+    explanation: "出口前にラスボスが現れた時、魔法使いから直接伝授された防御呪文。敵が最初に放つ鋭い爪を防ぐために使う。",
+  },
   { name: "フユウ", effect: "ちょっとだけ空中に浮くことが出来る！" },
   { name: "オバダンス", effect: "次の呪文効果時間を2倍にする！" },
   { name: "カタメ", effect: "身体を硬化させ、弱攻撃を無効化する！" },
@@ -844,6 +848,8 @@ function loadState() {
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
         bossIntroOpen: Boolean(saved.bossIntroOpen),
+        bossIntroPhase: ["threat", "wizard"].includes(saved.bossIntroPhase) ? saved.bossIntroPhase : "threat",
+        bossWizardSpellLearned: Boolean(saved.bossWizardSpellLearned) || saved.spells.includes("バリ"),
         bossAnswerOpen: Boolean(saved.bossAnswerOpen),
         bossSlotCreationPending: savedTsukemonoActivated && Boolean(saved.bossSlotCreationPending),
         bossTsukemonoActivated: savedTsukemonoActivated,
@@ -855,7 +861,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic" };
 }
 
 function saveState() {
@@ -900,6 +906,7 @@ function closeStagePanelsOnEntry(stage) {
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
   state.bossIntroOpen = false;
+  state.bossIntroPhase = "threat";
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
   state.bossTsukemonoActivated = false;
@@ -3399,6 +3406,27 @@ function canCreateBossSixthSlot() {
 }
 
 function renderBossIntro() {
+  if (state.bossIntroPhase === "wizard") {
+    return `
+      <section class="boss-intro-cinematic is-wizard-intervention" aria-label="魔法使いから新しい呪文を伝授される">
+        <button class="panel-close-button boss-intro-close" id="bossIntroClose" type="button" aria-label="魔法伝授を閉じる">×</button>
+        <img class="boss-wizard-art" src="./assets/boss-wizard-intervention-v1.webp?v=20260721-7" alt="青白い魔法陣から現れ、手を差し伸べる魔法使い" loading="eager">
+        <div class="boss-wizard-shade" aria-hidden="true"></div>
+        <div class="boss-wizard-copy">
+          <span class="boss-wizard-signal">ARCANE INTERVENTION / 魔法使い</span>
+          <h2>「待つんじゃ！」</h2>
+          <blockquote>「最後の戦いを前に、ひとつだけ新しい呪文を授ける。敵の動きをよく見て、必要な瞬間に唱えるんじゃ」</blockquote>
+          <article class="boss-wizard-spell-card" aria-label="新しく習得する呪文 バリ">
+            <span>新しい呪文を伝授</span>
+            <strong>☆ バリ</strong>
+            <p>瞬間的なバリアを張り、弱攻撃を無効化する。</p>
+            <small>ラスボスが最初に放つ、鋭い爪を防げる。</small>
+          </article>
+          <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">☆バリを習得して戦闘開始</button>
+        </div>
+      </section>
+    `;
+  }
   return `
     <section class="boss-intro-cinematic" aria-label="ラスボス戦 開幕">
       <button class="panel-close-button boss-intro-close" id="bossIntroClose" type="button" aria-label="戦闘導入を閉じる">×</button>
@@ -3409,8 +3437,8 @@ function renderBossIntro() {
         <h2>出口の前に、巨大な影が立ちはだかった</h2>
         <p class="boss-intro-story">山を越え、ようやく見つけた異空間の出口。光へ手を伸ばしたその瞬間、地面が激しく揺れ、出口を守る獣が闇の中から姿を現した。</p>
         <blockquote class="boss-intro-enemy">「ここまで辿り着いたか。だが、この出口は渡さない。覚えた呪文ごと、すべて喰らい尽くしてやろう」</blockquote>
-        <blockquote class="boss-intro-guide">「来るぞ！ 敵の次の行動を見極めるんじゃ。これまで覚えた呪文を一度ずつ使い、最後の試練を切り抜けろ！」</blockquote>
-        <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">戦闘開始</button>
+        <p class="boss-intro-guide">その時、聞き覚えのある声とともに青白い光が差し込んだ。</p>
+        <button class="primary-button boss-intro-start" id="bossIntroNext" type="button">声の主を確かめる</button>
       </div>
     </section>
   `;
@@ -3678,7 +3706,8 @@ function wireBossClearVideo() {
 function wireBoss() {
   wireProblems();
   document.querySelector("#bossFightStart")?.addEventListener("click", () => {
-    state.bossIntroOpen = state.bossInput.length === 0;
+    state.bossIntroOpen = state.bossInput.length === 0 && !state.bossWizardSpellLearned;
+    if (state.bossIntroOpen) state.bossIntroPhase = "threat";
     state.bossPanelMode = state.bossIntroOpen ? "closed" : "problem";
     state.feedback = null;
     if (state.bossIntroOpen) audioDirector.playEffect("boss-intro");
@@ -3698,11 +3727,20 @@ function wireBoss() {
     state.feedback = null;
     render();
   });
+  document.querySelector("#bossIntroNext")?.addEventListener("click", () => {
+    state.bossIntroPhase = "wizard";
+    state.feedback = null;
+    audioDirector.playEffect("spell");
+    render();
+    burstOnce(".boss-wizard-spell-card");
+  });
   document.querySelector("#bossIntroStart")?.addEventListener("click", () => {
+    addUnique(state.spells, "バリ");
+    state.bossWizardSpellLearned = true;
     state.bossIntroOpen = false;
     state.bossPanelMode = "problem";
     state.feedback = null;
-    audioDirector.playEffect("boss-guard");
+    audioDirector.playEffect("success");
     render();
   });
   document.querySelector("#bossIntroClose")?.addEventListener("click", () => {
@@ -4065,6 +4103,8 @@ function resetGame() {
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
   state.bossIntroOpen = false;
+  state.bossIntroPhase = "threat";
+  state.bossWizardSpellLearned = false;
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
   state.bossTsukemonoActivated = false;
@@ -4187,7 +4227,8 @@ function focusCurrentProblem() {
   }
 
   if (stage.id === "boss") {
-    state.bossIntroOpen = state.bossInput.length === 0;
+    state.bossIntroOpen = state.bossInput.length === 0 && !state.bossWizardSpellLearned;
+    if (state.bossIntroOpen) state.bossIntroPhase = "threat";
     state.bossPanelMode = state.bossIntroOpen ? "closed" : "problem";
     state.feedback = null;
     if (state.bossIntroOpen) audioDirector.playEffect("boss-intro");
