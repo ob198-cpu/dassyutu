@@ -3345,9 +3345,9 @@ function renderBossTechniqueTitle(index, modifier = "") {
     ? `
       <defs>${commonDefs}
         <clipPath id="${artworkId}-white"><rect x="157" y="56" width="126" height="99"/></clipPath>
-        <clipPath id="${artworkId}-black"><rect x="328" y="18" width="128" height="95"/></clipPath>
+        <clipPath id="${artworkId}-black"><rect x="326" y="18" width="72" height="137"/></clipPath>
         <clipPath id="${artworkId}-color"><rect x="566" y="18" width="72" height="137"/></clipPath>
-        <clipPath id="${artworkId}-blue"><rect x="677" y="18" width="77" height="137"/></clipPath>
+        <clipPath id="${artworkId}-blue"><rect x="674" y="18" width="56" height="137"/></clipPath>
       </defs>
       <g font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, serif" font-size="118" font-weight="900" text-anchor="middle" stroke="#180b03" stroke-width="8" paint-order="stroke fill" filter="url(#${impactId})">
         <text x="220" y="135" fill="url(#${metalId})">百</text><text x="220" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-white)">百</text>
