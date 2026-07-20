@@ -593,8 +593,8 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-6";
-  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-6";
+  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-7";
+  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-7";
   let svg = "";
   let spots = "";
 
