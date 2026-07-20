@@ -575,7 +575,7 @@ function isStage2KanjiClueRevealed(value) {
     .toUpperCase() === stage2KanjiRevealAnswer;
 }
 
-const stage4MemoShape = [[4, 2, 3], [3, 8, 8, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
+const stage4MemoShape = [[1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1]];
 
 const stage4ChoiceCandidates = [
   Array.from(new Set(Array.from("ろうかのどきじませ"))),
@@ -583,6 +583,18 @@ const stage4ChoiceCandidates = [
   Array.from(new Set(Array.from("こんじょうらいせげ"))),
   Array.from(new Set(Array.from("あせかきみせさきひめますつきみまうえ"))),
 ];
+
+function shuffleStage4Choices(values) {
+  const shuffled = [...values];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[target]] = [shuffled[target], shuffled[index]];
+  }
+  if (shuffled.length > 1 && shuffled.every((character, index) => character === values[index])) {
+    shuffled.push(shuffled.shift());
+  }
+  return shuffled;
+}
 
 function normalizeStage4Memo(value) {
   const source = value && typeof value === "object" ? value : {};
@@ -2046,13 +2058,14 @@ function renderStage4ChoicePicker() {
   const groupIndex = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[questionIndex].length - 1);
   const memo = normalizeStage4Memo(state.stage4Memo);
   const value = memo.cells[questionIndex][groupIndex].join("");
+  const choices = shuffleStage4Choices(stage4ChoiceCandidates[questionIndex]);
   return `
     <section class="s4-choice-picker" aria-label="${questionIndex + 1}番の文字候補">
       <div class="s4-choice-head">
         <div><span>途中回答 ${questionIndex + 1}-${groupIndex + 1}</span><strong>${value || "未入力"}</strong></div>
       </div>
       <div class="s4-choice-tiles" role="group" aria-label="選択候補">
-        ${stage4ChoiceCandidates[questionIndex].map((character) => `<button type="button" data-s4-choice="${character}">${character}</button>`).join("")}
+        ${choices.map((character) => `<button type="button" data-s4-choice="${character}">${character}</button>`).join("")}
       </div>
       <div class="s4-choice-actions">
         <button class="secondary-button" id="stage4PickerBackspace" type="button">決定</button>
@@ -2897,13 +2910,9 @@ function wireStage4Memo() {
       const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
       const memo = normalizeStage4Memo(state.stage4Memo);
       const target = memo.cells[question][group];
-      const emptyIndex = target.findIndex((character) => !character);
-      if (emptyIndex < 0) return;
-      target[emptyIndex] = button.dataset.s4Choice || "";
+      target[0] = button.dataset.s4Choice || "";
       state.stage4Memo = memo;
-      if (emptyIndex === target.length - 1 && group < stage4MemoShape[question].length - 1) {
-        state.stage4ActiveGroup = { question, group: group + 1 };
-      }
+      state.stage4PickerOpen = false;
       render();
     });
   });
