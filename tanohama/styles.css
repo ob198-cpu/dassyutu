@@ -24,6 +24,176 @@ body {
   margin: 0;
 }
 
+/* Shared spell rules and stone-tablet inputs. */
+.spell-rule-guide {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.28fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  padding: 10px;
+  border: 2px solid #66583b;
+  border-radius: 5px;
+  background:
+    linear-gradient(110deg, rgba(255, 255, 255, 0.035), transparent 26%, rgba(0, 0, 0, 0.18) 68%),
+    #27271f;
+  color: #f5e9c4;
+  box-shadow:
+    inset 0 0 0 1px rgba(224, 204, 143, 0.18),
+    inset 0 -12px 24px rgba(0, 0, 0, 0.2),
+    0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.spell-rule-guide-title {
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-right: 1px solid rgba(226, 203, 127, 0.34);
+}
+
+.spell-rule-guide-title strong {
+  color: #ffe58a;
+  font-size: clamp(15px, 1.45vw, 19px);
+  font-weight: 950;
+}
+
+.spell-rule-guide-title span {
+  width: fit-content;
+  padding: 3px 7px;
+  border: 1px solid rgba(255, 229, 138, 0.46);
+  border-radius: 3px;
+  color: #fff2b8;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.spell-rule-guide-copy {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 5px 8px 5px 0;
+}
+
+.spell-rule-guide-copy p {
+  margin: 0;
+  color: #eee6d0;
+  font-size: clamp(12px, 1.15vw, 15px);
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.learned-spell-detail.learned-primary-spell {
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(242, 213, 107, 0.34);
+  border-radius: 5px;
+  background: rgba(7, 14, 18, 0.9);
+  text-align: left;
+}
+
+.learned-spell-detail.learned-primary-spell > strong {
+  font-size: clamp(18px, 2.2vw, 25px);
+  white-space: nowrap;
+}
+
+.learned-spell-detail.learned-primary-spell p {
+  max-width: none;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.stone-tablet-input {
+  padding: 7px;
+  border: 2px solid #62563b;
+  border-radius: 5px;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.045), transparent 30%, rgba(0, 0, 0, 0.2) 70%),
+    #292a26;
+  box-shadow:
+    inset 0 0 0 1px rgba(222, 200, 136, 0.16),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.28),
+    0 5px 12px rgba(0, 0, 0, 0.28);
+}
+
+.magic-slots.stone-tablet-input .premium-slot,
+.boss-slate.stone-tablet-input .premium-slot,
+.stage4-answer-slots.stone-tablet-input .stage4-answer-slot {
+  border: 2px solid #80704d;
+  border-radius: 4px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), transparent 36%, rgba(0, 0, 0, 0.2)),
+    #343630;
+  color: #fff0b5;
+  text-shadow: 0 2px 2px #000;
+  box-shadow:
+    inset 2px 2px 5px rgba(255, 255, 255, 0.035),
+    inset -3px -4px 7px rgba(0, 0, 0, 0.34);
+}
+
+.magic-slots.stone-tablet-input .premium-slot.is-selected,
+.boss-slate.stone-tablet-input .premium-slot.is-selected,
+.stage4-answer-slots.stone-tablet-input .stage4-answer-slot.is-active {
+  border-color: #ffe58a;
+  outline: 2px solid rgba(255, 229, 138, 0.25);
+  outline-offset: 1px;
+  background:
+    linear-gradient(145deg, rgba(255, 230, 135, 0.12), transparent 40%),
+    #3d3b30;
+}
+
+.boss-spell-book-scroll > .spell-rule-guide {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 760px), (orientation: landscape) and (max-height: 560px) {
+  .spell-rule-guide {
+    grid-template-columns: 1fr;
+    gap: 5px;
+    padding: 7px;
+  }
+
+  .spell-rule-guide-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 6px 7px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(226, 203, 127, 0.34);
+  }
+
+  .spell-rule-guide-copy {
+    gap: 2px;
+    padding: 3px 5px 4px;
+  }
+
+  .spell-rule-guide-copy p {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .learned-spell-detail.learned-primary-spell {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 5px 10px;
+  }
+
+  .learned-spell-detail.learned-primary-spell > span {
+    grid-column: 1 / -1;
+  }
+
+  .learned-spell-detail.learned-primary-spell p {
+    font-size: 11px;
+  }
+
+  .stone-tablet-input {
+    padding: 4px;
+  }
+}
+
 html {
   background-color: #02050a;
 }

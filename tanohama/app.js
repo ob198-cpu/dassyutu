@@ -299,9 +299,27 @@ function getBossTiles(index) {
   return seededShuffle(selected, `${seedText}:layout`);
 }
 
-const spellRuleText =
-  "呪文のルール: 呪文は石板にカタカナで記入し、どこに、どの様に使うかを示す。石板の数に合った文字数の呪文しか唱える事が出来ない。習得した呪文には☆マークが付き、以後使用可能となる。";
+const spellRuleCopy = {
+  title: "呪文のルール：",
+  first: "呪文は石板にカタカナで記入し、どこにどのように使うかを示す。",
+  second: "石板の数に合った文字数の呪文しか唱えることができない。習得した呪文は☆マークがつき、以後使用可能になる。",
+};
 const spellActivationText = "問題を解くと呪文が現れるかも…<br>各ステージの呪文は空欄に文字を正しく打ち込むと発動";
+
+function renderSpellRuleGuide(extraClass = "") {
+  return `
+    <section class="spell-rule-guide ${extraClass}" aria-label="呪文のルール">
+      <div class="spell-rule-guide-title">
+        <strong>${spellRuleCopy.title}</strong>
+        <span>☆ 習得済み</span>
+      </div>
+      <div class="spell-rule-guide-copy">
+        <p>${spellRuleCopy.first}</p>
+        <p>${spellRuleCopy.second}</p>
+      </div>
+    </section>
+  `;
+}
 
 const storeKey = "tanohamaEscapeStateV4";
 
@@ -1165,7 +1183,7 @@ function renderPathAnswerControls(stage) {
         <span>石板 ${stage.slots}文字</span>
       </div>
       <div class="device-main-row">
-        <div class="premium-slot-row magic-slots">
+        <div class="premium-slot-row magic-slots stone-tablet-input">
           ${Array.from({ length: stage.slots })
             .map((_, i) => `<button class="premium-slot ${!done && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!done && i === activeSlot}" ${done ? "disabled" : ""}>${selected[i] || ""}</button>`)
             .join("")}
@@ -1705,6 +1723,7 @@ function renderLearnedSpellViewer() {
         <strong>覚えた呪文</strong>
         <button class="text-button learned-spell-close" id="closeLearnedSpellViewer" type="button">閉じる</button>
       </div>
+      ${renderSpellRuleGuide("is-stage-spell-guide")}
       <div class="learned-stage-tabs" aria-label="ステージ選択">
         ${stageTabs
           .map(
@@ -1734,6 +1753,11 @@ function renderLearnedSpellViewer() {
 
 function renderLearnedStageOneSpells() {
   return `
+    <article class="learned-spell-detail learned-primary-spell">
+      <span>01 / 崩れた足場</span>
+      <strong>☆ ツケモノ</strong>
+      <p>謎の四角を1個生成できる！ この土台の上にのみ生成可能。</p>
+    </article>
     <div class="learned-spell-images">
       <img src="./assets/stage01-spell.webp" alt="ステージ1 呪文">
       <img src="./assets/stage01-clear2.webp" alt="ステージ1 クリア資料">
@@ -1849,7 +1873,7 @@ function renderGateAnswerControls(stage, done, feedback) {
         <button class="gate-answer-close" id="gateAnswerClose" type="button">閉じる</button>
       </div>
       <div class="device-main-row">
-        <div class="premium-slot-row magic-slots">
+        <div class="premium-slot-row magic-slots stone-tablet-input">
           ${Array.from({ length: stage.slots })
             .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
             .join("")}
@@ -2601,7 +2625,7 @@ function renderTimeSpellChooser(phase) {
   const failed = phase === "cast-fail";
   return `
     <div class="time-spell-chooser" aria-label="唱える呪文を文字で選ぶ">
-      <div class="stage4-answer-slots" aria-label="選択した6文字">
+      <div class="stage4-answer-slots stone-tablet-input" aria-label="選択した6文字">
         ${selected.map((character, index) => `<button class="stage4-answer-slot ${index === activeSlot ? "is-active" : ""}" type="button" data-time-cast-slot="${index}" aria-pressed="${index === activeSlot}">${character || "―"}</button>`).join("")}
       </div>
       <div class="stage4-answer-tiles" aria-label="文字候補">
@@ -3367,6 +3391,7 @@ function renderBossSpellBookPanel(stage) {
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="呪文一覧を閉じる">×</button>
       </div>
       <div class="boss-spell-book-scroll">
+        ${renderSpellRuleGuide("is-boss-spell-guide")}
         <section class="boss-spell-book-section">
           <h3>過去の呪文</h3>
           <div class="boss-spell-book-grid">
@@ -3454,7 +3479,7 @@ function renderBossProblemPanel(stage) {
                 ${canCreateSixthSlot ? `
                   ${renderBossSixthSlotBuilder()}
                 ` : `
-                  <div class="boss-slate boss-current-slate ${slotCount >= 8 ? "is-long-spell" : ""} ${missingTsukemonoSlot ? "has-transparent-sixth-slot" : ""}" style="--boss-slot-count:${missingTsukemonoSlot ? 6 : slotCount}" aria-label="${missingTsukemonoSlot ? "6文字の回答欄。6文字目の枠は未生成" : `${slotCount}文字の回答欄`}">
+                  <div class="boss-slate boss-current-slate stone-tablet-input ${slotCount >= 8 ? "is-long-spell" : ""} ${missingTsukemonoSlot ? "has-transparent-sixth-slot" : ""}" style="--boss-slot-count:${missingTsukemonoSlot ? 6 : slotCount}" aria-label="${missingTsukemonoSlot ? "6文字の回答欄。6文字目の枠は未生成" : `${slotCount}文字の回答欄`}">
                     ${Array.from({ length: slotCount }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
                     ${missingTsukemonoSlot ? `<span class="boss-transparent-sixth-slot" aria-label="透明な6文字目の枠"></span>` : ""}
                   </div>
@@ -3530,7 +3555,7 @@ function renderBossSlate(step, index, solved, active) {
         <span class="boss-step-label">石板 ${step.slots}文字</span>
         ${solved ? `<span class="boss-step-done">☆発動済み</span>` : active ? `<span class="boss-step-now">いま唱える</span>` : ""}
       </div>
-      <div class="boss-slate">
+      <div class="boss-slate stone-tablet-input">
         ${chars
           .map((char, i) =>
             active
