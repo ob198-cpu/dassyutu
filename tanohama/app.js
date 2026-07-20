@@ -537,13 +537,15 @@ function normalizeStage2Memo(value) {
 }
 
 const stage2KanjiRevealAnswer = "SIKISINI";
+// The last two circles are read lower-left, then upper-right on the printed board.
+const stage2KanjiRevealMemoOrder = [0, 1, 2, 3, 4, 5, 7, 6];
 const stage2KanjiRevealHoldMs = 1600;
 let stage2KanjiRevealLockUntil = 0;
 
 function isStage2KanjiClueRevealed(value) {
   const memo = normalizeStage2Memo(value);
-  return memo[0]
-    .slice(0, stage2KanjiRevealAnswer.length)
+  return stage2KanjiRevealMemoOrder
+    .map((column) => memo[0][column] || "")
     .join("")
     .toUpperCase() === stage2KanjiRevealAnswer;
 }
@@ -595,8 +597,8 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-8";
-  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-8";
+  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-9";
+  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-9";
   let svg = "";
   let spots = "";
 
@@ -626,14 +628,15 @@ function renderStage2Board(memo, active, pickerOpen) {
       const sy = ((cy / VBH) * 100).toFixed(2);
       if (cell.circle) {
         svg += `<circle cx="${cx}" cy="${cy}" r="24" fill="#fbfbfb"/>`;
-        const inputEnabled = cell.memo < stage2KanjiRevealAnswer.length;
+        const inputOrderIndex = stage2KanjiRevealMemoOrder.indexOf(cell.memo);
+        const inputEnabled = inputOrderIndex >= 0;
         const char = inputEnabled ? memo[0]?.[cell.memo] || "" : "";
         if (char) {
           svg += `<text x="${cx}" y="${cy + 2}" fill="#168447" font-size="34" font-weight="900" text-anchor="middle" dominant-baseline="central" font-family="'Hiragino Sans','Segoe UI',sans-serif">${escapeAttribute(char)}</text>`;
         }
         if (inputEnabled) {
           const sel = pickerOpen && active.row === 0 && active.col === cell.memo;
-          svg += `<circle class="stage2-memo-hit ${sel ? "is-selected" : ""}" cx="${cx}" cy="${cy}" r="32" fill="transparent" role="button" tabindex="0" data-memo="0:${cell.memo}" aria-label="白丸 ${cell.memo + 1} に書き込む"/>`;
+          svg += `<circle class="stage2-memo-hit ${sel ? "is-selected" : ""}" cx="${cx}" cy="${cy}" r="32" fill="transparent" role="button" tabindex="0" data-memo="0:${cell.memo}" aria-label="白丸 ${inputOrderIndex + 1} に書き込む"/>`;
         }
       } else {
         const dimmed = kanjiUnlocked ? cell.color !== "black" : Boolean(marks[`${key}:${cell.r}:${cell.c}`]);
@@ -1091,9 +1094,16 @@ function renderPathProblemCard(stage) {
   const memo = normalizeStage2Memo(state.stage2Memo);
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const active = state.memoActive && Number.isInteger(state.memoActive.row) && Number.isInteger(state.memoActive.col)
-    ? { row: 0, col: Math.min(Math.max(state.memoActive.col, 0), stage2KanjiRevealAnswer.length - 1) }
-    : { row: 0, col: 0 };
+  const savedActiveColumn = state.memoActive && Number.isInteger(state.memoActive.col)
+    ? state.memoActive.col
+    : stage2KanjiRevealMemoOrder[0];
+  const active = {
+    row: 0,
+    col: stage2KanjiRevealMemoOrder.includes(savedActiveColumn)
+      ? savedActiveColumn
+      : stage2KanjiRevealMemoOrder[0],
+  };
+  const activeDisplayNumber = stage2KanjiRevealMemoOrder.indexOf(active.col) + 1;
   const pickerOpen = state.memoPickerOpen === true;
   const answerOpen = state.pathAnswerOpen === true;
   return `
@@ -1118,7 +1128,7 @@ function renderPathProblemCard(stage) {
           ? `
             <div class="slot-choice-popover memo-picker" aria-label="メモの候補">
               <div class="slot-choice-head">
-                <span>白丸 ${active.col + 1}</span>
+                <span>白丸 ${activeDisplayNumber}</span>
                 <div class="memo-picker-actions">
                   <button class="slot-choice-clear" id="clearMemoCell" type="button">空にする</button>
                   <button class="slot-choice-clear" id="closeMemoPicker" type="button">閉じる</button>
@@ -1224,7 +1234,9 @@ function wirePathProblem(stage) {
         state.stage2KanjiShowingRevealed = true;
         state.stage2CellMarks = {};
       }
-      state.memoActive = { row: 0, col: Math.min(col + 1, stage2KanjiRevealAnswer.length - 1) };
+      const activeOrderIndex = Math.max(stage2KanjiRevealMemoOrder.indexOf(col), 0);
+      const nextOrderIndex = Math.min(activeOrderIndex + 1, stage2KanjiRevealMemoOrder.length - 1);
+      state.memoActive = { row: 0, col: stage2KanjiRevealMemoOrder[nextOrderIndex] };
       state.memoPickerOpen = false;
       saveState();
       render();

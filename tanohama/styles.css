@@ -4664,7 +4664,7 @@ body::before {
   bottom: 0;
   width: var(--menu-w);
   display: grid;
-  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
   gap: 12px;
   padding: max(12px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
   border-right: 1px solid rgba(242, 213, 107, 0.26);
@@ -7154,7 +7154,7 @@ body.stage-path-mode .path-stage-background-only .stage-bg-art {
     width: var(--side-menu-w) !important;
     gap: 6px !important;
     padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom)) !important;
-    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
   }
 
   .side-menu-button,
