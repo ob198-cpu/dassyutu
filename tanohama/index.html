@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <script>
       (() => {
-        const buildVersion = "20260720-10";
+        const buildVersion = "20260721-1";
         const query = new URLSearchParams(location.search);
         if (query.get("refresh") === buildVersion) {
           history.replaceState(null, "", `${location.pathname}${location.hash}`);
@@ -46,7 +46,7 @@
       })();
     </script>
     <title>田野浜謎解き - 異空間からの脱出</title>
-    <link rel="stylesheet" href="./styles.css?v=20260720-10" />
+    <link rel="stylesheet" href="./styles.css?v=20260721-1" />
   </head>
   <body>
     <div class="rotate-guard" aria-hidden="true">
@@ -108,6 +108,6 @@
       <p id="hintBody"></p>
     </dialog>
 
-    <script src="./app.js?v=20260720-10"></script>
+    <script src="./app.js?v=20260721-1"></script>
   </body>
 </html>

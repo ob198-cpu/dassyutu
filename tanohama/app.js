@@ -597,8 +597,8 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-10";
-  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-10";
+  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260721-1";
+  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260721-1";
   let svg = "";
   let spots = "";
 
@@ -3226,6 +3226,14 @@ function renderBossTsukemonoBranch() {
   `;
 }
 
+function renderBossTsukemonoBlock({ created = false, label = "ツケモノの石ブロック" } = {}) {
+  return `
+    <span class="boss-tsukemono-block-visual ${created ? "is-created" : ""}" role="img" aria-label="${label}">
+      <i aria-hidden="true"></i>
+    </span>
+  `;
+}
+
 function getBossActionDescription(index) {
   return bossActionDescriptions[index] || "最後の攻撃を放とうとしている";
 }
@@ -3274,14 +3282,26 @@ function renderBossColorRemovalEffect() {
 
 function renderBossSixthSlotBuilder() {
   return `
-    <div class="boss-direct-slots boss-sixth-slot-builder" aria-label="6文字目が未完成の回答欄">
-      ${Array.from({ length: 5 }).map(() => "<span></span>").join("")}
-      <span class="boss-missing-slot" aria-label="6文字目の枠を置ける場所">
-        <i class="boss-tsukemono-block-icon" aria-hidden="true"></i>
-        <small>↑ ブロックを置ける</small>
-      </span>
+    <div class="boss-tsukemono-confirm-layer" role="dialog" aria-modal="true" aria-labelledby="bossTsukemonoConfirmTitle">
+      <section class="boss-tsukemono-confirm-card">
+        <div class="boss-tsukemono-confirm-art">
+          ${renderBossTsukemonoBlock({ label: "6文字目の足場になるツケモノの石ブロック" })}
+        </div>
+        <div class="boss-tsukemono-confirm-copy">
+          <span>6文字目の足場</span>
+          <h3 id="bossTsukemonoConfirmTitle">ツケモノを使いますか？</h3>
+          <p>石板の右端に石のブロックを置き、6文字目の枠を作る。</p>
+        </div>
+        <div class="boss-tsukemono-slot-preview" aria-label="5文字の石板と、これから作る6文字目の枠">
+          ${Array.from({ length: 5 }).map(() => "<span></span>").join("")}
+          <span class="is-block-slot">${renderBossTsukemonoBlock({ label: "6文字目に置く石ブロック" })}</span>
+        </div>
+        <div class="boss-tsukemono-confirm-actions">
+          <button class="secondary-button" id="cancelTsukemonoSlot" type="button">戻る</button>
+          <button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノを使う</button>
+        </div>
+      </section>
     </div>
-    <button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノで6文字目の枠を作る</button>
   `;
 }
 
@@ -3363,7 +3383,8 @@ function renderBossProblemPanel(stage) {
   const feedback = reviewingPast ? null : state.feedback?.stageId === "boss" ? state.feedback : null;
   const effectActive = feedback?.phase === "effect" || feedback?.phase === "hit";
   const tsukemonoBranch = feedback?.branch === "tsukemono";
-  const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
+  const isGokurosamaStep = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ");
+  const needsSixthSlot = isGokurosamaStep && !state.bossSixthSlotCreated;
   const canCreateSixthSlot = needsSixthSlot && canCreateBossSixthSlot();
   const missingTsukemonoSlot = needsSixthSlot && !canCreateSixthSlot;
   const slotCount = needsSixthSlot ? 5 : step.slots;
@@ -3428,11 +3449,11 @@ function renderBossProblemPanel(stage) {
                     ${missingTsukemonoSlot ? `<span class="boss-transparent-sixth-slot" aria-label="透明な6文字目の枠"></span>` : ""}
                   </div>
                   ${state.slotPickerOpen ? renderSlotPicker({ tiles: getBossTiles(index) }, state.activeSlot) : ""}
-                  ${missingTsukemonoSlot ? `
-                    <div class="boss-incomplete-cast-row">
+                  ${isGokurosamaStep ? `
+                    <div class="boss-incomplete-cast-row ${state.bossSixthSlotCreated ? "is-created" : "is-missing"}">
                       <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
-                      <div class="boss-tsukemono-base-image" aria-label="ツケモノを生成できる土台">
-                        <img src="./assets/stage01-clear2.webp" alt="ツケモノの土台">
+                      <div class="boss-tsukemono-block-cell" aria-label="${state.bossSixthSlotCreated ? "ツケモノで作った6文字目の石ブロック" : "6文字目に置くツケモノの石ブロック"}">
+                        ${renderBossTsukemonoBlock({ created: state.bossSixthSlotCreated, label: state.bossSixthSlotCreated ? "設置済みのツケモノの石ブロック" : "ツケモノの石ブロック" })}
                       </div>
                     </div>
                   ` : `<button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>`}
@@ -3592,6 +3613,12 @@ function wireBoss() {
     state.bossAnswerOpen = true;
     state.feedback = null;
     state.slotInput = [];
+    render();
+  });
+  document.querySelector("#cancelTsukemonoSlot")?.addEventListener("click", () => {
+    state.bossAnswerOpen = false;
+    state.slotPickerOpen = false;
+    state.feedback = null;
     render();
   });
   document.querySelector("#castTsukemonoForSlot")?.addEventListener("click", () => {
