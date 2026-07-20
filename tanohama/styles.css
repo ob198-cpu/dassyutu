@@ -16870,13 +16870,55 @@ html.line-webview .learned-spell-viewer {
 }
 
 .stage2-kanji-clue {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+.stage2-kanji-clue.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.stage2-reveal-confirmation {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  z-index: 8;
+  transform: translateX(-50%);
+  padding: 4px 18px;
+  border: 1px solid rgba(255, 221, 112, 0.86);
+  border-radius: 4px;
+  background: rgba(3, 10, 12, 0.94);
+  color: #ffe58a;
+  font-size: clamp(12px, 1.5vw, 18px);
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.stage2-reveal-confirmation-pop {
+  animation: stage2-confirmation-pop 560ms ease-out both;
+}
+
+@keyframes stage2-confirmation-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -8px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }
 
 .stage2-kanji-reveal {

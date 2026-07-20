@@ -593,9 +593,8 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const kanjiClueAsset = kanjiShowingRevealed
-    ? "./assets/stage02-kanji-revealed.webp?v=20260720-5"
-    : "./assets/stage02-kanji-fragments.webp?v=20260720-5";
+  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-6";
+  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-6";
   let svg = "";
   let spots = "";
 
@@ -676,9 +675,13 @@ function renderStage2Board(memo, active, pickerOpen) {
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
   const kanjiLabel = kanjiShowingRevealed ? "赤い部分のみの画像に切り替える" : "クロミレの画像に切り替える";
+  const kanjiImages = `
+    <img class="stage2-kanji-clue stage2-kanji-clue-fragments ${kanjiShowingRevealed ? "" : "is-active"}" src="${kanjiFragmentsAsset}" alt="色紙の赤い部分" draggable="false">
+    <img class="stage2-kanji-clue stage2-kanji-clue-revealed ${kanjiShowingRevealed ? "is-active" : ""}" src="${kanjiRevealedAsset}" alt="色紙から抜け落ちた形を左から読むとクロミレになる" draggable="false">
+  `;
   spots += kanjiUnlocked
-    ? `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}"><img class="stage2-kanji-clue ${kanjiShowingRevealed ? "is-revealed" : ""}" src="${kanjiClueAsset}" alt="${kanjiShowingRevealed ? "色紙から抜け落ちた形を左から読むとクロミレになる" : "色紙の赤い部分"}" draggable="false"></button>`
-    : `<div class="stage2-kanji-toggle-hit is-locked" aria-label="色紙の赤い部分"><img class="stage2-kanji-clue" src="${kanjiClueAsset}" alt="色紙の赤い部分" draggable="false"></div>`;
+    ? `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${kanjiImages}</button>`
+    : `<div class="stage2-kanji-toggle-hit is-locked" aria-label="色紙の赤い部分">${kanjiImages}</div>`;
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -1084,6 +1087,8 @@ function renderPathStage(stage) {
 
 function renderPathProblemCard(stage) {
   const memo = normalizeStage2Memo(state.stage2Memo);
+  const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
+  const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
   const active = state.memoActive && Number.isInteger(state.memoActive.row) && Number.isInteger(state.memoActive.col)
     ? { row: 0, col: Math.min(Math.max(state.memoActive.col, 0), stage2KanjiRevealAnswer.length - 1) }
     : { row: 0, col: 0 };
@@ -1091,6 +1096,7 @@ function renderPathProblemCard(stage) {
   const answerOpen = state.pathAnswerOpen === true;
   return `
     <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""}" aria-label="問題とメモ">
+      ${kanjiShowingRevealed ? `<div class="stage2-reveal-confirmation" role="status" aria-live="polite">クロミレが現れた</div>` : ""}
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions stage2-board-controls">
@@ -1171,7 +1177,7 @@ function wirePathProblem(stage) {
     state.stage2KanjiShowingRevealed = !state.stage2KanjiShowingRevealed;
     saveState();
     render();
-    popOnce(".stage2-kanji-clue", "stage2-kanji-reveal");
+    popOnce(".stage2-kanji-toggle-hit", "stage2-kanji-reveal");
   };
   document.querySelector("#stage2KanjiToggle")?.addEventListener("click", toggleKanjiClue);
   document.querySelector("#stage2KanjiToggle")?.addEventListener("keydown", (event) => {
@@ -1207,17 +1213,22 @@ function wirePathProblem(stage) {
       const memo = normalizeStage2Memo(state.stage2Memo);
       const wasKanjiRevealed = isStage2KanjiClueRevealed(memo);
       const { row, col } = state.memoActive;
-      memo[row][col] = button.dataset.memoTile || "";
+      memo[0][col] = (button.dataset.memoTile || "").trim().toUpperCase();
       state.stage2Memo = memo;
       const kanjiRevealed = isStage2KanjiClueRevealed(memo);
-      if (!wasKanjiRevealed && kanjiRevealed) state.stage2KanjiShowingRevealed = true;
+      if (kanjiRevealed) {
+        state.stage2KanjiShowingRevealed = true;
+        state.stage2CellMarks = {};
+      }
       state.memoActive = { row: 0, col: Math.min(col + 1, stage2KanjiRevealAnswer.length - 1) };
       state.memoPickerOpen = false;
+      saveState();
       render();
-      popOnce(`[data-memo="${row}:${col}"]`);
+      popOnce(`[data-memo="0:${col}"]`);
       if (!wasKanjiRevealed && kanjiRevealed) {
         audioDirector.playEffect("success");
-        popOnce(".stage2-kanji-clue", "stage2-kanji-reveal");
+        popOnce(".stage2-kanji-toggle-hit", "stage2-kanji-reveal");
+        popOnce(".stage2-reveal-confirmation", "stage2-reveal-confirmation-pop");
       }
     });
   });
