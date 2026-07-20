@@ -597,8 +597,8 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-9";
-  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-9";
+  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-10";
+  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-10";
   let svg = "";
   let spots = "";
 
@@ -2625,6 +2625,7 @@ function renderTimeSuccessSequence(stage, phase) {
           <h2>タイムマシンを唱えた！</h2>
           <p class="time-cast-effect-copy">空間が巻き戻り、「ここ」という言葉が残る過去へ移動する。</p>
           <div class="time-warp-effect" aria-hidden="true"></div>
+          <button class="primary-button" id="timeCastContinue" type="button">つぎへ</button>
         </div>
       </section>
     `;
@@ -2673,10 +2674,6 @@ function castSelectedTimeSpell(stage) {
     state.timeSequencePhase = "casting-time";
     state.feedback = null;
     render();
-    window.setTimeout(() => {
-      if (stages[state.stageIndex]?.id !== "time" || state.timeSequencePhase !== "casting-time") return;
-      returnToIntroWithTimeMachine();
-    }, 1600);
     return;
   }
   if (normalized === normalizeAnswer("キミタチナラ")) {
@@ -2692,6 +2689,7 @@ function castSelectedTimeSpell(stage) {
 }
 
 function wireTimeSuccessSequence(stage) {
+  document.querySelector("#timeCastContinue")?.addEventListener("click", returnToIntroWithTimeMachine);
   document.querySelector("#timeLearnedNext")?.addEventListener("click", () => {
     state.timeSequencePhase = "explanation";
     render();

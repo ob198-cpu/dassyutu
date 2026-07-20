@@ -16054,6 +16054,393 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   }
 }
 
+/* Desktop presentation: keep the puzzle, controls and stage art at a readable scale. */
+@media (min-width: 1100px) and (min-height: 700px) {
+  body.stage-one-mode .spell-device.is-problem-mode {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    grid-template-areas: none !important;
+    align-content: stretch !important;
+    gap: 14px !important;
+    padding: 22px 30px 20px !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-panel {
+    grid-area: auto !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    height: 100% !important;
+    padding: 18px 0 0 !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    gap: 14px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-scroll {
+    display: grid !important;
+    place-items: center !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .stage1-sheet {
+    width: min(100%, 1280px) !important;
+    margin: 0 auto !important;
+    padding: 18px 24px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .sheet-title {
+    font-size: 27px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-cols {
+    gap: 24px !important;
+    padding: 18px 0 !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-q1 {
+    gap: 18px !important;
+    padding-right: 24px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-natto {
+    font-size: 52px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-inst {
+    font-size: 18px !important;
+    line-height: 1.48 !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-q2-text {
+    font-size: 23px !important;
+    line-height: 1.45 !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-footer {
+    margin-top: 14px !important;
+    font-size: 17px !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .gate-kana-board {
+    box-sizing: border-box !important;
+    flex: 0 0 auto !important;
+    width: min(100%, 1120px) !important;
+    max-width: 1120px !important;
+    height: auto !important;
+    min-height: 78px !important;
+    max-height: 138px !important;
+    margin: 0 auto !important;
+    padding: 7px 10px 8px !important;
+    grid-template-rows: 30px 30px auto !important;
+    gap: 3px !important;
+    overflow: hidden auto !important;
+  }
+
+  body.stage-one-mode .gate-kana-board .kana-board-row {
+    height: 30px !important;
+    min-height: 30px !important;
+    gap: 2px !important;
+  }
+
+  body.stage-one-mode .gate-kana-board .kana-glyph {
+    height: 30px !important;
+    min-height: 30px !important;
+    font-size: 17px !important;
+    line-height: 30px !important;
+  }
+
+  body.stage-one-mode .gate-kana-board .kana-glyph.is-composite {
+    font-size: 14px !important;
+  }
+
+  body.stage-one-mode .problem-answer-launcher {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    padding-top: 12px !important;
+  }
+
+  body.stage-one-mode .problem-answer-toggle {
+    width: min(430px, 100%) !important;
+    min-height: 52px !important;
+    font-size: 18px !important;
+  }
+
+  .gate-success-sequence.is-prompt1 .gate-choice-card {
+    width: min(760px, calc(100% - 64px)) !important;
+    padding: 24px 26px !important;
+  }
+
+  .gate-success-sequence.is-prompt1 .gate-clear-heading strong {
+    font-size: 31px !important;
+  }
+
+  .gate-success-sequence.is-prompt1 .reward-card {
+    padding: 18px 20px !important;
+  }
+
+  .gate-success-sequence.is-prompt2 {
+    padding-bottom: 26px !important;
+  }
+
+  .gate-success-sequence.is-prompt2 .gate-choice-bar {
+    width: min(840px, calc(100% - 64px)) !important;
+    grid-template-columns: minmax(0, 1fr) 320px !important;
+    align-items: center !important;
+    gap: 18px !important;
+    padding: 15px 18px !important;
+  }
+
+  .gate-success-sequence.is-prompt2 .gate-choice-question {
+    font-size: 19px !important;
+    text-align: left !important;
+  }
+
+  .generic-immersive-stage {
+    position: relative !important;
+    isolation: isolate;
+    background: #02050a !important;
+  }
+
+  .generic-immersive-stage > .generic-stage-world {
+    position: absolute !important;
+    z-index: 0 !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    min-height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .generic-immersive-stage > .generic-stage-world > .stage-bg-art {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    opacity: 1 !important;
+  }
+
+  .generic-immersive-stage > .stage-corner-label,
+  .generic-immersive-stage > .stage4-background-message {
+    z-index: 5 !important;
+  }
+
+  .generic-immersive-stage.stage-shop .generic-problem-panel > .immersive-panel-scroll {
+    display: grid !important;
+    place-items: center !important;
+    padding: 24px !important;
+  }
+
+  .generic-immersive-stage.stage-shop .generic-problem-panel .sheet-problem {
+    width: min(100%, 1320px) !important;
+    min-height: 0 !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-sheet {
+    width: 100% !important;
+    height: min(620px, calc(100dvh - 112px)) !important;
+    min-height: 520px !important;
+    padding: 20px !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-sheet .stage3-cols {
+    height: calc(100% - 50px) !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-cipher {
+    padding: 16px 18px !important;
+    font-size: 18px !important;
+    line-height: 1.45 !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-target {
+    font-size: 34px !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-left .sheet-elder {
+    padding: 12px 16px !important;
+    font-size: 15px !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-shop-title {
+    padding: 12px !important;
+    font-size: 26px !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-items li {
+    min-height: 70px !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-items strong {
+    font-size: 20px !important;
+  }
+
+  .generic-immersive-stage.stage-shop .stage3-items small {
+    font-size: 14px !important;
+  }
+
+  .stage4-problem-panel > .immersive-panel-scroll {
+    display: grid !important;
+    place-items: center !important;
+    padding: 20px 22px !important;
+  }
+
+  .stage4-problem-panel .sheet-problem:has(.stage4-static-sheet) {
+    width: min(100%, 1480px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: auto !important;
+  }
+
+  .stage4-problem-panel .stage4-static-sheet {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    gap: 9px !important;
+    padding: 10px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-area {
+    padding: 9px 12px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-area > p {
+    margin-bottom: 7px !important;
+    font-size: 15px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-grid {
+    gap: 8px 14px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-grid .s4-num-row {
+    gap: 5px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-grid .s4-num-label {
+    flex-basis: 26px !important;
+    font-size: 18px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-grid .s4-num-box {
+    flex: 0 1 78px !important;
+    width: 78px !important;
+    min-height: 55px !important;
+    grid-template-rows: 18px 30px !important;
+    padding: 2px 3px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-grid .s4-num-source {
+    font-size: 13px !important;
+  }
+
+  .stage4-problem-panel .s4-static-answer-grid .s4-map-input {
+    height: 30px !important;
+    font-size: 16px !important;
+  }
+
+  .stage4-problem-panel .s4-footer-note {
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+  }
+
+  .stage4-problem-panel .s4-final-section {
+    gap: 10px 18px !important;
+    padding: 9px 12px !important;
+  }
+
+  .stage4-problem-panel .s4-final-clue > strong {
+    font-size: 13px !important;
+  }
+
+  .stage4-problem-panel .s4-final-phrase button {
+    min-height: 32px !important;
+    font-size: 16px !important;
+  }
+
+  .stage4-problem-panel .s4-final-answer-line > .s4-final-answer-submit {
+    min-width: 128px !important;
+    min-height: 42px !important;
+    font-size: 15px !important;
+  }
+
+  .stage4-answer-drawer {
+    inset: 50% auto auto 50% !important;
+    width: min(980px, calc(100% - 48px)) !important;
+    height: auto !important;
+    max-height: calc(100% - 48px) !important;
+    transform: translate(-50%, -50%) !important;
+    grid-template-rows: auto auto auto auto auto !important;
+    align-content: start !important;
+    gap: 14px !important;
+    padding: 20px !important;
+  }
+
+  .stage4-answer-drawer .stage4-answer-slots {
+    gap: 9px !important;
+  }
+
+  .stage4-answer-drawer .stage4-answer-slot {
+    min-height: 58px !important;
+  }
+
+  .stage4-answer-drawer .stage4-answer-tiles {
+    align-content: start !important;
+    gap: 7px !important;
+  }
+
+  .stage4-answer-drawer .stage4-answer-tiles button {
+    min-height: 40px !important;
+    font-size: 17px !important;
+  }
+
+  .time-spell-sequence.is-casting-time .time-spell-sequence-card {
+    width: min(760px, calc(100% - 64px)) !important;
+    padding: 26px 30px !important;
+  }
+
+  .time-spell-sequence.is-casting-time .time-spell-sequence-card > .primary-button {
+    min-height: 50px !important;
+    font-size: 18px !important;
+  }
+
+  .generic-immersive-stage.stage-shop.is-solved .stage-clear-overlay,
+  .generic-immersive-stage.stage-time.is-solved .stage-clear-overlay {
+    place-items: end center !important;
+    padding: 0 28px 28px !important;
+  }
+
+  .generic-immersive-stage.stage-shop.is-solved .stage-clear-card,
+  .generic-immersive-stage.stage-time.is-solved .stage-clear-card {
+    width: min(820px, calc(100% - 56px)) !important;
+    max-height: none !important;
+    padding: 20px 24px !important;
+  }
+
+  .generic-immersive-stage.stage-shop.is-solved .stage-clear-card h2,
+  .generic-immersive-stage.stage-time.is-solved .stage-clear-card h2 {
+    font-size: 30px !important;
+  }
+
+  .generic-immersive-stage.stage-shop.is-solved .clear-spell-reward p,
+  .generic-immersive-stage.stage-time.is-solved .clear-spell-reward p {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .generic-immersive-stage.stage-shop.is-solved .clear-actions button,
+  .generic-immersive-stage.stage-time.is-solved .clear-actions button {
+    min-height: 48px !important;
+    font-size: 16px !important;
+  }
+}
+
 @keyframes bossImpactLine {
   0%, 100% { opacity: 0.45; transform: translate(-50%, -50%) scaleX(0.72); }
   50% { opacity: 1; transform: translate(-50%, -50%) scaleX(1); }
@@ -17190,5 +17577,120 @@ body.stage-path-mode .stage2-problem-footer .problem-answer-toggle {
   body.stage-path-mode .path-problem-card.is-answer-open .path-problem-answer {
     flex: 1 1 auto;
     align-content: center;
+  }
+}
+
+/* Final desktop Stage 01 values must follow the shared webview safeguards above. */
+@media (min-width: 1100px) and (min-height: 700px) {
+  body.stage-one-mode .spell-device.is-problem-mode {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    grid-template-areas: none !important;
+    align-content: stretch !important;
+    gap: 14px !important;
+    padding: 22px 30px 20px !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-panel {
+    grid-area: auto !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    height: 100% !important;
+    padding: 18px 0 0 !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    gap: 14px !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .gate-sheet-scroll {
+    display: grid !important;
+    place-items: center !important;
+    overflow: hidden !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .stage1-sheet {
+    width: min(100%, 1280px) !important;
+    margin: 0 auto !important;
+    padding: 18px 24px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .sheet-title {
+    font-size: 27px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-cols {
+    gap: 24px !important;
+    padding: 18px 0 !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-q1 {
+    gap: 18px !important;
+    padding-right: 24px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-natto {
+    font-size: 52px !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-inst {
+    font-size: 18px !important;
+    line-height: 1.48 !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-q2-text {
+    font-size: 23px !important;
+    line-height: 1.45 !important;
+  }
+
+  body.stage-one-mode .stage1-sheet .stage1-footer {
+    margin-top: 14px !important;
+    font-size: 17px !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+  }
+
+  body.stage-one-mode .spell-device.is-problem-mode .gate-kana-board {
+    box-sizing: border-box !important;
+    flex: 0 0 auto !important;
+    width: min(100%, 1120px) !important;
+    max-width: 1120px !important;
+    height: auto !important;
+    min-height: 78px !important;
+    max-height: 138px !important;
+    margin: 0 auto !important;
+    padding: 7px 10px 8px !important;
+    grid-template-rows: 30px 30px auto !important;
+    gap: 3px !important;
+    overflow: hidden auto !important;
+  }
+
+  body.stage-one-mode .gate-kana-board .kana-board-row {
+    height: 30px !important;
+    min-height: 30px !important;
+    gap: 2px !important;
+  }
+
+  body.stage-one-mode .gate-kana-board .kana-glyph {
+    height: 30px !important;
+    min-height: 30px !important;
+    font-size: 17px !important;
+    line-height: 30px !important;
+  }
+
+  body.stage-one-mode .gate-kana-board .kana-glyph.is-composite {
+    font-size: 14px !important;
+  }
+
+  body.stage-one-mode .problem-answer-launcher {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    padding-top: 12px !important;
+  }
+
+  body.stage-one-mode .problem-answer-toggle {
+    width: min(430px, 100%) !important;
+    min-height: 52px !important;
+    font-size: 18px !important;
   }
 }
