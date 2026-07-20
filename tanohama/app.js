@@ -537,6 +537,8 @@ function normalizeStage2Memo(value) {
 }
 
 const stage2KanjiRevealAnswer = "SIKISINI";
+const stage2KanjiRevealHoldMs = 1600;
+let stage2KanjiRevealLockUntil = 0;
 
 function isStage2KanjiClueRevealed(value) {
   const memo = normalizeStage2Memo(value);
@@ -593,8 +595,8 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-7";
-  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-7";
+  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260720-8";
+  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260720-8";
   let svg = "";
   let spots = "";
 
@@ -1096,7 +1098,7 @@ function renderPathProblemCard(stage) {
   const answerOpen = state.pathAnswerOpen === true;
   return `
     <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""}" aria-label="問題とメモ">
-      ${kanjiShowingRevealed ? `<div class="stage2-reveal-confirmation" role="status" aria-live="polite">クロミレが現れた</div>` : ""}
+      ${kanjiUnlocked ? `<div class="stage2-reveal-confirmation" role="status" aria-live="assertive">クロミレが現れた</div>` : ""}
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions stage2-board-controls">
@@ -1174,6 +1176,7 @@ function wirePathProblem(stage) {
   });
   const toggleKanjiClue = () => {
     if (!isStage2KanjiClueRevealed(state.stage2Memo)) return;
+    if (Date.now() < stage2KanjiRevealLockUntil) return;
     state.stage2KanjiShowingRevealed = !state.stage2KanjiShowingRevealed;
     saveState();
     render();
@@ -1217,6 +1220,7 @@ function wirePathProblem(stage) {
       state.stage2Memo = memo;
       const kanjiRevealed = isStage2KanjiClueRevealed(memo);
       if (kanjiRevealed) {
+        stage2KanjiRevealLockUntil = Date.now() + stage2KanjiRevealHoldMs;
         state.stage2KanjiShowingRevealed = true;
         state.stage2CellMarks = {};
       }
@@ -1237,6 +1241,8 @@ function wirePathProblem(stage) {
     const { row, col } = state.memoActive;
     memo[row][col] = "";
     state.stage2Memo = memo;
+    state.stage2KanjiShowingRevealed = isStage2KanjiClueRevealed(memo);
+    saveState();
     render();
   });
   document.querySelector("#closeMemoPicker")?.addEventListener("click", () => {
