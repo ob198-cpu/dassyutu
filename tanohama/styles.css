@@ -13701,6 +13701,27 @@ button.s4-map-input.is-active {
   font-weight: 750;
 }
 
+.boss-wizard-spell-list {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px 14px;
+  margin: 5px 0;
+  padding: 7px 0;
+  border-top: 1px solid rgba(142, 207, 255, 0.3);
+  border-bottom: 1px solid rgba(142, 207, 255, 0.3);
+  list-style: none;
+}
+
+.boss-wizard-spell-list li {
+  min-width: 0;
+  color: #fff3bd;
+  font-size: clamp(10px, 1vw, 13px);
+  font-weight: 850;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .boss-wizard-copy .boss-intro-start {
   animation: bossDialogueIn 0.5s ease-out 0.45s both, bossStartPulse 1.3s ease-in-out 1.15s infinite alternate;
 }
@@ -13860,6 +13881,17 @@ button.s4-map-input.is-active {
   .boss-wizard-spell-card p {
     font-size: 10px;
     line-height: 1.25;
+  }
+
+  .boss-wizard-spell-list {
+    gap: 1px 10px;
+    margin: 2px 0;
+    padding: 3px 0;
+  }
+
+  .boss-wizard-spell-list li {
+    font-size: 8.5px;
+    line-height: 1.2;
   }
 
   .boss-wizard-copy .boss-intro-start {

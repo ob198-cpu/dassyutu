@@ -216,6 +216,8 @@ const bossNewSpells = [
   { name: "イチゲキゼンリョクデ", effect: "仲間1人の命と引き換えに全力の一撃を放つ！" },
 ];
 
+const bossWizardSpellNames = bossNewSpells.map((spell) => spell.name);
+
 const bossLearnedSpells = [
   { name: "ツケモノ", effect: "謎の四角を1個生成できる！" },
   { name: "ゴクロウサマ", effect: "『　』内の色を消す事が出来る。内容の意味が通れば、それは現実となる！" },
@@ -794,6 +796,12 @@ function loadState() {
       }
       saved.cleared = Array.isArray(saved.cleared) ? saved.cleared : [];
       saved.spells = Array.isArray(saved.spells) ? saved.spells : [];
+      const savedBossWizardSpellLearned = Boolean(saved.bossWizardSpellLearned) || saved.spells.includes("バリ");
+      if (savedBossWizardSpellLearned) {
+        bossWizardSpellNames.forEach((spell) => {
+          if (!saved.spells.includes(spell)) saved.spells.push(spell);
+        });
+      }
       if (saved.cleared.includes("time") || saved.spells.includes("キミタチナラ")) {
         saved.spells = saved.spells.filter((spell) => spell !== "キミタチナラ");
         if (saved.cleared.includes("time") && !saved.spells.includes("タイムマシン")) saved.spells.push("タイムマシン");
@@ -849,7 +857,7 @@ function loadState() {
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
         bossIntroOpen: Boolean(saved.bossIntroOpen),
         bossIntroPhase: ["threat", "wizard"].includes(saved.bossIntroPhase) ? saved.bossIntroPhase : "threat",
-        bossWizardSpellLearned: Boolean(saved.bossWizardSpellLearned) || saved.spells.includes("バリ"),
+        bossWizardSpellLearned: savedBossWizardSpellLearned,
         bossAnswerOpen: Boolean(saved.bossAnswerOpen),
         bossSlotCreationPending: savedTsukemonoActivated && Boolean(saved.bossSlotCreationPending),
         bossTsukemonoActivated: savedTsukemonoActivated,
@@ -3464,14 +3472,17 @@ function renderBossIntro() {
         <div class="boss-wizard-copy">
           <span class="boss-wizard-signal">ARCANE INTERVENTION / 魔法使い</span>
           <h2>「待つんじゃ！」</h2>
-          <blockquote>「最後の戦いを前に、ひとつだけ新しい呪文を授ける。敵の動きをよく見て、必要な瞬間に唱えるんじゃ」</blockquote>
-          <article class="boss-wizard-spell-card" aria-label="新しく習得する呪文 バリ">
-            <span>新しい呪文を伝授</span>
-            <strong>☆ バリ</strong>
-            <p>瞬間的なバリアを張り、弱攻撃を無効化する。</p>
-            <small>ラスボスが最初に放つ、鋭い爪を防げる。</small>
+          <blockquote>「最後の戦いを前に、十種の戦闘呪文をまとめて授ける。敵の動きと石板の数を見て、必要な呪文を使い分けるんじゃ」</blockquote>
+          <article class="boss-wizard-spell-card" aria-label="新しく習得する10種類の呪文">
+            <span>新しい呪文を10種類同時に伝授</span>
+            <strong>☆ 戦闘呪文 ×10</strong>
+            <p>バリを含む十種すべてを、この場で習得する。</p>
+            <ul class="boss-wizard-spell-list" aria-label="伝授される呪文一覧">
+              ${bossNewSpells.map((spell) => `<li>☆ ${spell.name}</li>`).join("")}
+            </ul>
+            <small>詳しい効果は、戦闘画面の「呪文の書」で確認できる。</small>
           </article>
-          <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">☆バリを習得して戦闘開始</button>
+          <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">10種類の呪文を習得して戦闘開始</button>
         </div>
       </section>
     `;
@@ -3788,7 +3799,7 @@ function wireBoss() {
     burstOnce(".boss-wizard-spell-card");
   });
   document.querySelector("#bossIntroStart")?.addEventListener("click", () => {
-    addUnique(state.spells, "バリ");
+    bossWizardSpellNames.forEach((spell) => addUnique(state.spells, spell));
     state.bossWizardSpellLearned = true;
     state.bossIntroOpen = false;
     state.bossPanelMode = "problem";
