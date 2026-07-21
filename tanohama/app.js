@@ -1088,7 +1088,7 @@ function renderIntro(stage) {
   elements.game.innerHTML = `
     <section class="intro-stage intro-image-stage" aria-label="異世界へ！？">
       <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
-      <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？崖を越えられない。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
+      <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？壁を越えられない。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
     </section>
   `;
   document.querySelector("#introStartButton")?.addEventListener("click", () => {
