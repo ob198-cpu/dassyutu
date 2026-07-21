@@ -4010,7 +4010,7 @@ function renderClear() {
       <video
         class="ending-cinematic-video"
         id="endingVideo"
-        poster="./assets/finale-ending-poster-v1.jpg?v=20260721-5"
+        poster="./assets/finale-ending-opening-poster-v1.jpg?v=20260721-11"
         preload="auto"
         playsinline
         webkit-playsinline
