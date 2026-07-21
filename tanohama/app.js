@@ -866,12 +866,13 @@ function loadState() {
         bossSixthSlotCreated: savedTsukemonoActivated && Boolean(saved.bossSixthSlotCreated),
         bossColorRemoved: Boolean(saved.bossColorRemoved),
         clearPhase: ["cinematic", "finished"].includes(saved.clearPhase) ? saved.clearPhase : "cinematic",
+        endingPage: Number.isInteger(saved.endingPage) ? Math.max(0, Math.min(2, saved.endingPage)) : 0,
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic", endingPage: 0 };
 }
 
 function saveState() {
@@ -1041,6 +1042,60 @@ function burstOnce(selector) {
   });
 }
 
+const scrollGuideSelector = [
+  ".gate-problem-card",
+  ".path-problem-card",
+  ".immersive-panel-scroll",
+  ".stage4-answer-drawer",
+  ".boss-problem-copy",
+  ".boss-spell-book-scroll",
+  ".learned-spell-viewer",
+  ".spell-open-screen",
+  "#hintBody",
+].join(",");
+
+function setupScrollIndicators() {
+  document.querySelectorAll(".scroll-down-indicator").forEach((indicator) => indicator.remove());
+  document.querySelectorAll(".scroll-indicator-host").forEach((host) => host.classList.remove("scroll-indicator-host"));
+
+  document.querySelectorAll(scrollGuideSelector).forEach((container) => {
+    if (!(container instanceof HTMLElement) || container.clientHeight < 80) return;
+    if (container.scrollHeight <= container.clientHeight + 24) return;
+
+    const host = container.closest(".spell-device, .path-device, .immersive-panel, .boss-problem-panel, .boss-spell-book-panel, .hint-dialog")
+      || container.parentElement;
+    if (!(host instanceof HTMLElement)) return;
+    if (Array.from(host.children).some((child) => child.classList?.contains("scroll-down-indicator"))) return;
+    if (window.getComputedStyle(host).position === "static") host.classList.add("scroll-indicator-host");
+
+    const indicator = document.createElement("button");
+    indicator.className = "scroll-down-indicator";
+    indicator.type = "button";
+    indicator.title = "下へスクロール";
+    indicator.setAttribute("aria-label", "下に続く内容へスクロール");
+    indicator.innerHTML = '<span aria-hidden="true">↓</span>';
+    host.appendChild(indicator);
+
+    const updateIndicator = () => {
+      const remaining = container.scrollHeight - container.clientHeight - container.scrollTop;
+      indicator.hidden = remaining <= 24;
+    };
+    container.addEventListener("scroll", updateIndicator, { passive: true });
+    indicator.addEventListener("click", () => {
+      const targetTop = Math.min(
+        container.scrollHeight - container.clientHeight,
+        container.scrollTop + Math.max(180, container.clientHeight * 0.72),
+      );
+      try {
+        container.scrollTo({ top: targetTop, behavior: "smooth" });
+      } catch {
+        container.scrollTop = targetTop;
+      }
+    });
+    updateIndicator();
+  });
+}
+
 function render() {
   if (!state.isClear) {
     const maxOpen = getUnlockedStageIndex();
@@ -1083,6 +1138,7 @@ function render() {
   }
   updateSoundControl();
   saveState();
+  window.requestAnimationFrame(setupScrollIndicators);
 }
 
 function renderIntro(stage) {
@@ -4119,12 +4175,55 @@ function completeBossStep(step) {
     addUnique(state.cleared, "boss");
     state.isClear = true;
     state.clearPhase = "cinematic";
+    state.endingPage = 0;
   }
   render();
   requestAnimationFrame(() => {
     const solved = document.querySelectorAll(".boss-step.is-solved");
     solved[solved.length - 1]?.classList.add("just-solved");
   });
+}
+
+const endingEpilogue = [
+  {
+    label: "帰還 1 / 3",
+    title: "出口の向こうから、焼き肉の匂いがした",
+    body: "ラスボスが崩れると、異空間を覆っていた闇もほどけていった。開いた扉の向こうから聞こえたのは、仲間の声と肉の焼ける音だった。",
+  },
+  {
+    label: "帰還 2 / 3",
+    title: "戻ったのは、飛ばされた直後のマッシュ室",
+    body: "扉をくぐった一行が着いたのは、焼き肉をしていた元の部屋。こちらではほとんど時間が進んでおらず、鉄板の肉はまだ焼け続けていた。",
+  },
+  {
+    label: "ESCAPE COMPLETE",
+    title: "ただいま。異空間からの脱出成功",
+    body: "異空間の扉は光の粒になって閉じた。それでも、覚えた呪文と力を合わせた記憶は残っている。焦げる寸前の肉を救い、一行は無事の帰還を祝って焼き肉を再開した。",
+  },
+];
+
+function endingEpilogueMarkup() {
+  const page = Math.max(0, Math.min(endingEpilogue.length - 1, state.endingPage || 0));
+  const scene = endingEpilogue[page];
+  const finalPage = page === endingEpilogue.length - 1;
+  return `
+    <article class="ending-epilogue" aria-live="polite">
+      <div class="ending-epilogue-progress" aria-label="エンディング ${page + 1} / ${endingEpilogue.length}">
+        ${endingEpilogue.map((_, index) => `<i class="${index <= page ? "is-active" : ""}"></i>`).join("")}
+      </div>
+      <small>${scene.label}</small>
+      <h2>${scene.title}</h2>
+      <p>${scene.body}</p>
+      ${finalPage ? `
+        <div class="ending-cinematic-buttons">
+          <button class="secondary-button" id="endingReplay" type="button">映像をもう一度見る</button>
+          <button class="primary-button" id="replayButton" type="button">最初から遊ぶ</button>
+        </div>
+      ` : `
+        <button class="primary-button ending-epilogue-next" id="endingEpilogueNext" type="button">つぎへ</button>
+      `}
+    </article>
+  `;
 }
 
 function renderClear() {
@@ -4147,14 +4246,7 @@ function renderClear() {
       <button class="primary-button ending-video-start" id="endingVideoStart" type="button" hidden>音付きエンディングを再生</button>
       <p class="ending-video-error" id="endingVideoError" hidden>動画を読み込めませんでした。通信状態を確認して再読み込みしてください。</p>
       <div class="ending-cinematic-actions ${finished ? "is-visible" : ""}" id="endingCinematicActions" ${finished ? "" : "hidden"}>
-        <div class="ending-cinematic-result">
-          <small>ESCAPE COMPLETE</small>
-          <strong>異空間からの脱出</strong>
-        </div>
-        <div class="ending-cinematic-buttons">
-          <button class="secondary-button" id="endingReplay" type="button">映像をもう一度見る</button>
-          <button class="primary-button" id="replayButton" type="button">最初から遊ぶ</button>
-        </div>
+        <div id="endingEpilogueContent">${endingEpilogueMarkup()}</div>
       </div>
     </section>
   `;
@@ -4165,17 +4257,21 @@ function renderClear() {
   const startButton = document.querySelector("#endingVideoStart");
   const errorMessage = document.querySelector("#endingVideoError");
   const actions = document.querySelector("#endingCinematicActions");
+  const epilogueContent = document.querySelector("#endingEpilogueContent");
   if (!video || !screen || !actions) return;
 
   video.muted = audioDirector.isMuted();
   const finishEnding = () => {
     audioDirector.setCinematicMode(false);
     state.clearPhase = "finished";
+    state.endingPage = 0;
     saveState();
     screen.classList.remove("is-playing");
     screen.classList.add("is-finished");
     skipButton?.setAttribute("hidden", "");
     startButton?.setAttribute("hidden", "");
+    if (epilogueContent) epilogueContent.innerHTML = endingEpilogueMarkup();
+    wireEpilogue();
     actions.hidden = false;
     requestAnimationFrame(() => actions.classList.add("is-visible"));
   };
@@ -4186,6 +4282,7 @@ function renderClear() {
     screen.classList.remove("is-finished");
     screen.classList.add("is-playing");
     state.clearPhase = "cinematic";
+    state.endingPage = 0;
     saveState();
     video.currentTime = 0;
     video.muted = audioDirector.isMuted();
@@ -4196,6 +4293,17 @@ function renderClear() {
       if (startButton) startButton.hidden = false;
     });
     if (skipButton) skipButton.hidden = false;
+  };
+  const wireEpilogue = () => {
+    document.querySelector("#endingEpilogueNext")?.addEventListener("click", () => {
+      state.endingPage = Math.min(endingEpilogue.length - 1, (state.endingPage || 0) + 1);
+      saveState();
+      if (epilogueContent) epilogueContent.innerHTML = endingEpilogueMarkup();
+      wireEpilogue();
+      audioDirector.playEffect("select");
+    });
+    document.querySelector("#endingReplay")?.addEventListener("click", playEnding);
+    document.querySelector("#replayButton")?.addEventListener("click", resetGame);
   };
 
   video.addEventListener("playing", () => {
@@ -4215,8 +4323,7 @@ function renderClear() {
     if (Number.isFinite(video.duration) && video.duration > 0) video.currentTime = Math.max(0, video.duration - 0.05);
     finishEnding();
   });
-  document.querySelector("#endingReplay")?.addEventListener("click", playEnding);
-  document.querySelector("#replayButton")?.addEventListener("click", resetGame);
+  wireEpilogue();
 
   if (!finished) {
     audioDirector.setCinematicMode(true);
@@ -4288,6 +4395,7 @@ function resetGame() {
   state.bossSixthSlotCreated = false;
   state.bossColorRemoved = false;
   state.clearPhase = "cinematic";
+  state.endingPage = 0;
   saveState();
   render();
 }
@@ -4312,6 +4420,7 @@ function showMenuMessage(title, message) {
   elements.hintTitle.textContent = title;
   elements.hintBody.textContent = message;
   if (!elements.hintDialog.open) elements.hintDialog.showModal();
+  window.requestAnimationFrame(setupScrollIndicators);
 }
 
 const explorationEvents = {
@@ -4334,6 +4443,7 @@ function openExploration() {
   elements.hintBody.innerHTML = `<span class="exploration-lead">魔法使いの気配がする。調べる場所を選べ。</span><span class="exploration-choices">${event.choices.map((choice, index) => `<button class="exploration-choice" type="button" data-explore-choice="${index}">${choice}</button>`).join("")}</span>`;
   elements.hintBody.querySelectorAll("[data-explore-choice]").forEach((button) => button.addEventListener("click", () => resolveExploration(stage, Number(button.dataset.exploreChoice))));
   if (!elements.hintDialog.open) elements.hintDialog.showModal();
+  window.requestAnimationFrame(setupScrollIndicators);
 }
 
 function resolveExploration(stage, choiceIndex) {
@@ -4345,6 +4455,7 @@ function resolveExploration(stage, choiceIndex) {
     elements.hintTitle.textContent = "魔法使いを見つけた！";
     elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、呪文を得られる」</span><span class="exploration-book-guide">左の「封印の書」から確認できます。</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
     elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
+    window.requestAnimationFrame(setupScrollIndicators);
     audioDirector.playEffect("success");
     return;
   }
@@ -4356,6 +4467,7 @@ function resolveExploration(stage, choiceIndex) {
   elements.hintTitle.textContent = "何かを見つけた";
   elements.hintBody.innerHTML = `<span class="exploration-result is-fake">呪文「${fakeSpell}」を覚えた。</span><span class="exploration-spell-effect">${getExplorationSpellEffect(fakeSpell)}</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
   elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
+  window.requestAnimationFrame(setupScrollIndicators);
   audioDirector.playEffect("fail");
 }
 
