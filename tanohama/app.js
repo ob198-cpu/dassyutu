@@ -845,6 +845,7 @@ function loadState() {
         timeAnswerOpen: Boolean(saved.timeAnswerOpen),
         timeSequencePhase: ["learned", "explanation", "choose", "cast-fail", "casting-time"].includes(saved.timeSequencePhase) ? saved.timeSequencePhase : "",
         introReturnPhase: ["message", "ready"].includes(saved.introReturnPhase) ? saved.introReturnPhase : "",
+        openingVideoSeen: Boolean(saved.openingVideoSeen),
         shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
         shopLockOpen: Boolean(saved.shopLockOpen),
         shopLockPromptOpen: Boolean(saved.shopLockPromptOpen),
@@ -869,7 +870,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic" };
 }
 
 function saveState() {
@@ -1085,12 +1086,28 @@ function render() {
 
 function renderIntro(stage) {
   const returnedFromTimeMachine = state.introReturnPhase === "message";
+  const shouldPlayOpeningVideo = !returnedFromTimeMachine && !state.openingVideoSeen;
   elements.game.innerHTML = `
-    <section class="intro-stage intro-image-stage" aria-label="異世界へ！？">
-      <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
-      <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？壁を越えられない。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
+    <section class="intro-stage ${shouldPlayOpeningVideo ? "intro-video-stage" : "intro-image-stage"}" aria-label="異世界へ！？">
+      ${shouldPlayOpeningVideo ? `
+        <div class="opening-video-shell" aria-label="異世界へ飛ばされる映像">
+          <video class="opening-video" id="openingVideo" preload="auto" playsinline webkit-playsinline autoplay>
+            <source src="./assets/opening-yakiniku-rift-v1.mp4?v=20260721-2" type="video/mp4">
+            この端末では映像を再生できません。
+          </video>
+          <button class="primary-button opening-video-start" id="openingVideoStart" type="button" hidden>映像を再生</button>
+          <button class="opening-video-skip" id="openingVideoSkip" type="button">スキップ</button>
+        </div>
+      ` : `
+        <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
+        <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？壁を越えられない。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
+      `}
     </section>
   `;
+  if (shouldPlayOpeningVideo) {
+    wireOpeningVideo();
+    return;
+  }
   document.querySelector("#introStartButton")?.addEventListener("click", () => {
     closeInfoDialogs();
     if (state.introReturnPhase === "message") {
@@ -1398,6 +1415,45 @@ function wirePathStage(stage, done) {
     render();
     burstOnce(".path-sequence-card");
   });
+}
+
+function wireOpeningVideo() {
+  const video = document.querySelector("#openingVideo");
+  if (!video) return;
+  const startButton = document.querySelector("#openingVideoStart");
+  const skipButton = document.querySelector("#openingVideoSkip");
+  let completed = false;
+
+  const completeOpening = () => {
+    if (completed) return;
+    completed = true;
+    video.pause();
+    audioDirector.setCinematicMode(false);
+    state.openingVideoSeen = true;
+    render();
+  };
+
+  const beginPlayback = () => {
+    video.muted = audioDirector.isMuted();
+    video.volume = 0.95;
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    if (attempt?.catch) {
+      attempt.catch(() => {
+        audioDirector.setCinematicMode(false);
+        startButton.hidden = false;
+      });
+    }
+  };
+
+  video.addEventListener("playing", () => {
+    startButton.hidden = true;
+  });
+  video.addEventListener("ended", completeOpening, { once: true });
+  video.addEventListener("error", completeOpening, { once: true });
+  startButton?.addEventListener("click", beginPlayback);
+  skipButton?.addEventListener("click", completeOpening);
+  beginPlayback();
 }
 
 function renderNav() {
@@ -3499,7 +3555,7 @@ function renderBossIntro() {
           webkit-playsinline
           autoplay
         >
-          <source src="./assets/boss-entrance-v1.mp4?v=20260721-1" type="video/mp4">
+          <source src="./assets/boss-entrance-v1.mp4?v=20260721-2" type="video/mp4">
           この端末では映像を再生できません。
         </video>
         <div class="boss-intro-video-label" aria-hidden="true"><span>FINAL BATTLE</span><strong>BOSS ARRIVAL</strong></div>
@@ -4082,7 +4138,7 @@ function renderClear() {
         webkit-playsinline
         ${finished ? "" : "autoplay"}
       >
-        <source src="./assets/finale-ending-v2.mp4?v=20260721-1" type="video/mp4">
+        <source src="./assets/finale-ending-v2.mp4?v=20260721-2" type="video/mp4">
         この端末ではエンディング動画を再生できません。
       </video>
       <div class="ending-cinematic-vignette" aria-hidden="true"></div>
@@ -4211,6 +4267,7 @@ function resetGame() {
   state.timeAnswerOpen = false;
   state.timeSequencePhase = "";
   state.introReturnPhase = "";
+  state.openingVideoSeen = false;
   state.shopPendingItem = "";
   state.shopLockOpen = false;
   state.shopLockPromptOpen = false;
