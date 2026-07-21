@@ -4021,13 +4021,12 @@ function renderClear() {
       <video
         class="ending-cinematic-video"
         id="endingVideo"
-        poster="./assets/finale-ending-opening-poster-v1.jpg?v=20260721-11"
         preload="auto"
         playsinline
         webkit-playsinline
         ${finished ? "" : "autoplay"}
       >
-        <source src="./assets/finale-ending-v1.mp4?v=20260721-5" type="video/mp4">
+        <source src="./assets/finale-ending-v2.mp4?v=20260721-1" type="video/mp4">
         この端末ではエンディング動画を再生できません。
       </video>
       <div class="ending-cinematic-vignette" aria-hidden="true"></div>
