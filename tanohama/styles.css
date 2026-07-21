@@ -17009,6 +17009,24 @@ body.stage-path-mode .path-problem-card .stage2-cell-toggle {
   transform-origin: top left;
 }
 
+.s4-week-black-overlay {
+  position: absolute;
+  left: 63.6%;
+  top: 28.5%;
+  width: 8%;
+  height: 11%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #111;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(12px, 2.45vw, 40px);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .s4-static-answer-area {
   flex: 0 0 auto;
   display: block;

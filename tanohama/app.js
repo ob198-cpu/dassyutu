@@ -154,6 +154,7 @@ const stages = [
       "ヒント④「④は球を投げた位置から放物線の頂点へ進み、そこから真下へ落ちる軌道をたどるのじゃ。球が通る文字を順につなげるんじゃぞ」",
       "ヒント⑤「①〜④の答えが出たら、各欄の色数字が示す文字を記入し、青→緑→黄の順に読むのじゃ」",
       "ヒント⑥「最後の答えは6文字。時差を無くすために、時を移動する装置の名前を入力するのじゃ」",
+      "ヒント⑦「呪文を呪文たらしめるものを思い出すのじゃ。」",
     ],
     textProblem: {
       title: "ステージ4",
@@ -1100,7 +1101,7 @@ function renderIntro(stage) {
         </div>
       ` : `
         <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
-        <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？壁を越えられない。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
+        <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？壁を越えられなかった。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
       `}
     </section>
   `;
@@ -2174,6 +2175,7 @@ function renderStage4Sheet() {
     <div class="sheet stage4-sheet stage4-static-sheet" role="group" aria-label="ステージ4 問題">
       <figure class="s4-static-problem-viewport">
         <img src="./assets/stage04-problem-questions.webp" alt="添付原稿から切り抜いたステージ4の①から④までの問題部分" />
+        <span class="s4-week-black-overlay" aria-hidden="true">WEEK</span>
       </figure>
       <section class="s4-static-answer-area" aria-label="①から④の途中回答">
         <p>途中回答</p>
@@ -2737,8 +2739,8 @@ function renderTimeSuccessSequence(stage, phase) {
       <section class="stage-clear-overlay time-spell-sequence is-casting-time" aria-live="assertive">
         <div class="stage-clear-card time-spell-sequence-card">
           <span class="clear-kicker">TIME MACHINE</span>
-          <h2>タイムマシンを唱えた！</h2>
-          <p class="time-cast-effect-copy">空間が巻き戻り、「ここ」という言葉が残る過去へ移動する。</p>
+          <h2>タイムマシンを唱えた。</h2>
+          <p class="time-cast-effect-copy">時空を通り越え、異世界脱出の為に必要な時間と空間に向かっていく。</p>
           <div class="time-warp-effect" aria-hidden="true"></div>
           <button class="primary-button" id="timeCastContinue" type="button">つぎへ</button>
         </div>
@@ -3532,11 +3534,10 @@ function renderBossIntro() {
           <article class="boss-wizard-spell-card" aria-label="新しく習得する10種類の呪文">
             <span>新しい呪文を10種類同時に伝授</span>
             <strong>☆ 戦闘呪文 ×10</strong>
-            <p>バリを含む十種すべてを、この場で習得する。</p>
             <ul class="boss-wizard-spell-list" aria-label="伝授される呪文一覧">
               ${bossNewSpells.map((spell) => `<li>☆ ${spell.name}</li>`).join("")}
             </ul>
-            <small>詳しい効果は、戦闘画面の「呪文の書」で確認できる。</small>
+            <small>詳しい効果は、戦闘画面の「呪文の確認」で確認できる。</small>
           </article>
           <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">10種類の呪文を習得して戦闘開始</button>
         </div>
@@ -3682,7 +3683,7 @@ function renderBossProblemPanel(stage) {
           ` : `
             <div class="boss-current-actions">
               <button class="primary-button" id="bossOpenAnswer" type="button">${state.bossAnswerOpen ? "呪文入力を閉じる" : "呪文を入力"}</button>
-              <button class="secondary-button" id="bossOpenSpellBook" type="button">呪文の書</button>
+              <button class="secondary-button" id="bossOpenSpellBook" type="button">呪文の確認</button>
             </div>
             ${state.bossAnswerOpen ? `
               <section class="boss-current-answer" aria-label="第${index + 1}問の呪文入力">
