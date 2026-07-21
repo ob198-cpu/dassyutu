@@ -13469,6 +13469,120 @@ button.s4-map-input.is-active {
   right: 12px;
 }
 
+.boss-intro-video-shell {
+  position: relative;
+  z-index: 2;
+  width: min(1120px, calc(100% - 40px));
+  height: min(68vh, 630px);
+  overflow: hidden;
+  border: 1px solid rgba(238, 199, 79, 0.7);
+  border-radius: 6px;
+  background: #000;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.82), 0 0 44px rgba(181, 36, 26, 0.22);
+}
+
+.boss-intro-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.boss-intro-video-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 31px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 96, 76, 0.72);
+  border-radius: 4px;
+  background: rgba(3, 5, 9, 0.82);
+  color: #ff8b7e;
+  font-size: 11px;
+  font-weight: 950;
+  pointer-events: none;
+}
+
+.boss-intro-video-label strong {
+  color: #fff0b2;
+}
+
+.boss-intro-video-start,
+.boss-intro-video-next {
+  position: absolute;
+  z-index: 4;
+  min-height: 52px;
+  font-size: 16px;
+}
+
+.boss-intro-video-start {
+  left: 50%;
+  top: 50%;
+  width: min(300px, calc(100% - 40px));
+  transform: translate(-50%, -50%) !important;
+}
+
+.boss-intro-video-start:hover,
+.boss-intro-video-start:active {
+  transform: translate(-50%, -50%) !important;
+}
+
+.boss-intro-video-next {
+  left: 50%;
+  bottom: clamp(16px, 3vh, 28px);
+  width: min(300px, calc(100% - 48px));
+  transform: translateX(-50%) !important;
+}
+
+.boss-intro-video-next:hover,
+.boss-intro-video-next:active {
+  transform: translateX(-50%) !important;
+}
+
+.boss-intro-video-skip {
+  position: absolute;
+  z-index: 4;
+  right: 12px;
+  top: 12px;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 235, 169, 0.58);
+  border-radius: 4px;
+  background: rgba(2, 6, 10, 0.82);
+  color: #fff1bd;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.boss-intro-video-error {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 4;
+  width: min(620px, calc(100% - 32px));
+  margin: 0;
+  padding: 9px 12px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 129, 102, 0.72);
+  border-radius: 4px;
+  background: rgba(42, 8, 5, 0.9);
+  color: #ffe4dc;
+  font-size: 12px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.boss-intro-video-start[hidden],
+.boss-intro-video-next[hidden],
+.boss-intro-video-error[hidden] {
+  display: none !important;
+}
+
 .boss-intro-warning {
   position: absolute;
   z-index: 2;
@@ -13811,6 +13925,33 @@ button.s4-map-input.is-active {
     padding: 7px 12px;
   }
 
+  .boss-intro-video-shell {
+    width: min(1040px, calc(100% - 34px));
+    height: min(78vh, 420px);
+  }
+
+  .boss-intro-video-label,
+  .boss-intro-video-skip {
+    top: 7px;
+  }
+
+  .boss-intro-video-label {
+    left: 7px;
+  }
+
+  .boss-intro-video-skip {
+    right: 7px;
+    min-height: 31px;
+    padding: 4px 9px;
+    font-size: 10px;
+  }
+
+  .boss-intro-video-start,
+  .boss-intro-video-next {
+    min-height: 38px;
+    font-size: 13px;
+  }
+
   .boss-intro-warning {
     top: 2%;
   }
@@ -13901,6 +14042,11 @@ button.s4-map-input.is-active {
 }
 
 @media (orientation: portrait), (max-width: 700px) {
+  .boss-intro-video-shell {
+    width: calc(100% - 24px);
+    height: min(64vh, 640px);
+  }
+
   .boss-wizard-art {
     object-position: 38% center;
   }

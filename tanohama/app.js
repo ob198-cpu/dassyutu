@@ -3490,16 +3490,24 @@ function renderBossIntro() {
   return `
     <section class="boss-intro-cinematic" aria-label="ラスボス戦 開幕">
       <button class="panel-close-button boss-intro-close" id="bossIntroClose" type="button" aria-label="戦闘導入を閉じる">×</button>
-      <div class="boss-intro-warning" aria-hidden="true"><span></span><b>FINAL BATTLE</b><span></span></div>
-      <div class="boss-intro-shockwave" aria-hidden="true"></div>
-      <div class="boss-intro-copy">
-        <span class="boss-intro-kicker">EXIT BLOCKED</span>
-        <h2>出口の前に、巨大な影が立ちはだかった</h2>
-        <p class="boss-intro-story">山を越え、ようやく見つけた異空間の出口。光へ手を伸ばしたその瞬間、地面が激しく揺れ、出口を守る獣が闇の中から姿を現した。</p>
-        <blockquote class="boss-intro-enemy">「ここまで辿り着いたか。だが、この出口は渡さない。覚えた呪文ごと、すべて喰らい尽くしてやろう」</blockquote>
-        <p class="boss-intro-guide">その時、聞き覚えのある声とともに青白い光が差し込んだ。</p>
-        <button class="primary-button boss-intro-start" id="bossIntroNext" type="button">声の主を確かめる</button>
+      <div class="boss-intro-video-shell" aria-label="ラスボス登場の映像">
+        <video
+          class="boss-intro-video"
+          id="bossIntroVideo"
+          preload="auto"
+          playsinline
+          webkit-playsinline
+          autoplay
+        >
+          <source src="./assets/boss-entrance-v1.mp4?v=20260721-1" type="video/mp4">
+          この端末では映像を再生できません。
+        </video>
+        <div class="boss-intro-video-label" aria-hidden="true"><span>FINAL BATTLE</span><strong>BOSS ARRIVAL</strong></div>
+        <button class="primary-button boss-intro-video-start" id="bossIntroVideoStart" type="button" hidden>映像を再生</button>
+        <p class="boss-intro-video-error" id="bossIntroVideoError" hidden>映像を再生できません。次へ進んでください。</p>
+        <button class="boss-intro-video-skip" id="bossIntroVideoSkip" type="button">映像をスキップ</button>
       </div>
+      <button class="primary-button boss-intro-video-next" id="bossIntroNext" type="button" hidden>つぎへ</button>
     </section>
   `;
 }
@@ -3767,6 +3775,53 @@ function wireBossClearVideo() {
   beginPlayback();
 }
 
+function wireBossIntroVideo() {
+  const video = document.querySelector("#bossIntroVideo");
+  if (!video) return;
+  const startButton = document.querySelector("#bossIntroVideoStart");
+  const skipButton = document.querySelector("#bossIntroVideoSkip");
+  const nextButton = document.querySelector("#bossIntroNext");
+  const errorMessage = document.querySelector("#bossIntroVideoError");
+  let finished = false;
+
+  const finishVideo = () => {
+    if (finished) return;
+    finished = true;
+    video.pause();
+    audioDirector.setCinematicMode(false);
+    startButton.hidden = true;
+    nextButton.hidden = false;
+    nextButton.focus({ preventScroll: true });
+  };
+
+  const beginPlayback = () => {
+    video.muted = audioDirector.isMuted();
+    video.volume = 0.95;
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    if (attempt?.catch) {
+      attempt.catch(() => {
+        startButton.hidden = false;
+      });
+    }
+  };
+
+  video.addEventListener("playing", () => {
+    startButton.hidden = true;
+    errorMessage.hidden = true;
+  });
+  video.addEventListener("ended", finishVideo, { once: true });
+  video.addEventListener("error", () => {
+    audioDirector.setCinematicMode(false);
+    startButton.hidden = true;
+    errorMessage.hidden = false;
+    nextButton.hidden = false;
+  });
+  startButton?.addEventListener("click", beginPlayback);
+  skipButton?.addEventListener("click", finishVideo);
+  beginPlayback();
+}
+
 function wireBoss() {
   wireProblems();
   document.querySelector("#bossFightStart")?.addEventListener("click", () => {
@@ -3868,6 +3923,7 @@ function wireBoss() {
     render();
   });
   const step = bossBattle[state.bossInput.length];
+  wireBossIntroVideo();
   wireBossClearVideo();
   if (!step) return;
   const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
