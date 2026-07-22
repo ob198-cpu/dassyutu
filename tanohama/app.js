@@ -3015,7 +3015,7 @@ function renderGenericStageClear(stage) {
 function tilePuzzle(stage, done) {
   return `
     <section class="play-box">
-      <div class="slot-row" aria-label="呪文スロット">
+      <div class="slot-row stone-tablet-input" aria-label="呪文スロット">
         ${Array.from({ length: stage.slots })
           .map((_, i) => `<button class="slot" type="button" data-slot="${i}">${state.slotInput[i] || ""}</button>`)
           .join("")}
