@@ -1879,7 +1879,7 @@ function renderGateStage(stage) {
 }
 
 function isLearnedSpellStageUnlocked(stageId) {
-  if (stageId === "intro") return true;
+  if (stageId === "intro") return state.spells.includes("キミタチナラ");
   if (stageId === "time") {
     return isStageCleared("time") || state.spells.includes(timeMachineSpellCopy.name);
   }
@@ -2425,6 +2425,7 @@ function renderPathCastEffect(stage) {
 function renderLearnedSpellContent(stageId) {
   if (stageId === "intro") {
     const learned = state.spells.includes("キミタチナラ");
+    if (!learned) return `<p class="learned-empty">「キミタチナラ…」を唱えた後に確認できます。</p>`;
     return `
       <article class="learned-spell-detail learned-primary-spell">
         <span>00 / 魔法使いのエール</span>
@@ -4616,6 +4617,10 @@ function focusCurrentMagic() {
     render();
   }
   if (stage.id === "intro") {
+    if (!state.spells.includes("キミタチナラ")) {
+      showMenuMessage("魔法使いのエール", "「キミタチナラ…」を唱えた後に確認できます。");
+      return;
+    }
     state.learnedSpellStage = "intro";
     state.learnedSpellViewerOpen = true;
     state.feedback = null;
