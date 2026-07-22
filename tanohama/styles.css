@@ -19297,3 +19297,31 @@ body.stage-path-mode .stage2-problem-footer .problem-answer-toggle {
   opacity: 0.72;
   filter: grayscale(0.22) drop-shadow(0 2px 1px rgba(0, 0, 0, 0.45));
 }
+
+/* Stage 00: keep the story sheet dominant and make Next a compact command. */
+body.stage-intro-mode .intro-image-stage:not(.intro-return-stage) {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+  align-content: stretch;
+  gap: 0;
+  padding: 6px;
+}
+
+body.stage-intro-mode .intro-image-stage:not(.intro-return-stage) .intro-opening-image {
+  width: min(100%, 1500px);
+  max-height: calc(100dvh - 20px);
+  margin: 0;
+}
+
+body.stage-intro-mode .intro-image-stage:not(.intro-return-stage) .intro-start-button {
+  position: absolute;
+  inset: auto 0 clamp(8px, 1.8dvh, 14px);
+  width: clamp(168px, 24vw, 240px);
+  height: 42px;
+  min-height: 42px;
+  margin: 0 auto;
+  padding: 7px 18px;
+  font-size: 15px;
+  line-height: 1;
+}

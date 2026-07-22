@@ -1174,7 +1174,7 @@ function renderIntro(stage) {
   const returnedFromTimeMachine = state.introReturnPhase === "message";
   const shouldPlayOpeningVideo = !returnedFromTimeMachine && !state.openingVideoSeen;
   elements.game.innerHTML = `
-    <section class="intro-stage ${shouldPlayOpeningVideo ? "intro-video-stage" : "intro-image-stage"}" aria-label="異世界へ！？">
+    <section class="intro-stage ${shouldPlayOpeningVideo ? "intro-video-stage" : "intro-image-stage"} ${returnedFromTimeMachine ? "intro-return-stage" : ""}" aria-label="異世界へ！？">
       ${shouldPlayOpeningVideo ? `
         <div class="opening-video-shell" aria-label="異世界へ飛ばされる映像">
           <video class="opening-video" id="openingVideo" preload="auto" playsinline webkit-playsinline autoplay>
