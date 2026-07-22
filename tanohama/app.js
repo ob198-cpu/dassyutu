@@ -1,3 +1,9 @@
+const timeMachineSpellCopy = {
+  name: "タイムマシン",
+  effect: "一時的に異空間へ移動する！",
+  explanation: "異空間では、まだ習得していない呪文を1つ唱えられる。『カタカナ…効果！』の形式なら呪文とみなされ、未習得でも発動できる。効果は現在異空間で発動し、発動と同時に自分も現在異空間へ戻る。",
+};
+
 const stages = [
   {
     id: "intro",
@@ -163,7 +169,7 @@ const stages = [
       prompt: "山の壁を越えるために使う6文字の手段を見つける。",
       answerHint: "答えは6文字。時を移動する装置の名前。",
       answerBoxes: 6,
-      solvedNote: "タイムマシン: 一時的に未来空間へ移動し、まだ習得していない呪文を1つ唱えられる。効果は現在異空間で発動し、同時に自分も現在異空間へ戻る。",
+      solvedNote: `${timeMachineSpellCopy.name}…${timeMachineSpellCopy.effect} ${timeMachineSpellCopy.explanation}`,
     },
   },
   {
@@ -224,10 +230,9 @@ const bossLearnedSpells = [
   { name: "ゴクロウサマ", effect: "『　』内の色を消す事が出来る。内容の意味が通れば、それは現実となる！" },
   { name: "ドラブレス", effect: "炎でどんな氷も溶かす事ができる！" },
   {
-    name: "タイムマシン",
-    effect: "一時的に未来空間へ移動する！",
-    explanation: "未来空間では、まだ習得していない呪文を1つ唱えられる。『カタカナ…効果！』の形式なら呪文とみなされ、未習得でも発動できる。効果は現在異空間で発動し、発動と同時に自分も現在異空間へ戻る。",
+    ...timeMachineSpellCopy,
   },
+  { name: "キミタチナラ", effect: "仲間を信じる言葉が力となり、どんな大きな壁も乗り越える！" },
 ];
 
 function normalizeSpellEffectCopy(effect) {
@@ -308,10 +313,16 @@ function getBossTiles(index) {
 
 const spellRuleCopy = {
   title: "呪文のルール：",
+  intro: "この世界では呪文はカタカナ…の姿をしているぞ。",
   first: "呪文は石板にカタカナで記入し、どこにどのように使うかを示す。",
   second: "石板の数に合った文字数の呪文しか唱えることができない。習得した呪文は☆マークがつき、以後使用可能になる。",
 };
 const spellActivationText = "問題を解くと呪文が現れるかも…<br>各ステージの呪文は空欄に文字を正しく打ち込むと発動";
+
+function formatSpellName(name) {
+  const cleanName = String(name || "").replace(/…+$/u, "");
+  return `${cleanName}…`;
+}
 
 function renderSpellRuleGuide(extraClass = "") {
   return `
@@ -321,6 +332,7 @@ function renderSpellRuleGuide(extraClass = "") {
         <span>☆ 習得済み</span>
       </div>
       <div class="spell-rule-guide-copy">
+        <p>${spellRuleCopy.intro}</p>
         <p>${spellRuleCopy.first}</p>
         <p>${spellRuleCopy.second}</p>
       </div>
@@ -571,7 +583,8 @@ function normalizeStage2Memo(value) {
 const stage2KanjiRevealAnswer = "SIKISINI";
 // The last two circles are read lower-left, then upper-right on the printed board.
 const stage2KanjiRevealMemoOrder = [0, 1, 2, 3, 4, 5, 7, 6];
-const stage2KanjiRevealHoldMs = 1600;
+const stage2KanjiRevealVersion = 2;
+const stage2KanjiRevealHoldMs = 0;
 let stage2KanjiRevealLockUntil = 0;
 
 function isStage2KanjiClueRevealed(value) {
@@ -803,9 +816,9 @@ function loadState() {
           if (!saved.spells.includes(spell)) saved.spells.push(spell);
         });
       }
-      if (saved.cleared.includes("time") || saved.spells.includes("キミタチナラ")) {
-        saved.spells = saved.spells.filter((spell) => spell !== "キミタチナラ");
-        if (saved.cleared.includes("time") && !saved.spells.includes("タイムマシン")) saved.spells.push("タイムマシン");
+      if (saved.cleared.includes("time")) {
+        if (!saved.spells.includes("タイムマシン")) saved.spells.push("タイムマシン");
+        if (!saved.spells.includes("キミタチナラ")) saved.spells.push("キミタチナラ");
       }
       const savedBossInput = Array.isArray(saved.bossInput) ? saved.bossInput : [];
       const usedTsukemonoInFourthBattle = normalizeAnswer(savedBossInput[3] || "") === normalizeAnswer("ツケモノ");
@@ -836,7 +849,11 @@ function loadState() {
         memoPickerOpen: Boolean(saved.memoPickerOpen),
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
-        stage2KanjiShowingRevealed: isStage2KanjiClueRevealed(saved.stage2Memo),
+        stage2KanjiShowingRevealed:
+          isStage2KanjiClueRevealed(saved.stage2Memo)
+          && saved.stage2KanjiRevealVersion === stage2KanjiRevealVersion
+          && saved.stage2KanjiShowingRevealed === true,
+        stage2KanjiRevealVersion,
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
           ? saved.stage4ActiveGroup
@@ -872,7 +889,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic", endingPage: 0 };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "intro", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage2KanjiRevealVersion, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic", endingPage: 0 };
 }
 
 function saveState() {
@@ -1043,10 +1060,12 @@ function burstOnce(selector) {
 }
 
 const scrollGuideSelector = [
-  ".gate-problem-card",
+  ".gate-sheet-scroll",
   ".path-problem-card",
   ".immersive-panel-scroll",
   ".stage4-answer-drawer",
+  ".boss-current-layout",
+  ".boss-wizard-copy",
   ".boss-problem-copy",
   ".boss-spell-book-scroll",
   ".learned-spell-viewer",
@@ -1062,7 +1081,7 @@ function setupScrollIndicators() {
     if (!(container instanceof HTMLElement) || container.clientHeight < 80) return;
     if (container.scrollHeight <= container.clientHeight + 24) return;
 
-    const host = container.closest(".spell-device, .path-device, .immersive-panel, .boss-problem-panel, .boss-spell-book-panel, .hint-dialog")
+    const host = container.closest(".gate-sheet-panel, .spell-device, .path-device, .immersive-panel, .boss-problem-panel, .boss-intro-cinematic, .boss-spell-book-panel, .hint-dialog")
       || container.parentElement;
     if (!(host instanceof HTMLElement)) return;
     if (Array.from(host.children).some((child) => child.classList?.contains("scroll-down-indicator"))) return;
@@ -1160,7 +1179,9 @@ function renderIntro(stage) {
         <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？壁を越えられなかった。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
       `}
     </section>
+    ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
   `;
+  wireLearnedSpellViewerControls();
   if (shouldPlayOpeningVideo) {
     wireOpeningVideo();
     return;
@@ -1234,7 +1255,7 @@ function renderPathProblemCard(stage) {
   const answerOpen = state.pathAnswerOpen === true;
   return `
     <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""}" aria-label="問題とメモ">
-      ${kanjiUnlocked ? `<div class="stage2-reveal-confirmation" role="status" aria-live="assertive">クロミレが現れた</div>` : ""}
+      ${kanjiUnlocked ? `<div class="stage2-reveal-confirmation" role="status" aria-live="assertive">入力が反応した。右の図をタップして確認する</div>` : ""}
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions stage2-board-controls">
@@ -1357,7 +1378,10 @@ function wirePathProblem(stage) {
       const kanjiRevealed = isStage2KanjiClueRevealed(memo);
       if (kanjiRevealed) {
         stage2KanjiRevealLockUntil = Date.now() + stage2KanjiRevealHoldMs;
-        state.stage2KanjiShowingRevealed = true;
+        state.stage2KanjiShowingRevealed = wasKanjiRevealed
+          ? state.stage2KanjiShowingRevealed === true
+          : false;
+        state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
         state.stage2CellMarks = {};
       }
       const activeOrderIndex = Math.max(stage2KanjiRevealMemoOrder.indexOf(col), 0);
@@ -1379,7 +1403,8 @@ function wirePathProblem(stage) {
     const { row, col } = state.memoActive;
     memo[row][col] = "";
     state.stage2Memo = memo;
-    state.stage2KanjiShowingRevealed = isStage2KanjiClueRevealed(memo);
+    state.stage2KanjiShowingRevealed = false;
+    state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
     saveState();
     render();
   });
@@ -1739,7 +1764,7 @@ function gateScene(done) {
           </div>
           <div class="spell-card">
             <span class="spell-status">${done ? "習得済み" : "未習得"}</span>
-            <strong>☆${spell}</strong>
+            <strong>☆${formatSpellName(spell)}</strong>
             <p>効果：謎の四角を1個生成できる。この土台の上にのみ生成可能。</p>
           </div>
         </section>
@@ -1756,7 +1781,7 @@ function gateScene(done) {
           </div>
           <p class="trial-copy">試練：扉があり通ることが出来ない</p>
           <div class="spell-card muted-spell">
-            <strong>☆□□□□□□</strong>
+      <strong>☆□□□□□□…</strong>
             <p>効果：「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。</p>
           </div>
         </section>
@@ -1853,14 +1878,36 @@ function renderGateStage(stage) {
   wireGateStage(stage, done);
 }
 
+function isLearnedSpellStageUnlocked(stageId) {
+  if (stageId === "intro") return true;
+  if (stageId === "time") {
+    return isStageCleared("time") || state.spells.includes(timeMachineSpellCopy.name);
+  }
+  return isStageCleared(stageId);
+}
+
+function wireLearnedSpellViewerControls() {
+  document.querySelector("#closeLearnedSpellViewer")?.addEventListener("click", () => {
+    state.learnedSpellViewerOpen = false;
+    render();
+  });
+  document.querySelectorAll("[data-learned-stage]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.learnedSpellStage = button.dataset.learnedStage || "intro";
+      render();
+    });
+  });
+}
+
 function renderLearnedSpellViewer() {
   const stageTabs = [
+    { id: "intro", label: "ステージ0" },
     { id: "gate", label: "ステージ1" },
     { id: "path", label: "ステージ2" },
     { id: "shop", label: "ステージ3" },
     { id: "time", label: "ステージ4" },
   ];
-  const unlockedTabs = stageTabs.filter((tab) => isStageCleared(tab.id));
+  const unlockedTabs = stageTabs.filter((tab) => isLearnedSpellStageUnlocked(tab.id));
   const selectedStage = unlockedTabs.some((tab) => tab.id === state.learnedSpellStage)
     ? state.learnedSpellStage
     : unlockedTabs[0]?.id || "";
@@ -1875,7 +1922,7 @@ function renderLearnedSpellViewer() {
         ${stageTabs
           .map(
             (tab) => {
-              const unlocked = isStageCleared(tab.id);
+              const unlocked = isLearnedSpellStageUnlocked(tab.id);
               const activeClass = selectedStage === tab.id ? " is-active" : "";
               if (!unlocked) {
                 return `
@@ -1893,7 +1940,7 @@ function renderLearnedSpellViewer() {
           )
           .join("")}
       </div>
-      ${selectedStage && isStageCleared(selectedStage) ? renderLearnedSpellContent(selectedStage) : `<p class="learned-empty">クリア済みステージの呪文だけ確認できます。</p>`}
+      ${selectedStage && isLearnedSpellStageUnlocked(selectedStage) ? renderLearnedSpellContent(selectedStage) : `<p class="learned-empty">習得したステージの呪文だけ確認できます。</p>`}
     </section>
   `;
 }
@@ -1902,7 +1949,7 @@ function renderLearnedStageOneSpells() {
   return `
     <article class="learned-spell-detail learned-primary-spell">
       <span>01 / 崩れた足場</span>
-      <strong>☆ ツケモノ</strong>
+      <strong>☆ ${formatSpellName("ツケモノ")}</strong>
       <p>謎の四角を1個生成できる！ この土台の上にのみ生成可能。</p>
     </article>
     <div class="learned-spell-images">
@@ -1924,7 +1971,7 @@ function renderGateSuccessOverlay(phase) {
           <div class="reward-card" aria-label="習得した呪文">
             <div class="reward-head">
               <span class="reward-badge">呪文を習得！</span>
-              <strong class="reward-name">☆ ツケモノ</strong>
+              <strong class="reward-name">☆ ${formatSpellName("ツケモノ")}</strong>
             </div>
             <p class="reward-desc">遺物石だろうか？ <b>謎の四角を1個生成できる！</b></p>
             <p class="reward-note"><span class="reward-stone" aria-hidden="true"></span>← この土台の上にのみ生成可能</p>
@@ -2314,7 +2361,7 @@ function renderPathSuccessStep(stage, phase) {
           <span class="clear-kicker">STAGE ${stage.number} CLEAR</span>
           <h2>${stage.reward}を覚えた</h2>
           <div class="path-learned-spell">
-            <strong>☆ ${stage.reward}</strong>
+            <strong>☆ ${formatSpellName(stage.reward)}</strong>
             <p>「　」内の色を消すことが出来る。</p>
             <p>「　」内の内容の意味が通れば、それは現実となる。</p>
           </div>
@@ -2376,13 +2423,23 @@ function renderPathCastEffect(stage) {
 }
 
 function renderLearnedSpellContent(stageId) {
+  if (stageId === "intro") {
+    const learned = state.spells.includes("キミタチナラ");
+    return `
+      <article class="learned-spell-detail learned-primary-spell">
+        <span>00 / 魔法使いのエール</span>
+        <strong>${learned ? "☆ " : ""}${formatSpellName("キミタチナラ")}</strong>
+        <p>どんな大きな壁も乗り越えられる！ 仲間を信じる言葉が力となる。</p>
+      </article>
+    `;
+  }
   const explorationSpells = getLearnedExplorationSpells(stageId);
   const explorationDetails = explorationSpells.length
     ? `
       <section class="learned-exploration-spells" aria-label="探索で覚えた呪文">
         <h3>探索で覚えた呪文</h3>
         <div class="learned-exploration-grid">
-          ${explorationSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+          ${explorationSpells.map((spell) => `<article><strong>☆ ${formatSpellName(spell.name)}</strong><p>${spell.effect}</p></article>`).join("")}
         </div>
       </section>
     `
@@ -2393,7 +2450,7 @@ function renderLearnedSpellContent(stageId) {
   return `
     <article class="learned-spell-detail">
       <span>${learnedStage.number} / ${learnedStage.title}</span>
-      <strong>☆ ${learnedStage.reward}</strong>
+      <strong>☆ ${formatSpellName(learnedStage.reward)}</strong>
       <p>${learnedStage.textProblem?.solvedNote || learnedStage.successMessage || "習得済みの呪文"}</p>
     </article>
     ${explorationDetails}
@@ -2795,7 +2852,7 @@ function renderTimeSuccessSequence(stage, phase) {
       <section class="stage-clear-overlay time-spell-sequence is-casting-time" aria-live="assertive">
         <div class="stage-clear-card time-spell-sequence-card">
           <span class="clear-kicker">TIME MACHINE</span>
-          <h2>タイムマシンを唱えた。</h2>
+          <h2>${formatSpellName(timeMachineSpellCopy.name)}を唱えた。</h2>
           <p class="time-cast-effect-copy">時空を通り越え、異世界脱出の為に必要な時間と空間に向かっていく。</p>
           <div class="time-warp-effect" aria-hidden="true"></div>
           <button class="primary-button" id="timeCastContinue" type="button">つぎへ</button>
@@ -2805,9 +2862,9 @@ function renderTimeSuccessSequence(stage, phase) {
   }
 
   const content = phase === "learned"
-    ? `<span class="clear-kicker">NEW SPELL</span><h2>タイムマシンを覚えた</h2><button class="primary-button" id="timeLearnedNext" type="button">つぎへ</button>`
+    ? `<span class="clear-kicker">NEW SPELL</span><h2>${formatSpellName(timeMachineSpellCopy.name)}を覚えた</h2><button class="primary-button" id="timeLearnedNext" type="button">つぎへ</button>`
     : phase === "explanation"
-      ? `<span class="clear-kicker">SPELL GUIDE</span><h2>タイムマシン</h2><p class="time-spell-explanation">一時的に未来空間へ移動し、まだ習得していない呪文を1つ唱えられる。効果は現在異空間で発動し、同時に自分も現在異空間へ戻る。</p><button class="primary-button" id="timeExplanationNext" type="button">つぎへ</button>`
+      ? `<span class="clear-kicker">SPELL GUIDE</span><h2>${formatSpellName(timeMachineSpellCopy.name)}</h2><p class="time-spell-explanation"><strong>${timeMachineSpellCopy.effect}</strong> ${timeMachineSpellCopy.explanation}</p><button class="primary-button" id="timeExplanationNext" type="button">つぎへ</button>`
       : `<span class="clear-kicker">SELECT SPELL</span><h2>どの呪文を唱えますか</h2>${renderTimeSpellChooser(phase)}`;
 
   return `
@@ -2829,6 +2886,7 @@ function returnToIntroWithTimeMachine() {
 
 function completeTimeStage(stage) {
   addUnique(state.cleared, stage.id);
+  addUnique(state.spells, "キミタチナラ");
   state.timeSequencePhase = "";
   state.introReturnPhase = "";
   state.feedback = { stageId: stage.id, type: "success" };
@@ -2932,7 +2990,7 @@ function renderGenericStageClear(stage) {
   const nextLabel = state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次のステージへ";
   const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : stage.id === "shop" ? "氷が溶けた" : `${stage.title} クリア`;
   const clearMessage = stage.id === "time"
-    ? "<strong>「キミタチナラ」を唱えた！</strong><br>その言葉が仲間たちの背中を押し、諦めかけていた心にもう一度力が戻った。足場の少ない急斜面に手をかけ、互いに支え合いながら一歩ずつ登っていく。山の壁そのものが消えたわけではない。それでも進み続け、ついに全員で頂上を乗り越えた！"
+    ? "<strong>「キミタチナラ…」を唱えた！</strong><br>その言葉が仲間たちの背中を押し、諦めかけていた心にもう一度力が戻った。足場の少ない急斜面に手をかけ、互いに支え合いながら一歩ずつ登っていく。山の壁そのものが消えたわけではない。それでも進み続け、ついに全員で頂上を乗り越えた！"
     : stage.id === "shop"
       ? "「ドラブレス」を唱えた！炎で氷が溶け、先へ進めるようになった！"
     : stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。";
@@ -2943,7 +3001,7 @@ function renderGenericStageClear(stage) {
         <h2>${clearTitle}</h2>
         ${stage.id === "time"
           ? `<div class="clear-spell-reward time-clear-story"><p>${clearMessage}</p></div>`
-          : `<div class="clear-spell-reward"><span>呪文を習得</span><strong>☆ ${stage.reward}</strong><p>${clearMessage}</p></div>`}
+          : `<div class="clear-spell-reward"><span>呪文を習得</span><strong>☆ ${formatSpellName(stage.reward)}</strong><p>${clearMessage}</p></div>`}
         <div class="clear-actions">
           <button class="secondary-button" id="genericToProblem" type="button">問題を見直す</button>
           <button class="primary-button" id="nextButton" type="button">${nextLabel}</button>
@@ -3009,7 +3067,7 @@ function renderStage4AnswerDrawer(stage) {
         <div><span>石板 6文字</span><strong>文字を選んで呪文を作る</strong></div>
         <button class="text-button" id="timeAnswerClose" type="button">閉じる</button>
       </div>
-      <div class="stage4-answer-slots" aria-label="選択した6文字">
+      <div class="stage4-answer-slots stone-tablet-input" aria-label="選択した6文字">
         ${selected.map((character, index) => `<button class="stage4-answer-slot ${index === activeSlot ? "is-active" : ""}" type="button" data-time-slot="${index}" aria-pressed="${index === activeSlot}">${character || "―"}</button>`).join("")}
       </div>
       <div class="stage4-answer-tiles" aria-label="文字候補">
@@ -3331,7 +3389,7 @@ const bossSuccessEffects = [
   "ラスボスは大技前の溜めを続け、こちらの呪文には反応しない。",
   "ゴクロウサマが『百黙絶静』の中の色を消した！",
   "カタメで『一犬糸争』を防いだ！",
-  "タイムマシンで一時的に未来空間へ移動し、零式空間の対象から外れた！",
+  "タイムマシンで一時的に異空間へ移動し、零式空間の対象から外れた！",
   "バタフライエフェクトが未来を変え、とびきりの一撃を放った！",
 ];
 
@@ -3404,7 +3462,7 @@ const bossSuccessScenes = [
   {
     label: "空間回避",
     title: "零式空間の外へ逃れた！",
-    story: "タイムマシンで一瞬だけ未来へ移動した。現在異空間を閉ざす零式空間は対象を失い、空しく消滅する。",
+    story: "タイムマシンで一瞬だけ異空間へ移動した。現在異空間を閉ざす零式空間は対象を失い、空しく消滅する。",
   },
   {
     label: "最終撃破",
@@ -3591,7 +3649,7 @@ function renderBossIntro() {
             <span>新しい呪文を10種類同時に伝授</span>
             <strong>☆ 戦闘呪文 ×10</strong>
             <ul class="boss-wizard-spell-list" aria-label="伝授される呪文一覧">
-              ${bossNewSpells.map((spell) => `<li>☆ ${spell.name}</li>`).join("")}
+              ${bossNewSpells.map((spell) => `<li>☆ ${formatSpellName(spell.name)}</li>`).join("")}
             </ul>
             <small>詳しい効果は、戦闘画面の「呪文の確認」で確認できる。</small>
           </article>
@@ -4368,6 +4426,7 @@ function resetGame() {
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
   state.stage2KanjiShowingRevealed = false;
+  state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
   state.stage4Memo = normalizeStage4Memo(null);
   state.stage4ActiveGroup = { question: 0, group: 0 };
   state.stage4PickerOpen = false;
@@ -4555,6 +4614,13 @@ function focusCurrentMagic() {
   if (!isStageRevealed(stage)) {
     state.revealed = { ...(state.revealed || {}), [stage.id]: true };
     render();
+  }
+  if (stage.id === "intro") {
+    state.learnedSpellStage = "intro";
+    state.learnedSpellViewerOpen = true;
+    state.feedback = null;
+    render();
+    return;
   }
   if (stage.id === "gate") {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
