@@ -583,7 +583,7 @@ function normalizeStage2Memo(value) {
 const stage2KanjiRevealAnswer = "SIKISINI";
 // The last two circles are read lower-left, then upper-right on the printed board.
 const stage2KanjiRevealMemoOrder = [0, 1, 2, 3, 4, 5, 7, 6];
-const stage2KanjiRevealVersion = 2;
+const stage2KanjiRevealVersion = 3;
 const stage2KanjiRevealHoldMs = 0;
 let stage2KanjiRevealLockUntil = 0;
 
@@ -654,8 +654,8 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
-  const kanjiFragmentsAsset = "./assets/stage02-kanji-fragments.webp?v=20260721-1";
-  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260721-1";
+  const kanjiHiddenAsset = "./assets/stage02-kanji-missing.webp?v=20260722-1";
+  const kanjiRevealedAsset = "./assets/stage02-kanji-revealed.webp?v=20260722-1";
   let svg = "";
   let spots = "";
 
@@ -736,14 +736,14 @@ function renderStage2Board(memo, active, pickerOpen) {
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
-  const kanjiLabel = kanjiShowingRevealed ? "赤い部分のみの画像に切り替える" : "クロミレの画像に切り替える";
+  const kanjiLabel = kanjiShowingRevealed ? "赤い部分が隠れた画像に切り替える" : "クロミレが現れた画像に切り替える";
   const kanjiImages = `
-    <img class="stage2-kanji-clue stage2-kanji-clue-fragments ${kanjiShowingRevealed ? "" : "is-active"}" src="${kanjiFragmentsAsset}" alt="色紙の赤い部分" draggable="false">
-    <img class="stage2-kanji-clue stage2-kanji-clue-revealed ${kanjiShowingRevealed ? "is-active" : ""}" src="${kanjiRevealedAsset}" alt="色紙から抜け落ちた形を左から読むとクロミレになる" draggable="false">
+    <img class="stage2-kanji-clue stage2-kanji-clue-hidden ${kanjiShowingRevealed ? "" : "is-active"}" src="${kanjiHiddenAsset}" alt="色紙に残っている黒い部分" draggable="false">
+    <img class="stage2-kanji-clue stage2-kanji-clue-revealed ${kanjiShowingRevealed ? "is-active" : ""}" src="${kanjiRevealedAsset}" alt="隠れていた赤い部分を左から読むとクロミレになる" draggable="false">
   `;
   spots += kanjiUnlocked
     ? `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${kanjiImages}</button>`
-    : `<div class="stage2-kanji-toggle-hit is-locked" aria-label="色紙の赤い部分">${kanjiImages}</div>`;
+    : `<div class="stage2-kanji-toggle-hit is-locked" aria-label="色紙に残っている黒い部分。白丸を正しく埋めると隠れた部分が現れる">${kanjiImages}</div>`;
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="img" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -851,8 +851,8 @@ function loadState() {
         stage2Rotated: Boolean(saved.stage2Rotated),
         stage2KanjiShowingRevealed:
           isStage2KanjiClueRevealed(saved.stage2Memo)
-          && saved.stage2KanjiRevealVersion === stage2KanjiRevealVersion
-          && saved.stage2KanjiShowingRevealed === true,
+          && (saved.stage2KanjiRevealVersion !== stage2KanjiRevealVersion
+            || saved.stage2KanjiShowingRevealed !== false),
         stage2KanjiRevealVersion,
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
@@ -1255,7 +1255,7 @@ function renderPathProblemCard(stage) {
   const answerOpen = state.pathAnswerOpen === true;
   return `
     <section class="spell-device path-spell-device path-problem-card ${answerOpen ? "is-answer-open" : ""}" aria-label="問題とメモ">
-      ${kanjiUnlocked ? `<div class="stage2-reveal-confirmation" role="status" aria-live="assertive">入力が反応した。右の図をタップして確認する</div>` : ""}
+      ${kanjiUnlocked ? `<div class="stage2-reveal-confirmation" role="status" aria-live="assertive">入力成功。隠れていた赤い「クロミレ」が現れた！</div>` : ""}
       <div class="path-device-head">
         <span class="path-device-title">問題とメモ</span>
         <div class="path-device-actions stage2-board-controls">
@@ -1380,7 +1380,7 @@ function wirePathProblem(stage) {
         stage2KanjiRevealLockUntil = Date.now() + stage2KanjiRevealHoldMs;
         state.stage2KanjiShowingRevealed = wasKanjiRevealed
           ? state.stage2KanjiShowingRevealed === true
-          : false;
+          : true;
         state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
         state.stage2CellMarks = {};
       }
