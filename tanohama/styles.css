@@ -76,20 +76,40 @@ body {
 }
 
 /* Final battle clear movies: show the spell result first, then return to the explanation. */
-.boss-current-layout.is-clear-cinematic {
+.boss-current-layout.is-clear-cinematic,
+.boss-current-layout.is-effect-result {
   grid-template-columns: minmax(0, 1fr) !important;
   padding: 10px !important;
   overflow: hidden !important;
 }
 
-.boss-current-layout.is-clear-cinematic .boss-visual-stack {
+.boss-current-layout.is-clear-cinematic .boss-visual-stack,
+.boss-current-layout.is-effect-result .boss-visual-stack {
   display: none !important;
 }
 
-.boss-current-layout.is-clear-cinematic .boss-current-copy {
+.boss-current-layout.is-clear-cinematic .boss-current-copy,
+.boss-current-layout.is-effect-result .boss-current-copy {
   grid-column: 1;
+  display: block;
   min-height: 0;
   padding: 0 !important;
+  overflow: hidden;
+}
+
+.boss-current-layout.is-clear-cinematic .boss-intent-block,
+.boss-current-layout.is-clear-cinematic .boss-current-meta,
+.boss-current-layout.is-effect-result .boss-intent-block,
+.boss-current-layout.is-effect-result .boss-current-meta {
+  display: none !important;
+}
+
+.boss-current-layout.is-effect-result .boss-step-effect.is-success {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .boss-step-effect.has-video {
@@ -108,7 +128,7 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 310px;
+  min-height: 0;
   overflow: hidden;
   border-radius: 5px;
   background: #000;
@@ -119,7 +139,8 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   background: #000;
 }
 
@@ -199,12 +220,34 @@ body {
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
-  .boss-current-layout.is-clear-cinematic {
+  .boss-current-layout.is-clear-cinematic,
+  .boss-current-layout.is-effect-result {
     padding: 5px !important;
   }
 
-  .boss-clear-cinematic {
-    min-height: 0;
+  .boss-current-problem.is-success-effect > .immersive-panel-head {
+    min-height: 44px;
+    padding-block: 4px;
+  }
+
+  .boss-current-problem.is-success-effect > .immersive-panel-head strong {
+    font-size: clamp(14px, 2.1vw, 18px);
+  }
+
+  .boss-current-layout.is-effect-result .boss-step-effect.is-success {
+    align-content: start;
+    gap: 3px;
+    padding: 6px 10px;
+  }
+
+  .boss-current-layout.is-effect-result .boss-technique-title-art.is-effect {
+    max-height: 44px;
+    margin-bottom: -6px;
+  }
+
+  .boss-current-layout.is-effect-result .boss-effect-story,
+  .boss-current-layout.is-effect-result .boss-effect-result {
+    line-height: 1.3;
   }
 
   .boss-clear-video-label,

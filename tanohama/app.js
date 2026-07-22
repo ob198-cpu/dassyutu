@@ -3749,7 +3749,7 @@ function renderBossProblemPanel(stage) {
   const successScene = feedback?.phase === "effect" ? getBossSuccessScene(index, feedback.castValue) : null;
   const videoPending = feedback?.phase === "effect" && feedback?.videoFinished !== true;
   return `
-    <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""}" aria-label="ラスボス 第${index + 1}問">
+    <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""} ${feedback?.phase === "effect" ? "is-success-effect" : ""} ${videoPending ? "is-playing-clear-video" : ""}" aria-label="ラスボス 第${index + 1}問">
       <div class="immersive-panel-head">
         <div><span>FINAL BATTLE ${index + 1} / ${bossBattle.length}</span><strong>ラスボスの行動を見て呪文を選べ</strong></div>
         <div class="boss-review-nav" aria-label="過去の問題を見る">
@@ -3758,7 +3758,7 @@ function renderBossProblemPanel(stage) {
         </div>
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="問題を閉じる">×</button>
       </div>
-      <div class="boss-current-layout ${videoPending ? "is-clear-cinematic" : ""}">
+      <div class="boss-current-layout ${videoPending ? "is-clear-cinematic" : ""} ${feedback?.phase === "effect" ? "is-effect-result" : ""}">
         <div class="boss-visual-stack">
           <div class="boss-current-visual">
             ${renderBossActionImage(index)}
