@@ -2425,7 +2425,7 @@ function renderPathCastEffect(stage) {
 function renderLearnedSpellContent(stageId) {
   if (stageId === "intro") {
     const learned = state.spells.includes("キミタチナラ");
-    if (!learned) return `<p class="learned-empty">「キミタチナラ…」を唱えた後に確認できます。</p>`;
+    if (!learned) return `<p class="learned-empty">このステージの呪文はまだ習得していません。</p>`;
     return `
       <article class="learned-spell-detail learned-primary-spell">
         <span>00 / 魔法使いのエール</span>
@@ -4617,11 +4617,9 @@ function focusCurrentMagic() {
     render();
   }
   if (stage.id === "intro") {
-    if (!state.spells.includes("キミタチナラ")) {
-      showMenuMessage("魔法使いのエール", "「キミタチナラ…」を唱えた後に確認できます。");
-      return;
+    if (isLearnedSpellStageUnlocked("intro")) {
+      state.learnedSpellStage = "intro";
     }
-    state.learnedSpellStage = "intro";
     state.learnedSpellViewerOpen = true;
     state.feedback = null;
     render();
