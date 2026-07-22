@@ -566,8 +566,15 @@ body {
   color: #ffe36f;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.56), 0 0 18px rgba(255, 211, 71, 0.18);
   cursor: pointer;
+  pointer-events: auto;
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
+}
+
+.gate-success-sequence.is-prompt1 > .scroll-down-indicator {
+  z-index: 260;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
 }
 
 .scroll-down-indicator[hidden] {
@@ -18543,11 +18550,12 @@ body.game-clear-mode #game::before {
   }
 }
 
-html.line-webview {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: none !important;
+html.line-webview,
+html.line-webview body {
+  width: var(--app-width) !important;
+  height: var(--app-height) !important;
+  min-height: var(--app-height) !important;
+  max-height: var(--app-height) !important;
   overflow: hidden !important;
   background: #02050a !important;
   overscroll-behavior: none;
@@ -18555,16 +18563,9 @@ html.line-webview {
   text-size-adjust: 100% !important;
 }
 
-html.line-webview body {
-  width: var(--app-width) !important;
-  height: var(--app-height) !important;
-  min-height: var(--app-height) !important;
-  max-height: none !important;
-  overflow: hidden !important;
-  background-color: #02050a !important;
-  overscroll-behavior: none;
-  -webkit-text-size-adjust: 100% !important;
-  text-size-adjust: 100% !important;
+html.line-in-app body {
+  position: fixed !important;
+  inset: 0 !important;
 }
 
 html.line-webview button,

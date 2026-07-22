@@ -1070,6 +1070,7 @@ const scrollGuideSelector = [
   ".boss-spell-book-scroll",
   ".learned-spell-viewer",
   ".spell-open-screen",
+  ".gate-success-sequence.is-prompt1 .gate-choice-card",
   "#hintBody",
 ].join(",");
 
@@ -1114,6 +1115,15 @@ function setupScrollIndicators() {
     updateIndicator();
   });
 }
+
+let scrollIndicatorResizeFrame = 0;
+function refreshScrollIndicatorsForViewport() {
+  window.cancelAnimationFrame(scrollIndicatorResizeFrame);
+  scrollIndicatorResizeFrame = window.requestAnimationFrame(setupScrollIndicators);
+}
+
+window.addEventListener("resize", refreshScrollIndicatorsForViewport, { passive: true });
+window.visualViewport?.addEventListener("resize", refreshScrollIndicatorsForViewport, { passive: true });
 
 function render() {
   if (!state.isClear) {
