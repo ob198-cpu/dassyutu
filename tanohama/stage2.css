@@ -336,9 +336,9 @@ body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
   bottom: var(--panel-edge, 6px) !important;
 }
 @media (orientation: landscape) and (min-width: 681px) and (max-height: 700px) {
-  body.stage-path-mode .side-stage-button { gap: 4px !important; }
-  body.stage-path-mode .side-stage-number { min-width: 24px; padding-inline: 3px; }
-  body.stage-path-mode .side-stage-title { white-space: nowrap; font-size: 11px; }
+  body.stage-path-mode .side-stage-button { gap: 4px !important; grid-template-columns: 24px minmax(0, 1fr) !important; }
+  body.stage-path-mode .side-stage-number { min-width: 24px !important; padding-inline: 3px; }
+  body.stage-path-mode .side-stage-title { white-space: nowrap !important; font-size: 11px !important; }
 }
 @media (orientation: landscape) and (max-width: 680px) {
   body.stage-path-mode .path-stage-background-only {
