@@ -26,6 +26,19 @@ const context = vm.createContext({
 vm.runInContext(declarations + '\n' + wiring + '\n' + answerWiring, context);
 const run = code => vm.runInContext(code, context);
 const board = () => run('renderStage2Board(normalizeStage2Memo(state.stage2Memo), {row:0,col:0}, false)');
+const kanji = partsOnly => run(`renderStage2Kanji(true, ${partsOnly})`);
+assert.ok(!/<rect[^>]*\bstroke=/.test(kanji(false)), 'The diagram must not add a second frame');
+assert.ok(board().svg.includes('x="868" y="170" width="238" height="238"'), 'Preserve the original square and arrow positions');
+assert.ok(!board().spots.includes('タッチしてヒント'), 'Do not offer a clue before the circle input unlocks it');
+const miPath = [...kanji(true).matchAll(/class="stage2-kanji-piece"[^>]*><path d="([^"]+)"/g)][2][1];
+const miStrokes = [...miPath.matchAll(/M([\d.]+) ([\d.]+) L([\d.]+) ([\d.]+)/g)]
+  .map(match => match.slice(1).map(Number));
+assert.equal(miStrokes.length, 3, 'ミ must use exactly three source strokes');
+const miLengths = miStrokes.map(([x1, y1, x2, y2]) => {
+  assert.ok(x2 > x1 && y2 > y1, 'Each ミ stroke must slope down to the right');
+  return Math.hypot(x2 - x1, y2 - y1);
+});
+assert.ok(miLengths[1] < miLengths[0] && miLengths[0] < miLengths[2], 'ミ middle stroke is shortest and bottom stroke longest');
 assert.equal(run('isStage2KanjiClueRevealed([])'), false);
 assert.equal((board().svg.match(/data-memo=/g) || []).length, 8, 'Only eight upper circles are editable');
 assert.ok(!board().spots.includes('stage2-kanji-added'), 'Initial clue must not contain answer strokes');
@@ -43,6 +56,7 @@ assert.equal(JSON.stringify([state.cleared, state.spells, state.slotInput]), bef
 assert.equal(state.stage2KanjiShowingRevealed, false, 'Show completed kanji before extracting the parts');
 assert.equal((board().svg.match(/opacity="0.14"/g) || []).length, 0, 'No automatic color filtering');
 assert.ok(board().spots.includes('stage2-kanji-added'));
+assert.ok(board().spots.includes('タッチしてヒント'), 'Unlocked diagram must visibly invite tapping');
 buttons.get('#stage2KanjiToggle').handlers.click();
 assert.equal(state.stage2KanjiShowingRevealed, true);
 const extracted = board();
