@@ -643,13 +643,13 @@ function escapeAttribute(value) {
 
 const stage2BoardPalette = { black: "#1a1a1a", red: "#d61e1e", blue: "#1a46a0", navy: "#496fae", yellow: "#f0c828", white: "#ffffff" };
 
-// The three added lower strokes of 糸 already form a slanted ミ.
-// Extraction moves those same strokes without changing their shape.
+// The three added lower strokes sit at a gentler tilt from vertical in 糸.
+// Extraction turns those same strokes into ミ without changing their shape.
 function renderStage2Kanji(unlocked, partsOnly) {
   const pieces = [
     { path: "M103 86 L65 133 M85 109 H173 L114 171", transform: "translate(-20 72)" },
     { path: "M65 180 H137 V252 H65 Z", transform: "translate(105 -4)" },
-    { path: "M296 198 L354 218 M305 235 L349 250 M285 270 L360 296", transform: "translate(0 -25)" },
+    { path: "M296 198 L354 218 M305 235 L349 250 M285 270 L360 296", sourceTransform: "rotate(30 318 240)", transform: "translate(0 -25)" },
     { path: "M400 110 V297 L454 277", transform: "translate(26 65) scale(1, .72)" },
   ];
   return `<svg class="stage2-kanji-vector ${partsOnly ? "is-parts" : ""}" viewBox="0 0 540 380" role="img" aria-label="${unlocked ? (partsOnly ? "補った四つの形" : "線が補われた色紙の図") : "一部の線が欠けた図"}">
@@ -660,7 +660,7 @@ function renderStage2Kanji(unlocked, partsOnly) {
         <path d="M322 83 L288 127 L316 149 M349 111 L287 184 L359 177 L349 154"/>
         <path d="M400 110 L483 87 M400 205 H492 M450 103 Q449 227 474 292 Q486 322 499 287"/>
       </g>
-      ${unlocked ? `<g class="stage2-kanji-added" stroke="#b52d36">${pieces.map((piece) => `<g class="stage2-kanji-piece" transform="${partsOnly && !piece.extractedPath ? piece.transform : "translate(0 0)"}"><path d="${partsOnly && piece.extractedPath ? piece.extractedPath : piece.path}"/></g>`).join("")}</g>` : ""}
+      ${unlocked ? `<g class="stage2-kanji-added" stroke="#b52d36">${pieces.map((piece) => `<g class="stage2-kanji-piece" transform="${partsOnly ? (piece.extractedPath ? "translate(0 0)" : piece.transform) : (piece.sourceTransform || "translate(0 0)")}"><path d="${partsOnly && piece.extractedPath ? piece.extractedPath : piece.path}"/></g>`).join("")}</g>` : ""}
     </g>
   </svg>`;
 }
