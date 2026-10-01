@@ -94,8 +94,8 @@ html body.stage-path-mode .spell-device.path-problem-card .stage2-board-viewport
 .stage2-kanji-piece { transform-origin: 0 0; }
 .path-problem-card .stage2-kanji-arrange {
   position: absolute;
-  left: 71.18%;
-  top: 54.4%;
+  left: 79%;
+  top: 62.06%;
   z-index: 5;
   display: block;
   width: 18.13%;
