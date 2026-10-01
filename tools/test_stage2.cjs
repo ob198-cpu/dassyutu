@@ -11,12 +11,12 @@ const buttons = new Map();
 function button(dataset = {}) {
   return { dataset, handlers: {}, addEventListener(name, handler) { this.handlers[name] = handler; } };
 }
-for (const id of ['#clearMemoCell', '#stage2KanjiToggle', '#closeMemoPicker']) buttons.set(id, button());
+for (const id of ['#clearMemoCell', '#stage2KanjiToggle', '#stage2KanjiArrange', '#stage2KanjiDialogImage', '#stage2KanjiDialogToggle', '#closeMemoPicker']) buttons.set(id, button());
 const tile = button({memoTile: ''});
 const state = {
   stageIndex: 2, cleared: ['intro', 'gate'], spells: ['ツケモノ'], slotInput: [],
   stage2Memo: [], memoActive: {row: 0, col: 0}, stage2CellMarks: {},
-  stage2KanjiShowingRevealed: false,
+  stage2KanjiShowingRevealed: false, stage2KanjiRedVisible: true,
 };
 const context = vm.createContext({
   state, console,
@@ -30,6 +30,7 @@ const kanji = partsOnly => run(`renderStage2Kanji(true, ${partsOnly})`);
 assert.ok(!/<rect[^>]*\bstroke=/.test(kanji(false)), 'The diagram must not add a second frame');
 assert.ok(board().svg.includes('x="868" y="170" width="238" height="238"'), 'Preserve the original square and arrow positions');
 assert.ok(!board().spots.includes('タッチしてヒント'), 'Do not offer a clue before the circle input unlocks it');
+assert.ok(!board().spots.includes('stage2KanjiArrange'), 'Do not offer arranging before the circle input unlocks it');
 const miPath = [...kanji(true).matchAll(/class="stage2-kanji-piece"[^>]*><path d="([^"]+)"/g)][2][1];
 const sourceMiPath = [...kanji(false).matchAll(/class="stage2-kanji-piece"[^>]*><path d="([^"]+)"/g)][2][1];
 assert.equal(miPath, sourceMiPath, 'Extract the same three slanted strokes shown in 糸 without reshaping them');
@@ -47,6 +48,8 @@ assert.ok(!board().spots.includes('stage2-kanji-added'), 'Initial clue must not 
 assert.ok(!board().spots.includes('クロミレ'), 'Do not leak clue text before solving');
 run('wirePathProblem({id:"path"})');
 run('wirePathStage({id:"path",slots:6}, false)');
+buttons.get('#stage2KanjiArrange').handlers.click();
+assert.equal(state.stage2KanjiShowingRevealed, false, 'Arranging must not bypass the circle input');
 const before = JSON.stringify([state.cleared, state.spells, state.slotInput]);
 for (const [i, letter] of [...'SIKISINI'].entries()) {
   state.memoActive = {row: 0, col: [0,1,2,3,4,5,7,6][i]};
@@ -58,11 +61,28 @@ assert.equal(JSON.stringify([state.cleared, state.spells, state.slotInput]), bef
 assert.equal(state.stage2KanjiShowingRevealed, false, 'Show completed kanji before extracting the parts');
 assert.equal((board().svg.match(/opacity="0.14"/g) || []).length, 0, 'No automatic color filtering');
 assert.ok(board().spots.includes('stage2-kanji-added'));
-assert.ok(board().spots.includes('タッチしてヒント'), 'Unlocked diagram must visibly invite tapping');
-buttons.get('#stage2KanjiToggle').handlers.click();
+assert.ok(!board().spots.includes('タッチしてヒント'), 'Remove the old touch-hint label');
+assert.ok(board().spots.includes('赤部分を並べる'), 'Offer arranging as a separate button');
+for (const id of ['#stage2KanjiToggle', '#stage2KanjiDialogImage']) {
+  for (const expected of [false, true, false, true]) {
+    buttons.get(id).handlers.click();
+    assert.equal(board().spots.includes('stage2-kanji-added'), expected, 'Repeated image clicks alternate red and initial diagrams');
+    assert.equal(state.stage2KanjiShowingRevealed, false, 'Image clicks must not arrange parts');
+  }
+}
+buttons.get('#stage2KanjiArrange').handlers.click();
 assert.equal(state.stage2KanjiShowingRevealed, true);
 const extracted = board();
 assert.equal((extracted.svg.match(/opacity="0.14"/g) || []).length, 0, 'Extracting the clue must not filter the whole puzzle');
+buttons.get('#stage2KanjiToggle').handlers.click();
+assert.equal(state.stage2KanjiShowingRevealed, false, 'Click the arranged image to return to the red diagram');
+assert.equal(state.stage2KanjiRedVisible, true);
+buttons.get('#stage2KanjiToggle').handlers.click();
+assert.ok(!board().spots.includes('stage2-kanji-added'));
+buttons.get('#stage2KanjiDialogToggle').handlers.click();
+assert.equal(state.stage2KanjiShowingRevealed, true, 'The enlarged view also offers arranging');
+assert.equal(state.stage2KanjiRedVisible, true);
+assert.equal(JSON.stringify([state.cleared, state.spells, state.slotInput]), before, 'Comparing and arranging never solves the stage');
 state.stage2CellMarks = {'u:0:6': 1};
 state.memoActive = {row:0,col:1};
 tile.dataset.memoTile = 'O';

@@ -665,12 +665,13 @@ function renderStage2Kanji(unlocked, partsOnly) {
   </svg>`;
 }
 
-function renderStage2KanjiDialog(unlocked, partsOnly) {
+function renderStage2KanjiDialog(unlocked, partsOnly, redVisible = true) {
+  const imageLabel = partsOnly || !redVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
   return `<dialog id="stage2KanjiDialog" class="stage2-kanji-dialog" aria-labelledby="stage2KanjiTitle">
     <div class="stage2-kanji-dialog-head"><h2 id="stage2KanjiTitle">右の図を見比べる</h2><button id="closeStage2Kanji" type="button">問題全体に戻る</button></div>
-    <div class="stage2-kanji-large">${renderStage2Kanji(unlocked, partsOnly)}</div>
-    <p class="stage2-kanji-caption">${unlocked ? (partsOnly ? "補った線だけを取り出し、向きをそろえています。何と読めるでしょう？" : "赤い線が補われて、二つの漢字になりました。補った線に注目してみよう。") : "まだ線が欠けています。問題を読み解き、白丸に文字を入れてみよう。"}</p>
-    ${unlocked ? `<button id="stage2KanjiDialogToggle" class="primary-button" type="button">${partsOnly ? "色紙に戻す" : "補った線だけを見る"}</button>` : ""}
+    <div class="stage2-kanji-large">${unlocked ? `<button id="stage2KanjiDialogImage" class="stage2-kanji-dialog-image" type="button" aria-label="${imageLabel}">${renderStage2Kanji(redVisible, partsOnly)}</button>` : renderStage2Kanji(false, false)}</div>
+    ${unlocked ? `<button id="stage2KanjiDialogToggle" class="primary-button" type="button">赤部分を並べる</button>` : ""}
+    <p class="stage2-kanji-caption">${unlocked ? (partsOnly ? "補った線だけを取り出し、向きをそろえています。何と読めるでしょう？" : "画像を押すたびに、赤い線のある図と最初の図を見比べられます。") : "まだ線が欠けています。問題を読み解き、白丸に文字を入れてみよう。"}</p>
   </dialog>`;
 }
 
@@ -684,6 +685,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   const textPal = { ...pal, blue: pal.navy, navy: pal.blue };
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
+  const kanjiRedVisible = kanjiUnlocked && state.stage2KanjiRedVisible !== false;
   let svg = "";
   let spots = "";
 
@@ -760,8 +762,11 @@ function renderStage2Board(memo, active, pickerOpen) {
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
-  const kanjiLabel = !kanjiUnlocked ? "右の図を拡大する" : kanjiShowingRevealed ? "色紙に戻す" : "補った線だけを見る";
-  spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiUnlocked ? "タッチしてヒント：" : ""}${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiUnlocked, kanjiShowingRevealed)}${kanjiUnlocked ? `<svg class="stage2-kanji-touch-hint" viewBox="0 0 238 36" aria-hidden="true"><text x="119" y="26" text-anchor="middle" fill="#2a56a8" font-size="24" font-weight="900" font-family="'Hiragino Sans','Yu Gothic',sans-serif">タッチしてヒント</text></svg>` : ""}</button>`;
+  const kanjiLabel = !kanjiUnlocked ? "右の図を拡大する" : kanjiShowingRevealed || !kanjiRedVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
+  spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}</button>`;
+  if (kanjiUnlocked) {
+    spots += `<button id="stage2KanjiArrange" class="stage2-kanji-arrange" type="button" aria-label="赤部分を並べる"><svg viewBox="0 0 238 40" aria-hidden="true"><text x="119" y="28" text-anchor="middle" fill="currentColor" font-size="25" font-weight="900" font-family="'Hiragino Sans','Yu Gothic',sans-serif">赤部分を並べる</text></svg></button>`;
+  }
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="group" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -871,6 +876,7 @@ function loadState() {
           isStage2KanjiClueRevealed(saved.stage2Memo)
           && saved.stage2KanjiRevealVersion === stage2KanjiRevealVersion
           && saved.stage2KanjiShowingRevealed === true,
+        stage2KanjiRedVisible: saved.stage2KanjiRedVisible !== false,
         stage2KanjiRevealVersion,
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
@@ -907,7 +913,7 @@ function loadState() {
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "intro", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage2KanjiRevealVersion, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic", endingPage: 0 };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "intro", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage2KanjiRedVisible: true, stage2KanjiRevealVersion, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic", endingPage: 0 };
 }
 
 function saveState() {
@@ -1270,6 +1276,7 @@ function renderPathProblemCard(stage) {
   const memo = normalizeStage2Memo(state.stage2Memo);
   const kanjiUnlocked = isStage2KanjiClueRevealed(memo);
   const kanjiShowingRevealed = kanjiUnlocked && state.stage2KanjiShowingRevealed !== false;
+  const kanjiRedVisible = kanjiUnlocked && state.stage2KanjiRedVisible !== false;
   const savedActiveColumn = state.memoActive && Number.isInteger(state.memoActive.col)
     ? state.memoActive.col
     : stage2KanjiRevealMemoOrder[0];
@@ -1320,7 +1327,7 @@ function renderPathProblemCard(stage) {
         <button class="problem-answer-toggle" id="pathAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
       </div>
       ${answerOpen ? renderPathAnswerControls(stage) : ""}
-      ${renderStage2KanjiDialog(kanjiUnlocked, kanjiShowingRevealed)}
+      ${renderStage2KanjiDialog(kanjiUnlocked, kanjiShowingRevealed, kanjiRedVisible)}
     </section>
   `;
 }
@@ -1392,13 +1399,24 @@ function wirePathProblem(stage) {
   const toggleKanjiClue = () => {
     if (!isStage2KanjiClueRevealed(state.stage2Memo)) { openKanjiDialog(); return; }
     const keepDialog = document.querySelector("#stage2KanjiDialog")?.open;
-    state.stage2KanjiShowingRevealed = !state.stage2KanjiShowingRevealed;
+    state.stage2KanjiRedVisible = state.stage2KanjiShowingRevealed || state.stage2KanjiRedVisible === false;
+    state.stage2KanjiShowingRevealed = false;
     saveState();
     redraw(keepDialog);
     popOnce(".stage2-kanji-toggle-hit", "stage2-kanji-reveal");
   };
   document.querySelector("#stage2KanjiToggle")?.addEventListener("click", toggleKanjiClue);
-  document.querySelector("#stage2KanjiDialogToggle")?.addEventListener("click", toggleKanjiClue);
+  document.querySelector("#stage2KanjiDialogImage")?.addEventListener("click", toggleKanjiClue);
+  const arrangeKanjiParts = () => {
+    if (!isStage2KanjiClueRevealed(state.stage2Memo)) return;
+    const keepDialog = document.querySelector("#stage2KanjiDialog")?.open;
+    state.stage2KanjiShowingRevealed = true;
+    state.stage2KanjiRedVisible = true;
+    saveState();
+    redraw(keepDialog);
+  };
+  document.querySelector("#stage2KanjiArrange")?.addEventListener("click", arrangeKanjiParts);
+  document.querySelector("#stage2KanjiDialogToggle")?.addEventListener("click", arrangeKanjiParts);
   document.querySelectorAll("[data-memo]").forEach((button) => {
     const openMemo = () => {
       const [row, col] = (button.dataset.memo || "0:0").split(":").map(Number);
@@ -1440,8 +1458,10 @@ function wirePathProblem(stage) {
           ? state.stage2KanjiShowingRevealed === true
           : false;
         state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
+        if (!wasKanjiRevealed) state.stage2KanjiRedVisible = true;
       } else {
         state.stage2KanjiShowingRevealed = false;
+        state.stage2KanjiRedVisible = true;
       }
       const activeOrderIndex = Math.max(stage2KanjiRevealMemoOrder.indexOf(col), 0);
       const nextOrderIndex = Math.min(activeOrderIndex + 1, stage2KanjiRevealMemoOrder.length - 1);
@@ -1463,6 +1483,7 @@ function wirePathProblem(stage) {
     memo[row][col] = "";
     state.stage2Memo = memo;
     state.stage2KanjiShowingRevealed = false;
+    state.stage2KanjiRedVisible = true;
     state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
     saveState();
     redraw();
@@ -4486,6 +4507,7 @@ function resetGame() {
   state.stage2CellMarks = {};
   state.stage2Rotated = false;
   state.stage2KanjiShowingRevealed = false;
+  state.stage2KanjiRedVisible = true;
   state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
   state.stage4Memo = normalizeStage4Memo(null);
   state.stage4ActiveGroup = { question: 0, group: 0 };

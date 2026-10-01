@@ -92,15 +92,27 @@ html body.stage-path-mode .spell-device.path-problem-card .stage2-board-viewport
 }
 .stage2-kanji-vector.is-parts .stage2-kanji-base { opacity: 0; }
 .stage2-kanji-piece { transform-origin: 0 0; }
-.stage2-kanji-touch-hint {
+.path-problem-card .stage2-kanji-arrange {
   position: absolute;
-  left: 0;
-  bottom: 3%;
+  left: 71.18%;
+  top: 54.4%;
+  z-index: 5;
   display: block;
-  width: 100%;
-  height: 15%;
-  pointer-events: none;
+  width: 18.13%;
+  height: 4.7%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #2a56a8;
+  border-radius: 4px;
+  background: #2a56a8;
+  color: #fff;
+  pointer-events: auto;
+  touch-action: manipulation;
+  cursor: pointer;
 }
+.stage2-kanji-arrange svg { display: block; width: 100%; height: 100%; pointer-events: none; }
+.stage2-kanji-arrange:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 body.stage-path-mode .path-problem-card .stage2-problem-footer {
   gap: 6px;
   padding: 2px 0 !important;
@@ -185,6 +197,16 @@ body.stage-path-mode .path-problem-card .memo-picker-actions button {
   width: min(100%, calc((var(--app-height, 100dvh) - 184px) * 540 / 380));
   margin: 0 auto;
   aspect-ratio: 540 / 380;
+}
+.stage2-kanji-dialog .stage2-kanji-dialog-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #f5dfce;
 }
 .stage2-kanji-caption { margin: 10px 0; font-size: 15px; line-height: 1.5; }
 .stage2-kanji-dialog > button { display: block; margin: 8px auto 0; }
