@@ -649,7 +649,7 @@ function renderStage2Kanji(unlocked, partsOnly) {
   const pieces = [
     { path: "M103 86 L65 133 M85 109 H173 L114 171", transform: "translate(-20 72)" },
     { path: "M65 180 H137 V252 H65 Z", transform: "translate(105 -4)" },
-    { path: "M296 198 L354 218 M305 235 L349 250 M285 270 L360 296", sourceTransform: "rotate(30 318 240)", transform: "translate(0 -25)" },
+    { path: "M296 198 L354 218 M305 235 L349 250 M285 270 L360 296", sourceTransform: "rotate(45 318 240)", transform: "translate(0 -25)" },
     { path: "M400 110 V297 L454 277", transform: "translate(26 65) scale(1, .72)" },
   ];
   return `<svg class="stage2-kanji-vector ${partsOnly ? "is-parts" : ""}" viewBox="0 0 540 380" role="img" aria-label="${unlocked ? (partsOnly ? "補った四つの形" : "線が補われた色紙の図") : "一部の線が欠けた図"}">
