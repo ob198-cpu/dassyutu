@@ -750,15 +750,16 @@ function renderStage2Board(memo, active, pickerOpen) {
   // 矢印(白地+青縁)と番号
   const arrowShape = "M-70,-20 L14,-20 L14,-42 L72,0 L14,42 L14,20 L-70,20 Z";
   const arrows = [
-    { x: 330, y: 452, deg: 90, n: "①" },
-    { x: 482, y: 452, deg: -90, n: "②" },
-    { x: 776, y: 252, deg: 0, n: "③" },
-    { x: 788, y: 342, deg: 180, n: "④" },
-    { x: 880, y: 468, deg: 145, n: "④" },
+    { x: 330, y: 450, deg: 90, sx: 0.4, sy: 0.7, n: "①" },
+    { x: 482, y: 450, deg: -90, sx: 0.4, sy: 0.7, n: "②" },
+    { x: 790, y: 252, deg: 0, sx: 0.82, sy: 0.7, n: "③" },
+    { x: 790, y: 342, deg: 180, sx: 0.82, sy: 0.7, n: "④" },
+    { x: 826, y: 454, deg: 145, sx: 0.45, sy: 0.6, n: "④" },
   ];
-  arrows.forEach((a) => {
-    svg += `<g transform="translate(${a.x},${a.y}) rotate(${a.deg})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#2a56a8" stroke-width="6" stroke-linejoin="round"/></g>`;
-    svg += `<text x="${a.x - (Math.abs(a.deg) === 90 ? 0 : 14)}" y="${a.y + 1}" fill="#2a56a8" font-size="40" font-weight="900" text-anchor="middle" dominant-baseline="central">${a.n}</text>`;
+  arrows.forEach((a, index) => {
+    const radians = a.deg * Math.PI / 180;
+    svg += `<g class="stage2-step-arrow" data-arrow="${index + 1}"><g transform="translate(${a.x},${a.y}) rotate(${a.deg}) scale(${a.sx},${a.sy})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#2a56a8" stroke-width="6" stroke-linejoin="round"/></g>`;
+    svg += `<text x="${a.x - 10 * Math.cos(radians)}" y="${a.y - 10 * Math.sin(radians) + 1}" fill="#2a56a8" font-size="24" font-weight="900" text-anchor="middle" dominant-baseline="central">${a.n}</text></g>`;
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
@@ -1323,7 +1324,7 @@ function renderPathProblemCard(stage) {
           : ""}
       </div>
       <div class="problem-answer-launcher stage2-problem-footer">
-        <p class="stage2-board-hint" role="status">${kanjiUnlocked ? "右の図に線が補われた。タップして見比べよう。" : "白丸をタップして文字を書き込む"}</p>
+        ${kanjiUnlocked ? "" : `<p class="stage2-board-hint" role="status">白丸をタップして文字を書き込む</p>`}
         <button class="problem-answer-toggle" id="pathAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
       </div>
       ${answerOpen ? renderPathAnswerControls(stage) : ""}
@@ -1473,7 +1474,6 @@ function wirePathProblem(stage) {
       if (!wasKanjiRevealed && kanjiRevealed) {
         audioDirector.playEffect("success");
         popOnce(".stage2-kanji-toggle-hit", "stage2-kanji-reveal");
-        popOnce(".stage2-board-hint");
       }
     });
   });
