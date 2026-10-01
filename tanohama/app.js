@@ -643,13 +643,13 @@ function escapeAttribute(value) {
 
 const stage2BoardPalette = { black: "#1a1a1a", red: "#d61e1e", blue: "#1a46a0", navy: "#496fae", yellow: "#f0c828", white: "#ffffff" };
 
-// The clue uses the added strokes of 色紙. Only the extracted ミ is reshaped
-// for legibility; its three source strokes in 糸 remain unchanged.
+// The three added lower strokes of 糸 already form a slanted ミ.
+// Extraction moves those same strokes without changing their shape.
 function renderStage2Kanji(unlocked, partsOnly) {
   const pieces = [
     { path: "M103 86 L65 133 M85 109 H173 L114 171", transform: "translate(-20 72)" },
     { path: "M65 180 H137 V252 H65 Z", transform: "translate(105 -4)" },
-    { path: "M287 218 L277 269 M318 194 V279 M348 215 L359 261", extractedPath: "M296 173 L354 193 M305 210 L349 225 M285 245 L360 271" },
+    { path: "M296 198 L354 218 M305 235 L349 250 M285 270 L360 296", transform: "translate(0 -25)" },
     { path: "M400 110 V297 L454 277", transform: "translate(26 65) scale(1, .72)" },
   ];
   return `<svg class="stage2-kanji-vector ${partsOnly ? "is-parts" : ""}" viewBox="0 0 540 380" role="img" aria-label="${unlocked ? (partsOnly ? "補った四つの形" : "線が補われた色紙の図") : "一部の線が欠けた図"}">

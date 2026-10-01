@@ -31,6 +31,8 @@ assert.ok(!/<rect[^>]*\bstroke=/.test(kanji(false)), 'The diagram must not add a
 assert.ok(board().svg.includes('x="868" y="170" width="238" height="238"'), 'Preserve the original square and arrow positions');
 assert.ok(!board().spots.includes('タッチしてヒント'), 'Do not offer a clue before the circle input unlocks it');
 const miPath = [...kanji(true).matchAll(/class="stage2-kanji-piece"[^>]*><path d="([^"]+)"/g)][2][1];
+const sourceMiPath = [...kanji(false).matchAll(/class="stage2-kanji-piece"[^>]*><path d="([^"]+)"/g)][2][1];
+assert.equal(miPath, sourceMiPath, 'Extract the same three slanted strokes shown in 糸 without reshaping them');
 const miStrokes = [...miPath.matchAll(/M([\d.]+) ([\d.]+) L([\d.]+) ([\d.]+)/g)]
   .map(match => match.slice(1).map(Number));
 assert.equal(miStrokes.length, 3, 'ミ must use exactly three source strokes');

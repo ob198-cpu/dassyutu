@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <script>
       (() => {
-        const buildVersion = "20261001-1";
+        const buildVersion = "20261001-2";
         const query = new URLSearchParams(location.search);
         if (query.get("refresh") === buildVersion) {
           history.replaceState(null, "", `${location.pathname}${location.hash}`);
@@ -110,6 +110,6 @@
       <p id="hintBody"></p>
     </dialog>
 
-    <script src="./app.js?v=20261001-1"></script>
+    <script src="./app.js?v=20261001-2"></script>
   </body>
 </html>
