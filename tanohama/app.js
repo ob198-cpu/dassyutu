@@ -339,7 +339,9 @@ function renderSpellRuleGuide(extraClass = "") {
   `;
 }
 
-const storeKey = "tanohamaEscapeStateV4";
+const stage2Only = new URLSearchParams(window.location.search).get("stage") === "2";
+const stage2OnlyIndex = stages.findIndex((stage) => stage.id === "path");
+const storeKey = stage2Only ? "tanohamaStage2StateV1" : "tanohamaEscapeStateV4";
 
 const audioDirector = (() => {
   const preferenceKey = "tanohamaSoundMutedV1";
@@ -807,6 +809,7 @@ const state = loadState();
 forceGateProblemClosedOnStartup();
 state.feedback = null;
 closeStagePanelsOnEntry(stages[state.stageIndex] || stages[0]);
+prepareStage2OnlyMode();
 let gateSuccessTimers = [];
 
 // 岩落下演出の画像を先読みして、発動時に確実に表示されるようにする
@@ -915,6 +918,17 @@ function loadState() {
     localStorage.removeItem(storeKey);
   }
   return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "intro", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage2KanjiRedVisible: true, stage2KanjiRevealVersion, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic", endingPage: 0 };
+}
+
+function prepareStage2OnlyMode() {
+  if (!stage2Only) return;
+  state.stageIndex = stage2OnlyIndex;
+  state.isClear = false;
+  state.openingVideoSeen = true;
+  state.sealBooks = { ...(state.sealBooks || {}), path: true };
+  state.revealed = { ...(state.revealed || {}), path: true };
+  state.learnedSpellStage = "path";
+  state.pathPanelMode = isStageCleared("path") ? "clear" : "problem";
 }
 
 function saveState() {
@@ -1027,10 +1041,12 @@ function closeInfoDialogs() {
 }
 
 function getUnlockedStageIndex() {
+  if (stage2Only) return stage2OnlyIndex;
   return Math.min(stages.length - 1, Math.max(0, state.cleared.length));
 }
 
 function canOpenStage(index) {
+  if (stage2Only) return index === stage2OnlyIndex;
   return index <= getUnlockedStageIndex();
 }
 
@@ -1043,6 +1059,7 @@ function openStage(index) {
   state.feedback = null;
   closeStagePanelsOnEntry(stage);
   resetStageInput();
+  prepareStage2OnlyMode();
   render();
   return true;
 }
@@ -1169,7 +1186,7 @@ function render() {
   elements.topTitle.textContent = state.isClear
     ? "異空間からの脱出 CLEAR"
     : `異空間からの脱出 ${stage.number} / ${stage.title}`;
-  elements.stageCount.textContent = stage.isIntro ? `00 / ${String(puzzleTotal).padStart(2, "0")}` : `${stage.number} / ${String(puzzleTotal).padStart(2, "0")}`;
+  elements.stageCount.textContent = stage2Only ? stage.number : stage.isIntro ? `00 / ${String(puzzleTotal).padStart(2, "0")}` : `${stage.number} / ${String(puzzleTotal).padStart(2, "0")}`;
   elements.spellCount.textContent = String(state.spells.length);
   renderNav();
   if (state.isClear) {
@@ -1622,6 +1639,7 @@ function renderNav() {
   elements.nav.innerHTML = "";
   elements.sideNav.innerHTML = "";
   stages.forEach((stage, index) => {
+    if (stage2Only && index !== stage2OnlyIndex) return;
     const unlocked = canOpenStage(index) || isStageCleared(stage.id);
     const locked = !unlocked;
 
@@ -2427,7 +2445,7 @@ function renderPathStageClear(stage) {
           <h2>『扉のない通路』</h2>
           <p><strong>${stage.reward}を唱えた！</strong>『』の中の<span class="path-red-word">あか</span>色を消したことで『扉のない通路』になった！</p>
         </div>
-        <button class="primary-button" id="nextButton" type="button">次のステージへ</button>
+        ${stage2Only ? "" : '<button class="primary-button" id="nextButton" type="button">次のステージへ</button>'}
       </div>
     </section>
   `;
@@ -4537,6 +4555,7 @@ function resetGame() {
   state.bossColorRemoved = false;
   state.clearPhase = "cinematic";
   state.endingPage = 0;
+  prepareStage2OnlyMode();
   saveState();
   render();
 }
