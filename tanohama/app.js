@@ -1341,7 +1341,7 @@ function renderPathProblemCard(stage) {
           : ""}
       </div>
       <div class="problem-answer-launcher stage2-problem-footer">
-        ${kanjiUnlocked ? "" : `<p class="stage2-board-hint" role="status">白丸をタップして文字を書き込む</p>`}
+        ${kanjiUnlocked ? "" : `<p class="stage2-board-hint" role="status">白丸をタップして文字を書き込むことができます</p>`}
         <button class="problem-answer-toggle" id="pathAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
       </div>
       ${answerOpen ? renderPathAnswerControls(stage) : ""}

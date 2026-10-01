@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <script>
       (() => {
-        const buildVersion = "20261002-1";
+        const buildVersion = "20261002-2";
         const query = new URLSearchParams(location.search);
         if (query.get("refresh") === buildVersion) {
           const entryQuery = query.get("stage") === "2" ? "?stage=2" : "";
@@ -111,6 +111,6 @@
       <p id="hintBody"></p>
     </dialog>
 
-    <script src="./app.js?v=20261002-1"></script>
+    <script src="./app.js?v=20261002-2"></script>
   </body>
 </html>

@@ -86,6 +86,7 @@ assert.equal(normal.run('state.sealBooks.path'), undefined);
 assert.equal(launch('?stage=3', new Map()).run('state.stageIndex'), 0, 'Unrecognized stage queries retain normal startup');
 
 const entryScript = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+const buildVersion = entryScript.match(/const buildVersion = "([^"]+)"/)[1];
 function cleanRefresh(search) {
   let result;
   vm.runInNewContext(entryScript, {
@@ -97,6 +98,6 @@ function cleanRefresh(search) {
   });
   return result;
 }
-assert.equal(cleanRefresh('?stage=2&refresh=20261002-1'), '/tanohama/?stage=2#test', 'Cache-refresh cleanup preserves Stage 02 mode');
-assert.equal(cleanRefresh('?refresh=20261002-1'), '/tanohama/#test', 'Keep normal refresh cleanup');
+assert.equal(cleanRefresh(`?stage=2&refresh=${buildVersion}`), '/tanohama/?stage=2#test', 'Cache-refresh cleanup preserves Stage 02 mode');
+assert.equal(cleanRefresh(`?refresh=${buildVersion}`), '/tanohama/#test', 'Keep normal refresh cleanup');
 console.log('Stage 02 URL checks passed: direct entry, save isolation, reload/reset, navigation, clear, and normal-game regression.');
