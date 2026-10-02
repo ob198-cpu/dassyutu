@@ -743,9 +743,9 @@ function renderStage2Board(memo, active, pickerOpen) {
   svg += `<text x="30" y="38" fill="#2a56a8" font-size="34" font-weight="900" font-family="'Hiragino Sans','Segoe UI',sans-serif">ステージ2</text>`;
   // 凡例: ●×10 しろ + 手順
   for (let i = 0; i < 10; i++) {
-    svg += `<circle cx="${494 + i * 24}" cy="90" r="10.5" fill="#fbfbfb"/>`;
+    svg += `<circle cx="${44 + i * 24}" cy="90" r="10.5" fill="#fbfbfb"/>`;
   }
-  svg += `<text x="732" y="100" fill="#fbfbfb" font-size="26" font-weight="900">しろ</text>`;
+  svg += `<text x="282" y="100" fill="#fbfbfb" font-size="26" font-weight="900">しろ</text>`;
   svg += `<text x="800" y="99" fill="#2a56a8" font-size="24" font-weight="900">①②③④<tspan fill="#d61e1e">の矢印</tspan>の順に解くのじゃ</text>`;
   drawBlock("u", stage2Board.upper);
   drawBlock("l", stage2Board.lower);

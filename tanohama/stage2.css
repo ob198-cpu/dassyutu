@@ -392,3 +392,25 @@ body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-board-viewp
 html body.stage-path-mode .spell-device.path-problem-card:not(.is-answer-open) .stage2-board-viewport > .stage2-board-wrap {
   margin: 0 auto !important;
 }
+
+/* Let the board extend to the bottom; the answer launcher stays in the right rail. */
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-board-viewport {
+  grid-row: 1 / 3;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-problem-footer {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-problem-footer .problem-answer-toggle {
+  width: 100%;
+  min-width: 0;
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-board-hint {
+    font-size: 10px !important;
+    padding: 3px;
+  }
+}
