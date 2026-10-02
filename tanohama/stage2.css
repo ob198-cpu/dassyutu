@@ -448,3 +448,5 @@ body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
 }
 .stage2-touch-cue svg { display: block; width: 100%; height: 100%; }
 .path-problem-card .stage2-kanji-toggle-hit { overflow: visible; }
+/* Point into the panel from its upper-right corner. */
+.stage2-touch-cue svg { transform: rotate(-135deg); }
