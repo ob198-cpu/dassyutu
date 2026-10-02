@@ -696,7 +696,7 @@ function renderStage2Board(memo, active, pickerOpen) {
       (b.h[r] || []).forEach((seg, c) => {
         Object.entries(seg).forEach(([color, off]) => {
           const y = b.y[r] + off;
-          svg += `<line x1="${b.x[c]}" y1="${y}" x2="${b.x[c + 1]}" y2="${y}" stroke="${pal[color]}" stroke-width="5"/>`;
+          svg += `<line x1="${b.x[c]}" y1="${y}" x2="${b.x[c + 1]}" y2="${y}" stroke="${color === "blue" ? "#78d7f5" : pal[color]}" stroke-width="5"/>`;
         });
       });
     }
@@ -704,7 +704,7 @@ function renderStage2Board(memo, active, pickerOpen) {
       (b.v[c] || []).forEach((seg, r) => {
         Object.entries(seg).forEach(([color, off]) => {
           const x = b.x[c] + off;
-          svg += `<line x1="${x}" y1="${b.y[r]}" x2="${x}" y2="${b.y[r + 1]}" stroke="${pal[color]}" stroke-width="5"/>`;
+          svg += `<line x1="${x}" y1="${b.y[r]}" x2="${x}" y2="${b.y[r + 1]}" stroke="${color === "blue" ? "#78d7f5" : pal[color]}" stroke-width="5"/>`;
         });
       });
     }
@@ -739,7 +739,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   svg += `<rect x="0" y="0" width="${VBW}" height="${VBH}" fill="#f6f2ea"/>`;
   svg += `<rect x="18" y="52" width="1194" height="616" fill="#cf9d9d"/>`;
   // 外枠は左辺だけを除き、上・右・下を原本どおり残す。
-  svg += `<path d="M18 52 H1212 V668 H18" fill="none" stroke="#2a56a8" stroke-width="4"/>`;
+  svg += `<path d="M18 52 H1212 V668 H18" fill="none" stroke="#78d7f5" stroke-width="4"/>`;
   svg += `<text x="30" y="38" fill="#2a56a8" font-size="34" font-weight="900" font-family="'Hiragino Sans','Segoe UI',sans-serif">ステージ2</text>`;
   // 凡例: ●×10 しろ + 手順
   for (let i = 0; i < 10; i++) {
@@ -760,11 +760,11 @@ function renderStage2Board(memo, active, pickerOpen) {
   ];
   arrows.forEach((a, index) => {
     const radians = a.deg * Math.PI / 180;
-    svg += `<g class="stage2-step-arrow" data-arrow="${index + 1}"><g transform="translate(${a.x},${a.y}) rotate(${a.deg}) scale(${a.sx},${a.sy})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#2a56a8" stroke-width="6" stroke-linejoin="round"/></g>`;
+    svg += `<g class="stage2-step-arrow" data-arrow="${index + 1}"><g transform="translate(${a.x},${a.y}) rotate(${a.deg}) scale(${a.sx},${a.sy})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#78d7f5" stroke-width="6" stroke-linejoin="round"/></g>`;
     svg += `<text x="${a.x - 10 * Math.cos(radians)}" y="${a.y - 10 * Math.sin(radians) + 1}" fill="#2a56a8" font-size="24" font-weight="900" text-anchor="middle" dominant-baseline="central">${a.n}</text></g>`;
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
-  svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#2a56a8" stroke-width="6"/>`;
+  svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#78d7f5" stroke-width="6"/>`;
   const kanjiLabel = !kanjiUnlocked ? "右の図を拡大する" : kanjiShowingRevealed || !kanjiRedVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
   spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}</button>`;
   if (kanjiUnlocked) {
@@ -1313,6 +1313,7 @@ function renderPathProblemCard(stage) {
         <button id="rotateBoard" type="button" aria-pressed="${state.stage2Rotated}"><span aria-hidden="true">⟳</span> ${state.stage2Rotated ? "向きを戻す" : "180°回転"}</button>
         <button id="stage2ZoomBoard" type="button" aria-pressed="${stage2BoardZoomed}">${stage2BoardZoomed ? "問題全体を表示" : "問題を拡大"}</button>
         <button id="stage2ZoomKanji" type="button">右の図を拡大</button>
+        <button id="stage2Fullscreen" type="button">${document.fullscreenElement || document.webkitFullscreenElement ? "全画面を終了" : "全画面表示"}</button>
       </div>
       <div class="stage2-board-viewport ${stage2BoardZoomed ? "is-zoomed" : ""}">
         <div class="path-problem-image stage2-inline-memo stage2-board-wrap ${state.stage2Rotated ? "is-rotated" : ""}">
@@ -4829,3 +4830,30 @@ document.addEventListener("pointerdown", (event) => {
 }, { capture: true, passive: true });
 
 render();
+
+// Request fullscreen only from an explicit tap; unsupported webviews keep normal play.
+document.addEventListener("click", async (event) => {
+  if (!event.target.closest?.("#stage2Fullscreen")) return;
+  const root = document.documentElement;
+  const current = document.fullscreenElement || document.webkitFullscreenElement;
+  try {
+    if (current) {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) await exit.call(document);
+      return;
+    }
+    const request = root.requestFullscreen || root.webkitRequestFullscreen;
+    const enabled = document.fullscreenEnabled ?? document.webkitFullscreenEnabled;
+    if (!request || enabled === false) throw new Error("unavailable");
+    await request.call(root);
+  } catch (_) {
+    showMenuMessage("全画面表示について", "このブラウザーでは全画面表示を利用できません。LINE内で開いている場合は、メニューから外部ブラウザーで開いてください。iPhoneではSafariの共有から「ホーム画面に追加」し、そのアイコンから開くとブラウザーの上下の操作欄なしで遊べます。別のブラウザーでは進行データを引き継げない場合があります。");
+  }
+});
+const syncFullscreenControl = () => {
+  const button = document.querySelector("#stage2Fullscreen");
+  if (button) button.textContent = document.fullscreenElement || document.webkitFullscreenElement ? "全画面を終了" : "全画面表示";
+  window.dispatchEvent(new Event("resize"));
+};
+document.addEventListener("fullscreenchange", syncFullscreenControl);
+document.addEventListener("webkitfullscreenchange", syncFullscreenControl);

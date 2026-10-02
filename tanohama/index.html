@@ -39,6 +39,8 @@
         syncLineViewport();
         window.addEventListener("resize", syncLineViewport, { passive: true });
         window.addEventListener("pageshow", syncLineViewport, { passive: true });
+        document.addEventListener("fullscreenchange", syncLineViewport);
+        document.addEventListener("webkitfullscreenchange", syncLineViewport);
         window.addEventListener("orientationchange", () => {
           syncLineViewport();
           window.setTimeout(syncLineViewport, 240);
@@ -49,7 +51,7 @@
     </script>
     <title>田野浜謎解き - 異空間からの脱出</title>
     <link rel="stylesheet" href="./styles.css?v=20260722-11" />
-    <link rel="stylesheet" href="./stage2.css?v=20261002-6" />
+    <link rel="stylesheet" href="./stage2.css?v=20261002-7" />
   </head>
   <body>
     <div class="rotate-guard" aria-hidden="true">
@@ -111,6 +113,6 @@
       <p id="hintBody"></p>
     </dialog>
 
-    <script src="./app.js?v=20261002-6"></script>
+    <script src="./app.js?v=20261002-7"></script>
   </body>
 </html>

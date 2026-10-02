@@ -414,3 +414,24 @@ body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-problem-foo
     padding: 3px;
   }
 }
+
+/* Keep fullscreen controls away from the iPhone notch and home indicator. */
+body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
+  top: max(var(--panel-edge, 6px), env(safe-area-inset-top)) !important;
+  right: max(var(--panel-edge, 6px), env(safe-area-inset-right)) !important;
+  bottom: max(var(--panel-edge, 6px), env(safe-area-inset-bottom)) !important;
+}
+.path-problem-card .stage2-kanji-toggle-hit,
+.path-problem-card .stage2-kanji-arrange { border-color: #78d7f5; }
+@media (orientation: landscape) and (min-width: 681px) and (max-height: 700px) {
+  body.stage-path-mode { --side-menu-w: calc(110px + env(safe-area-inset-left)); }
+  body.stage-path-mode .side-menu {
+    padding-left: max(5px, env(safe-area-inset-left)) !important;
+    padding-top: max(5px, env(safe-area-inset-top)) !important;
+    padding-bottom: max(5px, env(safe-area-inset-bottom)) !important;
+  }
+}
+@media (orientation: landscape) and (max-width: 680px) and (max-height: 360px) {
+  body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-puzzle-toolbar { gap: 2px; }
+  body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-puzzle-toolbar button { min-height: 28px; }
+}
