@@ -450,3 +450,13 @@ body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
 .path-problem-card .stage2-kanji-toggle-hit { overflow: visible; }
 /* Point into the panel from its upper-right corner. */
 .stage2-touch-cue svg { transform: rotate(-135deg); }
+body.stage-path-mode .path-problem-card .stage2-problem-footer .stage2-arrange-action {
+  width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  margin: 0;
+  padding: 4px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  touch-action: manipulation;
+}

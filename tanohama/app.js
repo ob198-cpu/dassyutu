@@ -672,7 +672,7 @@ function renderStage2KanjiDialog(unlocked, partsOnly, redVisible = true) {
   return `<dialog id="stage2KanjiDialog" class="stage2-kanji-dialog" aria-labelledby="stage2KanjiTitle">
     <div class="stage2-kanji-dialog-head"><h2 id="stage2KanjiTitle">右の図を見比べる</h2><button id="closeStage2Kanji" type="button">問題全体に戻る</button></div>
     <div class="stage2-kanji-large">${unlocked ? `<button id="stage2KanjiDialogImage" class="stage2-kanji-dialog-image" type="button" aria-label="${imageLabel}">${renderStage2Kanji(redVisible, partsOnly)}</button>` : renderStage2Kanji(false, false)}</div>
-    ${unlocked ? `<button id="stage2KanjiDialogToggle" class="primary-button" type="button">赤部分を並べる</button>` : ""}
+    ${unlocked ? `<button id="stage2KanjiDialogToggle" class="primary-button" type="button">赤い部分を並べる</button>` : ""}
     <p class="stage2-kanji-caption">${unlocked ? (partsOnly ? "補った線だけを取り出し、向きをそろえています。何と読めるでしょう？" : "画像を押すたびに、赤い線のある図と最初の図を見比べられます。") : "まだ線が欠けています。問題を読み解き、白丸に文字を入れてみよう。"}</p>
   </dialog>`;
 }
@@ -767,9 +767,6 @@ function renderStage2Board(memo, active, pickerOpen) {
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#d61e1e" stroke-width="6"/>`;
   const kanjiLabel = !kanjiUnlocked ? "右の図を拡大する" : kanjiShowingRevealed || !kanjiRedVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
   spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}${kanjiUnlocked ? `<span class="stage2-touch-cue" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M35 72 L28 53 Q25 43 31 40 Q36 38 40 47 L43 53 V15 Q43 5 50 5 Q57 5 57 15 V39 Q64 33 69 41 Q76 36 81 45 Q89 43 91 53 L91 65 Q90 76 80 84 H43 Q38 79 35 72 Z" fill="#ffd293" stroke="#713c23" stroke-width="3.5" stroke-linejoin="round"/><path d="M58 44 V58 M69 45 V59 M80 50 V61" fill="none" stroke="#b97948" stroke-width="2.5" stroke-linecap="round"/><path d="M43 82 H81 V95 H43 Z" fill="#45a8d8" stroke="#234b65" stroke-width="3"/><path d="M48 87 H76" fill="none" stroke="#b8eafa" stroke-width="2"/></svg></span>` : ""}</button>`;
-  if (kanjiUnlocked) {
-    spots += `<button id="stage2KanjiArrange" class="stage2-kanji-arrange" type="button" aria-label="赤部分を並べる"><svg viewBox="0 0 238 40" aria-hidden="true"><text x="119" y="28" text-anchor="middle" fill="currentColor" font-size="25" font-weight="900" font-family="'Hiragino Sans','Yu Gothic',sans-serif">赤部分を並べる</text></svg></button>`;
-  }
 
   return {
     svg: `<svg class="stage2-board-svg" viewBox="0 0 ${VBW} ${VBH}" role="group" aria-label="ステージ2 盤面(原本を再構成)">${svg}</svg>`,
@@ -1342,7 +1339,7 @@ function renderPathProblemCard(stage) {
           : ""}
       </div>
       <div class="problem-answer-launcher stage2-problem-footer">
-        ${kanjiUnlocked ? "" : `<p class="stage2-board-hint" role="status">白丸をタップして文字を書き込むことができます</p>`}
+        ${kanjiUnlocked ? (!answerOpen ? `<button id="stage2KanjiArrange" class="primary-button stage2-arrange-action" type="button">赤い部分を並べる</button>` : "") : `<p class="stage2-board-hint" role="status">白丸をタップして文字を書き込むことができます</p>`}
         <button class="problem-answer-toggle" id="pathAnswerToggle" type="button" aria-expanded="${answerOpen}">${answerOpen ? "解答欄を閉じる" : "解答欄を開く"}</button>
       </div>
       ${answerOpen ? renderPathAnswerControls(stage) : ""}

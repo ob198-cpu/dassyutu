@@ -63,7 +63,8 @@ assert.equal(state.stage2KanjiShowingRevealed, false, 'Show completed kanji befo
 assert.equal((board().svg.match(/opacity="0.14"/g) || []).length, 0, 'No automatic color filtering');
 assert.ok(board().spots.includes('stage2-kanji-added'));
 assert.ok(!board().spots.includes('タッチしてヒント'), 'Remove the old touch-hint label');
-assert.ok(board().spots.includes('赤部分を並べる'), 'Offer arranging as a separate button');
+assert.ok(!board().spots.includes('stage2KanjiArrange'), 'The arranging button is outside the board');
+assert.match(source, /stage2-problem-footer[\s\S]*?stage2KanjiArrange[\s\S]*?赤い部分を並べる/, 'Offer arranging in the right footer');
 for (const id of ['#stage2KanjiToggle', '#stage2KanjiDialogImage']) {
   for (const expected of [false, true, false, true]) {
     buttons.get(id).handlers.click();
