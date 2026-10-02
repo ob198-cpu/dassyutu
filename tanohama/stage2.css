@@ -346,3 +346,49 @@ body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
     min-height: 0 !important;
   }
 }
+
+/* Stage 02: display controls sit beside the board, freeing its top edge. */
+body.stage-path-mode .spell-device.path-spell-device.path-problem-card:not(.is-answer-open) {
+  display: grid !important;
+  grid-template-areas: none !important;
+  grid-template-columns: minmax(0, 1fr) 116px !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: 4px 8px !important;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-puzzle-toolbar {
+  grid-column: 2;
+  grid-row: 1;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-self: start;
+  align-items: stretch;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-puzzle-toolbar button {
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  padding-inline: 6px;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-board-viewport {
+  grid-column: 1;
+  grid-row: 1;
+  height: 100%;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-problem-footer {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .memo-board-inline-only {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+body.stage-path-mode .path-problem-card .memo-board-inline-only .memo-picker {
+  pointer-events: auto;
+}
+body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-board-viewport {
+  align-items: flex-start;
+}
+html body.stage-path-mode .spell-device.path-problem-card:not(.is-answer-open) .stage2-board-viewport > .stage2-board-wrap {
+  margin: 0 auto !important;
+}
