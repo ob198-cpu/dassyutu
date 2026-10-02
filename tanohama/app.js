@@ -719,7 +719,7 @@ function renderStage2Board(memo, active, pickerOpen) {
         const inputEnabled = inputOrderIndex >= 0;
         const char = inputEnabled ? memo[0]?.[cell.memo] || "" : "";
         if (char) {
-          svg += `<text x="${cx}" y="${cy + 2}" fill="#168447" font-size="34" font-weight="900" text-anchor="middle" dominant-baseline="central" font-family="'Hiragino Sans','Segoe UI',sans-serif">${escapeAttribute(char)}</text>`;
+          svg += `<text x="${cx}" y="${cy + 2}" fill="#8234ad" font-size="34" font-weight="900" text-anchor="middle" dominant-baseline="central" font-family="'Hiragino Sans','Segoe UI',sans-serif">${escapeAttribute(char)}</text>`;
         }
         if (inputEnabled) {
           const sel = pickerOpen && active.row === 0 && active.col === cell.memo;
@@ -760,11 +760,11 @@ function renderStage2Board(memo, active, pickerOpen) {
   ];
   arrows.forEach((a, index) => {
     const radians = a.deg * Math.PI / 180;
-    svg += `<g class="stage2-step-arrow" data-arrow="${index + 1}"><g transform="translate(${a.x},${a.y}) rotate(${a.deg}) scale(${a.sx},${a.sy})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#78d7f5" stroke-width="6" stroke-linejoin="round"/></g>`;
+    svg += `<g class="stage2-step-arrow" data-arrow="${index + 1}"><g transform="translate(${a.x},${a.y}) rotate(${a.deg}) scale(${a.sx},${a.sy})"><path d="${arrowShape}" fill="#fdfdfd" stroke="#d61e1e" stroke-width="6" stroke-linejoin="round"/></g>`;
     svg += `<text x="${a.x - 10 * Math.cos(radians)}" y="${a.y - 10 * Math.sin(radians) + 1}" fill="#2a56a8" font-size="24" font-weight="900" text-anchor="middle" dominant-baseline="central">${a.n}</text></g>`;
   });
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
-  svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#78d7f5" stroke-width="6"/>`;
+  svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#d61e1e" stroke-width="6"/>`;
   const kanjiLabel = !kanjiUnlocked ? "右の図を拡大する" : kanjiShowingRevealed || !kanjiRedVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
   spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}${kanjiUnlocked ? `<span class="stage2-touch-cue" aria-hidden="true"><svg viewBox="0 0 100 100"><text x="50" y="78" font-size="76" text-anchor="middle">👆</text></svg></span>` : ""}</button>`;
   if (kanjiUnlocked) {
