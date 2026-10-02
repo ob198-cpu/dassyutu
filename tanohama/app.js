@@ -766,7 +766,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#78d7f5" stroke-width="6"/>`;
   const kanjiLabel = !kanjiUnlocked ? "右の図を拡大する" : kanjiShowingRevealed || !kanjiRedVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
-  spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}</button>`;
+  spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}${kanjiUnlocked ? `<span class="stage2-touch-cue" aria-hidden="true"><svg viewBox="0 0 100 100"><text x="50" y="78" font-size="76" text-anchor="middle">👆</text></svg></span>` : ""}</button>`;
   if (kanjiUnlocked) {
     spots += `<button id="stage2KanjiArrange" class="stage2-kanji-arrange" type="button" aria-label="赤部分を並べる"><svg viewBox="0 0 238 40" aria-hidden="true"><text x="119" y="28" text-anchor="middle" fill="currentColor" font-size="25" font-weight="900" font-family="'Hiragino Sans','Yu Gothic',sans-serif">赤部分を並べる</text></svg></button>`;
   }

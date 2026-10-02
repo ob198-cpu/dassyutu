@@ -435,3 +435,16 @@ body.stage-path-mode .spell-device.path-spell-device.path-problem-card {
   body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-puzzle-toolbar { gap: 2px; }
   body.stage-path-mode .path-problem-card:not(.is-answer-open) .stage2-puzzle-toolbar button { min-height: 28px; }
 }
+
+/* Show the touch cue only after the white-circle phrase unlocks the panel. */
+.path-problem-card .stage2-touch-cue {
+  position: absolute;
+  top: -8%;
+  right: -8%;
+  width: 28%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .65));
+}
+.stage2-touch-cue svg { display: block; width: 100%; height: 100%; }
+.path-problem-card .stage2-kanji-toggle-hit { overflow: visible; }
