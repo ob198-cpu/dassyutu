@@ -719,7 +719,7 @@ function renderStage2Board(memo, active, pickerOpen) {
         const inputEnabled = inputOrderIndex >= 0;
         const char = inputEnabled ? memo[0]?.[cell.memo] || "" : "";
         if (char) {
-          svg += `<text x="${cx}" y="${cy + 2}" fill="#8234ad" font-size="34" font-weight="900" text-anchor="middle" dominant-baseline="central" font-family="'Hiragino Sans','Segoe UI',sans-serif">${escapeAttribute(char)}</text>`;
+          svg += `<text x="${cx}" y="${cy + 2}" fill="#8234ad" stroke="#8234ad" stroke-width="1.2" paint-order="stroke fill" font-size="34" font-weight="900" text-anchor="middle" dominant-baseline="central" font-family="'Hiragino Sans','Segoe UI',sans-serif">${escapeAttribute(char)}</text>`;
         }
         if (inputEnabled) {
           const sel = pickerOpen && active.row === 0 && active.col === cell.memo;
@@ -766,7 +766,7 @@ function renderStage2Board(memo, active, pickerOpen) {
   // ③④で使う右枠は、線と記号の位置関係も含めて問題そのもの。
   svg += `<rect x="868" y="170" width="238" height="238" fill="#cf9d9d" stroke="#d61e1e" stroke-width="6"/>`;
   const kanjiLabel = !kanjiUnlocked ? "右の図を拡大する" : kanjiShowingRevealed || !kanjiRedVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
-  spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}${kanjiUnlocked ? `<span class="stage2-touch-cue" aria-hidden="true"><svg viewBox="0 0 100 100"><text x="50" y="78" font-size="76" text-anchor="middle">👆</text></svg></span>` : ""}</button>`;
+  spots += `<button id="stage2KanjiToggle" class="stage2-kanji-toggle-hit" type="button" aria-label="${kanjiLabel}" data-revealed="${kanjiShowingRevealed}">${renderStage2Kanji(kanjiRedVisible, kanjiShowingRevealed)}${kanjiUnlocked ? `<span class="stage2-touch-cue" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M35 72 L28 53 Q25 43 31 40 Q36 38 40 47 L43 53 V15 Q43 5 50 5 Q57 5 57 15 V39 Q64 33 69 41 Q76 36 81 45 Q89 43 91 53 L91 65 Q90 76 80 84 H43 Q38 79 35 72 Z" fill="#ffd293" stroke="#713c23" stroke-width="3.5" stroke-linejoin="round"/><path d="M58 44 V58 M69 45 V59 M80 50 V61" fill="none" stroke="#b97948" stroke-width="2.5" stroke-linecap="round"/><path d="M43 82 H81 V95 H43 Z" fill="#45a8d8" stroke="#234b65" stroke-width="3"/><path d="M48 87 H76" fill="none" stroke="#b8eafa" stroke-width="2"/></svg></span>` : ""}</button>`;
   if (kanjiUnlocked) {
     spots += `<button id="stage2KanjiArrange" class="stage2-kanji-arrange" type="button" aria-label="赤部分を並べる"><svg viewBox="0 0 238 40" aria-hidden="true"><text x="119" y="28" text-anchor="middle" fill="currentColor" font-size="25" font-weight="900" font-family="'Hiragino Sans','Yu Gothic',sans-serif">赤部分を並べる</text></svg></button>`;
   }
