@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#02050a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const userAgent = navigator.userAgent || "";
+        const isLineWebView = /(?:^|\s)Line\//i.test(userAgent) || /\bLIFF\b/i.test(userAgent);
+        const isAppleMobile = /iPhone|iPad|iPod/i.test(userAgent)
+          || (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1);
+        const isAndroidMobile = /Android/i.test(userAgent);
+        if (!isLineWebView && !isAppleMobile && !isAndroidMobile) return;
+
+        root.classList.add("line-webview");
+        root.classList.toggle("line-in-app", isLineWebView);
+        const syncLineViewport = () => {
+          const viewport = window.visualViewport;
+          const width = Math.round(viewport?.width || window.innerWidth || root.clientWidth);
+          const height = Math.round(viewport?.height || window.innerHeight || root.clientHeight);
+          if (width > 0) root.style.setProperty("--app-width", `${width}px`);
+          if (height > 0) root.style.setProperty("--app-height", `${height}px`);
+        };
+
+        syncLineViewport();
+        window.addEventListener("resize", syncLineViewport, { passive: true });
+        window.addEventListener("pageshow", syncLineViewport, { passive: true });
+        window.addEventListener("orientationchange", () => {
+          syncLineViewport();
+          window.setTimeout(syncLineViewport, 240);
+        }, { passive: true });
+        window.visualViewport?.addEventListener("resize", syncLineViewport, { passive: true });
+      })();
+    </script>
+    <title>田野浜謎解き - 異空間からの脱出</title>
+    <link rel="stylesheet" href="./styles.css?v=improved-20261004-1" />
+  <link rel="stylesheet" id="experienceStyles" href="./experience.css?v=improved-20261004-1" />
+  <link rel="stylesheet" id="arrangementStyles" href="./arrangement.css?v=improved-20261004-1" />
+    <link id="stage2ReferenceStyles" rel="stylesheet" href="./stage2-reference.css?v=improved-20261004-1" disabled>
+    <link rel="icon" href="data:,">
+  </head>
+  <body>
+    <div class="rotate-guard" aria-hidden="true">
+      <div class="rotate-guard-inner">
+        <span class="rotate-icon">📱</span>
+        <strong>スマホを横向きにしてください</strong>
+        <p>このゲームは横持ちでプレイする設計です。<br>端末を横に回転させると始まります。</p>
+      </div>
+    </div>
+    <div class="ember-layer" aria-hidden="true"></div>
+    <aside id="journeyMenu" class="side-menu" aria-label="左メニュー">
+      <div class="side-menu-tools">
+        <button id="menuReset" class="side-menu-button side-menu-command" type="button">リセット</button>
+        <button id="menuSound" class="side-menu-button sound-toggle" type="button" aria-label="サウンドを切り替える" aria-pressed="true" title="BGMと効果音を切り替える"><span>音</span><small>ON</small></button>
+      </div>
+      <button id="menuProblem" class="side-menu-button side-menu-command" type="button">探索</button>
+      <button id="menuSealBook" class="side-menu-button side-menu-command seal-book-button" type="button">封印の書</button>
+      <button id="menuMagic" class="side-menu-button side-menu-command" type="button">呪文</button>
+      <button id="menuHint" class="side-menu-button side-menu-command" type="button">ヒント</button>
+      <nav id="sideStageNav" class="side-stage-nav" aria-label="ステージショートカット"></nav>
+    </aside>
+
+    <main class="phone-shell">
+      <header class="topbar">
+        <div>
+          <h1 id="topTitle">異空間からの脱出</h1>
+        </div>
+      </header>
+
+      <section class="status-strip" aria-live="polite">
+        <div>
+          <span class="label">進行</span>
+          <strong id="stageCount">1 / 5</strong>
+        </div>
+        <div>
+          <span class="label">呪文</span>
+          <strong id="spellCount">0</strong>
+        </div>
+      </section>
+
+      <nav id="stageNav" class="stage-nav" aria-label="ステージ"></nav>
+
+      <section id="game" class="game-card"></section>
+    </main>
+
+    <dialog id="docDialog" class="doc-dialog">
+      <div class="dialog-head">
+        <strong id="docTitle">資料</strong>
+        <button id="closeDoc" class="ghost-button" type="button">閉じる</button>
+      </div>
+      <img id="docImage" alt="謎解き資料の拡大画像" />
+    </dialog>
+
+    <dialog id="hintDialog" class="hint-dialog">
+      <div class="dialog-head">
+        <strong id="hintTitle">ヒント</strong>
+        <button id="closeHint" class="ghost-button" type="button">閉じる</button>
+      </div>
+      <p id="hintBody"></p>
+    </dialog>
+
+    <script src="./app.js?v=improved-20261004-1"></script>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+/* Reviewed experience layer: existing puzzle art and game rules stay intact. */
+:root { --side-menu-w: 184px !important; }
+.side-menu { padding: 16px 12px !important; gap: 8px !important; grid-auto-rows: min-content !important; background: linear-gradient(180deg,#101b25f5,#050c13f5) !important; border-right: 1px solid #658a8c66 !important; }
+.side-menu .side-menu-button { min-height: 48px !important; height: auto !important; border: 1px solid #6b8d9466 !important; border-radius: 8px !important; background: #17232ce0 !important; color: #e5eeec !important; box-shadow: inset 0 1px #ffffff0c !important; font-size: 14px !important; }
+.side-menu .side-menu-command { min-height: 48px !important; }
+.side-menu > .side-menu-command { height: 48px !important; max-height: 48px !important; padding: 8px 12px !important; }
+.side-menu .side-menu-button:hover { background: #233a44 !important; border-color: #9ad5d1 !important; }
+.side-menu .side-stage-button { min-height: 52px !important; padding: 8px !important; gap: 8px !important; }
+.side-stage-nav { gap: 6px !important; margin-top: 14px !important; }
+.side-stage-number { min-width: 30px !important; width: 30px !important; height: 30px !important; font-size: 12px !important; }
+.side-stage-title { font-size: 12px !important; white-space: nowrap; }
+.side-menu .is-current { border-color: #cba768 !important; background: linear-gradient(100deg,#685536,#27343c) !important; color: #fff1d2 !important; }
+.side-menu .is-locked { opacity: .48 !important; }
+.side-menu .seal-book-button { border-color: #b997605f !important; background: #3f392a !important; color: #ffedbe !important; }
+.side-menu-tools { gap: 6px !important; }
+.side-menu-tools .side-menu-button { min-height: 40px !important; font-size: 12px !important; }
+.journey-guide { position: absolute; z-index: 35; bottom: 34px; left: 32px; width: min(490px,calc(100% - 64px)); display: grid; grid-template-columns: 1fr auto; gap: 8px 18px; padding: 20px 22px; border: 1px solid #9abbb344; border-radius: 12px; background: linear-gradient(110deg,#0b1821f2,#0b1821b3); box-shadow: 0 18px 60px #0007; backdrop-filter: blur(12px); color: #f2f1e8; }
+.journey-guide small { grid-column: 1/-1; color: #a3c9c9; font-size: 10px; letter-spacing: .18em; }
+.journey-guide strong { align-self: center; font-size: 14px; line-height: 1.7; font-weight: 500; }
+.journey-guide button { min-height: 46px; white-space: nowrap; font-size: 13px; padding: 8px 16px; }
+.gate-background-message { top: 24px !important; bottom: auto !important; right: 24px !important; max-width: calc(100% - 48px); font-size: 14px !important; font-weight: 500 !important; padding: 10px 16px !important; background: #06121cac !important; border-left-color: #d4ab6f !important; }
+.stage-world::before { content: ''; position: absolute; z-index: 3; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 52% 32%,#79d5eb12,transparent 42%),linear-gradient(0deg,#06101862,transparent 45%); }
+.stage-world::after { content: ''; position: absolute; z-index: 4; inset: 35% -10% -10%; pointer-events: none; background: radial-gradient(ellipse at 22% 70%,#95dae11a,transparent 44%),radial-gradient(ellipse at 78% 70%,#a1c5de12,transparent 42%); animation: chamber-mist 18s ease-in-out infinite alternate; }
+@keyframes chamber-mist { from { transform: translate3d(-2%,2%,0); opacity: .45; } to { transform: translate3d(3%,-2%,0); opacity: .95; } }
+.hint-dialog { border: 1px solid #849b8e80 !important; border-radius: 14px !important; background: #101e29f5 !important; box-shadow: 0 30px 100px #000a; }
+.hint-dialog::backdrop { background: #02080db8; backdrop-filter: blur(5px); }
+.reset-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+#nextHint { margin-top: 20px; }
+.gate-problem-answer-head strong { white-space: nowrap !important; }
+.gate-problem-answer-head { gap: 6px !important; }
+.gate-problem-answer-head span { white-space: nowrap !important; font-size: 11px !important; }
+button:focus-visible { outline: 3px solid #b6eeea !important; outline-offset: 3px; }
+@media (min-width: 900px) and (min-height: 600px) {
+ body.stage-one-mode .spell-device.is-problem-mode { inset: 24px 24px 24px calc(var(--side-menu-w) + 24px) !important; padding: 22px 18px !important; border-radius: 14px !important; background: #09151df5 !important; }
+ body.stage-one-mode .spell-device.is-problem-mode.is-answer-open { display: grid !important; grid-template-columns: minmax(0,1fr) 238px !important; gap: 18px !important; align-items: center !important; }
+ body.stage-one-mode .spell-device.is-problem-mode .spell-window-close { position: absolute !important; top: 6px !important; right: 6px !important; }
+ body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-sheet-panel { grid-column: 1 !important; grid-row: 1 !important; }
+ body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-problem-answer { grid-column: 2 !important; grid-row: 1 !important; }
+ body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-sheet-panel { width: 100% !important; height: auto !important; max-height: 100% !important; min-height: 0 !important; flex: none !important; }
+ body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-sheet-scroll { height: auto !important; max-height: calc(100dvh - 230px) !important; overflow: auto !important; }
+ body.stage-one-mode .gate-problem-answer { width: 100% !important; min-width: 0 !important; padding: 14px !important; align-self: center !important; }
+ body.stage-one-mode .gate-problem-answer .device-main-row { display: grid !important; grid-template-columns: 1fr !important; gap: 12px !important; }
+ body.stage-one-mode .gate-problem-answer .premium-slot-row { display: grid !important; grid-template-columns: repeat(4,minmax(0,1fr)) !important; gap: 5px !important; }
+ body.stage-one-mode .gate-problem-answer .premium-slot { min-width: 0 !important; width: 100% !important; height: 48px !important; }
+ body.stage-one-mode .slot-choice-popover { width: 100% !important; padding: 10px !important; margin-top: 12px !important; }
+ body.stage-one-mode .slot-choice-grid { display: grid !important; grid-template-columns: repeat(3,minmax(0,1fr)) !important; gap: 6px !important; }
+ body.stage-one-mode .slot-choice-button { min-width: 0 !important; height: 42px !important; font-size: 19px !important; }
+}
+@media (max-width: 899px) and (orientation: landscape) {
+ :root { --side-menu-w: 140px !important; }
+ .side-menu { padding: 8px !important; gap: 5px !important; }
+ .side-menu .side-menu-button { min-height: 38px !important; font-size: 12px !important; }
+ .side-menu .side-stage-button { min-height: 34px !important; }
+ .side-stage-nav { margin-top: 4px !important; gap: 3px !important; }
+ .side-stage-number { width: 24px !important; min-width: 24px !important; height: 22px !important; }
+ .side-stage-title { font-size: 10px !important; }
+ .journey-guide { left: 14px; bottom: 18px; width: min(470px,calc(100% - 28px)); padding: 12px; }
+ .gate-background-message { top: 12px !important; right: 12px !important; font-size: 12px !important; }
+}
+@media (orientation: portrait) and (max-width: 680px) { :root { --side-menu-w: 0px !important; } }
+@media (prefers-reduced-motion: reduce) { .stage-world::after { animation: none; } }
+@media (min-width: 640px) and (max-width: 680px) and (orientation: landscape) {
+ #journeyMenu { display: grid !important; grid-template-columns: minmax(0,1fr) !important; grid-template-rows: repeat(5,min-content) min-content !important; align-content: start !important; }
+ #journeyMenu .side-menu-button { min-width: 0 !important; max-width: 100% !important; width: 100% !important; padding: 4px !important; text-align: center !important; }
+ #journeyMenu .side-menu-tools { display: grid !important; grid-template-columns: minmax(0,1fr) 30px !important; min-width: 0 !important; gap: 4px !important; }
+ #journeyMenu .side-stage-nav { display: grid !important; grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 4px !important; margin-top: 4px !important; }
+ #journeyMenu .side-stage-button { display: flex !important; justify-content: center !important; align-items: center !important; min-height: 30px !important; max-height: 30px !important; }
+ #journeyMenu .side-stage-title { display: none !important; }
+ #game .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .device-main-row { display: grid !important; grid-template-columns: minmax(0,1fr) !important; grid-template-rows: auto auto !important; gap: 6px !important; }
+ #game .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .premium-slot-row { display: grid !important; grid-template-columns: repeat(4,minmax(0,1fr)) !important; width: 100% !important; gap: 3px !important; }
+ #game .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .premium-slot { min-width: 0 !important; max-width: 100% !important; width: 100% !important; height: 32px !important; }
+ #game .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .cast-button { grid-column: 1 !important; grid-row: 2 !important; min-width: 0 !important; width: 100% !important; }
+ #journeyMenu .side-stage-nav { height: auto !important; max-height: none !important; overflow: visible !important; }
+}
+@media (min-width: 900px) and (min-height: 600px) {
+ body.stage-one-mode .is-answer-open .stage1-cols { grid-template-columns: 1.05fr 1fr !important; }
+ body.stage-one-mode .is-answer-open .stage1-q1 { gap: 8px !important; grid-template-columns: 18px 112px minmax(0,1fr) !important; }
+ body.stage-one-mode .is-answer-open .stage1-natto { width: 112px !important; }
+ body.stage-one-mode .is-answer-open .stage1-natto-col { font-size: 38px !important; }
+ body.stage-one-mode .is-answer-open .stage1-inst { font-size: 13px !important; white-space: nowrap !important; }
+ body.stage-one-mode .is-answer-open .stage1-q2-text { font-size: 15px !important; }
+ body.stage-one-mode .is-answer-open .stage1-footer { font-size: 13px !important; }
+}
+@media (min-width: 700px) and (max-width: 899px) and (orientation: landscape) {
+ .side-stage-nav { display: grid !important; grid-template-columns: 1fr 1fr !important; }
+ .side-stage-title { display: none !important; }
+ .side-menu .side-stage-button { justify-content: center !important; }
+ .side-menu > .side-menu-command { height: 38px !important; min-height: 38px !important; max-height: 38px !important; }
+ body.stage-one-mode .spell-device.is-problem-mode.is-answer-open { display: grid !important; grid-template-columns: minmax(0,1fr) 176px !important; gap: 8px !important; padding: 12px 8px !important; }
+ body.stage-one-mode .is-answer-open .spell-window-close { position: absolute !important; right: 4px !important; top: 4px !important; }
+ body.stage-one-mode .is-answer-open .gate-sheet-panel { grid-column: 1 !important; grid-row: 1 !important; width: 100% !important; height: auto !important; max-height: 100% !important; }
+ body.stage-one-mode .is-answer-open .gate-sheet-scroll { height: auto !important; max-height: calc(100dvh - 100px) !important; }
+ body.stage-one-mode .is-answer-open .gate-problem-answer { grid-column: 2 !important; grid-row: 1 !important; width: 100% !important; padding: 7px !important; }
+ body.stage-one-mode .gate-problem-answer .device-main-row { display: grid !important; grid-template-columns: 1fr !important; gap: 6px !important; }
+ body.stage-one-mode .gate-problem-answer .premium-slot-row { display: grid !important; grid-template-columns: repeat(4,minmax(0,1fr)) !important; gap: 3px !important; }
+ body.stage-one-mode .gate-problem-answer .premium-slot { min-width: 0 !important; width: 100% !important; height: 34px !important; }
+ body.stage-one-mode .slot-choice-grid { display: grid !important; grid-template-columns: repeat(3,minmax(0,1fr)) !important; gap: 4px !important; }
+ body.stage-one-mode .slot-choice-popover { width: 100% !important; padding: 6px !important; }
+ body.stage-one-mode .slot-choice-button { min-width: 0 !important; height: 32px !important; font-size: 16px !important; }
+ body.stage-one-mode .is-answer-open .stage1-cols { grid-template-columns: 1.1fr 1fr !important; }
+ body.stage-one-mode .is-answer-open .stage1-q1 { grid-template-columns: 12px 76px minmax(0,1fr) !important; gap: 4px !important; }
+ body.stage-one-mode .is-answer-open .stage1-natto { width: 76px !important; }
+ body.stage-one-mode .is-answer-open .stage1-natto-col { font-size: 27px !important; }
+ body.stage-one-mode .is-answer-open .stage1-inst { font-size: 10px !important; white-space: nowrap !important; }
+ body.stage-one-mode .is-answer-open .stage1-q2-text { font-size: 11px !important; }
+ body.stage-one-mode .is-answer-open .stage1-footer { font-size: 10px !important; }
+}
+@media (min-width: 640px) and (max-width: 760px) and (orientation: landscape) {
+ :root, body { --side-menu-w: 110px !important; --mobile-nav-h: 0px !important; }
+ .side-menu { inset: 0 auto 0 0 !important; width: 110px !important; height: 100dvh !important; max-height: 100dvh !important; padding: 6px !important; display: grid !important; grid-template-columns: 1fr !important; grid-auto-rows: min-content !important; gap: 5px !important; }
+ .side-menu-tools { display: grid !important; grid-template-columns: 1fr 32px !important; width: 100% !important; }
+ .side-menu .side-menu-command { width: 100% !important; height: 35px !important; min-height: 35px !important; max-height: 35px !important; padding: 4px !important; font-size: 11px !important; }
+ .side-stage-nav { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4px !important; margin-top: 4px !important; }
+ .side-menu .side-stage-button { justify-content: center !important; min-height: 32px !important; padding: 4px !important; }
+ .side-stage-title { display: none !important; }
+ .phone-shell { margin-left: 110px !important; width: calc(100vw - 110px) !important; padding-top: 0 !important; }
+ body.stage-one-mode .spell-device.is-problem-mode { top: 6px !important; left: 116px !important; right: 6px !important; bottom: 6px !important; }
+ body.stage-one-mode .spell-device.is-problem-mode.is-answer-open { display: grid !important; grid-template-columns: minmax(0,1fr) 166px !important; gap: 8px !important; padding: 8px !important; }
+ body.stage-one-mode .is-answer-open .spell-window-close { position: absolute !important; right: 4px !important; top: 4px !important; }
+ body.stage-one-mode .is-answer-open .gate-sheet-panel { grid-column: 1 !important; grid-row: 1 !important; width: 100% !important; height: auto !important; max-height: 100% !important; }
+ body.stage-one-mode .is-answer-open .gate-sheet-scroll { height: auto !important; max-height: calc(100dvh - 90px) !important; }
+ body.stage-one-mode .is-answer-open .gate-problem-answer { grid-column: 2 !important; grid-row: 1 !important; width: 100% !important; padding: 6px !important; }
+ body.stage-one-mode .gate-problem-answer .device-main-row { display: grid !important; grid-template-columns: 1fr !important; gap: 6px !important; }
+ body.stage-one-mode .gate-problem-answer .premium-slot-row { display: grid !important; grid-template-columns: repeat(4,minmax(0,1fr)) !important; gap: 3px !important; }
+ body.stage-one-mode .gate-problem-answer .premium-slot { min-width: 0 !important; width: 100% !important; height: 32px !important; }
+ body.stage-one-mode .slot-choice-grid { display: grid !important; grid-template-columns: repeat(3,minmax(0,1fr)) !important; gap: 4px !important; }
+ body.stage-one-mode .slot-choice-popover { width: 100% !important; padding: 6px !important; }
+ body.stage-one-mode .slot-choice-button { min-width: 0 !important; height: 30px !important; font-size: 16px !important; }
+ body.stage-one-mode .is-answer-open .stage1-cols { display: grid !important; grid-template-columns: 1fr !important; gap: 4px !important; }
+ body.stage-one-mode .is-answer-open .stage1-q1 { grid-template-columns: 16px 76px minmax(0,1fr) !important; gap: 7px !important; }
+ body.stage-one-mode .is-answer-open .stage1-natto { width: 76px !important; }
+ body.stage-one-mode .is-answer-open .stage1-natto-col { font-size: 24px !important; }
+ body.stage-one-mode .is-answer-open .stage1-inst { font-size: 10px !important; white-space: nowrap !important; }
+ body.stage-one-mode .is-answer-open .stage1-q2 { border-left: 0 !important; border-top: 1px solid #4b3528 !important; padding: 4px !important; min-height: 28px !important; }
+ body.stage-one-mode .is-answer-open .stage1-q2-text { font-size: 11px !important; white-space: normal !important; }
+ body.stage-one-mode .is-answer-open .stage1-q2-text br { display: none; }
+ body.stage-one-mode .is-answer-open .stage1-footer { font-size: 9px !important; white-space: normal !important; height: auto !important; max-height: none !important; overflow: visible !important; line-height: 1.4 !important; }
+ body.stage-one-mode .is-answer-open .stage1-sheet { padding: 8px !important; }
+ body.stage-one-mode .is-answer-open .sheet-title { font-size: 14px !important; }
+ body.stage-one-mode .is-answer-open .gate-kana-board { height: 46px !important; min-height: 46px !important; padding: 2px !important; }
+}
+@media (min-width: 640px) and (max-width: 680px) and (orientation: landscape) {
+ html body.stage-one-mode .side-menu { inset: 0 auto 0 0 !important; width: 110px !important; height: 100dvh !important; max-height: 100dvh !important; display: grid !important; grid-template-columns: 1fr !important; overflow-y: auto !important; }
+ html body.stage-one-mode .phone-shell { width: calc(100vw - 110px) !important; margin: 0 0 0 110px !important; }
+ html body.stage-one-mode .side-stage-nav { display: grid !important; grid-template-columns: 1fr 1fr !important; }
+ html body.stage-one-mode .side-menu .side-menu-command { height: 35px !important; min-height: 35px !important; max-height: 35px !important; }
+ html body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .device-main-row { display: grid !important; grid-template-columns: minmax(0,1fr) !important; }
+ html body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .premium-slot-row { display: grid !important; grid-template-columns: repeat(4,minmax(0,1fr)) !important; width: 100% !important; }
+ html body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .premium-slot { min-width: 0 !important; width: 100% !important; height: 32px !important; }
+ html body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .slot-choice-popover { position: static !important; height: auto !important; max-height: none !important; overflow: visible !important; }
+ html body.stage-one-mode .spell-device.is-problem-mode.is-answer-open .gate-problem-answer .slot-choice-grid { display: grid !important; grid-template-columns: repeat(3,minmax(0,1fr)) !important; height: auto !important; max-height: none !important; overflow: visible !important; }
+}
