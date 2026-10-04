@@ -1,0 +1,26 @@
+/* Restore original imagery; keep navigation reachable on short mobile screens. */
+#recoveryMenu { display:flex !important; flex-direction:column !important; gap:6px !important; padding:10px !important; width:var(--side-menu-w) !important; overflow:hidden !important; }
+#recoveryMenu > .side-menu-command { flex:none !important; min-height:38px !important; height:38px !important; max-height:38px !important; padding:4px 6px !important; font-size:14px !important; }
+#recoveryMenu .side-menu-tools { flex:none !important; min-height:36px !important; }
+#recoveryMenu .side-menu-tools button { min-height:36px !important; height:36px !important; }
+.recovery-menu-tools { display:grid; grid-template-columns:1fr; gap:4px; flex:none; }
+#recoveryMenu .recovery-menu-tools button { min-height:36px !important; height:36px !important; padding:4px 6px !important; font-size:13px !important; }
+#recoveryMenu #sideStageNav { display:flex !important; flex-direction:column !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; margin-top:2px !important; gap:4px !important; }
+#recoveryMenu .side-stage-button { flex:none !important; min-height:40px !important; height:40px !important; padding:5px !important; font-size:12px !important; }
+#recoveryMenu .side-stage-title { font-size:12px !important; }
+#recoveryMenu button:disabled { opacity:.5 !important; }
+.recovery-video-dialog { width:min(900px,calc(100vw - 24px)); max-height:calc(100dvh - 16px); padding:14px; overflow:auto; background:#07111b; color:#fff; border:1px solid #d0b56e; }
+.recovery-video-dialog::backdrop { background:#000c; }
+.recovery-video-head { display:flex; gap:12px; justify-content:space-between; align-items:center; }
+.recovery-video-dialog button,.recovery-video-dialog select { min-height:36px; font-size:14px; padding:6px 12px; }
+.recovery-video-dialog select { width:100%; margin:8px 0; }
+.recovery-video-dialog video { display:block; width:100%; max-height:calc(100dvh - 170px); background:#000; }
+.recovery-video-dialog p { margin:8px 0; font-size:12px; }
+@media (orientation:landscape) and (max-height:600px) {
+ #recoveryMenu { gap:3px !important; padding:5px !important; }
+ #recoveryMenu > .side-menu-command { min-height:30px !important; height:30px !important; max-height:30px !important; font-size:12px !important; }
+ #recoveryMenu .recovery-menu-tools button { min-height:30px !important; height:30px !important; font-size:11px !important; }
+ #recoveryMenu .side-stage-button { min-height:30px !important; height:30px !important; padding:3px !important; }
+ #recoveryMenu .side-stage-title { font-size:10px !important; }
+ #recoveryMenu .side-stage-number { width:22px !important; min-width:22px !important; height:22px !important; font-size:10px !important; }
+}

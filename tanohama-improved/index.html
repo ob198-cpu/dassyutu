@@ -4,10 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="theme-color" content="#02050a" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <script>
       (() => {
+        const buildVersion = "20261002-2";
+        const query = new URLSearchParams(location.search);
+        if (query.get("refresh") === buildVersion) {
+          const entryQuery = query.get("stage") === "2" ? "?stage=2" : "";
+          history.replaceState(null, "", `${location.pathname}${entryQuery}${location.hash}`);
+        }
+
         const root = document.documentElement;
         const userAgent = navigator.userAgent || "";
         const isLineWebView = /(?:^|\s)Line\//i.test(userAgent) || /\bLIFF\b/i.test(userAgent);
@@ -29,19 +39,21 @@
         syncLineViewport();
         window.addEventListener("resize", syncLineViewport, { passive: true });
         window.addEventListener("pageshow", syncLineViewport, { passive: true });
+        document.addEventListener("fullscreenchange", syncLineViewport);
+        document.addEventListener("webkitfullscreenchange", syncLineViewport);
         window.addEventListener("orientationchange", () => {
           syncLineViewport();
           window.setTimeout(syncLineViewport, 240);
         }, { passive: true });
         window.visualViewport?.addEventListener("resize", syncLineViewport, { passive: true });
+        window.visualViewport?.addEventListener("scroll", syncLineViewport, { passive: true });
       })();
     </script>
     <title>田野浜謎解き - 異空間からの脱出</title>
-    <link rel="stylesheet" href="./styles.css?v=improved-20261004-1" />
-  <link rel="stylesheet" id="experienceStyles" href="./experience.css?v=improved-20261004-1" />
-  <link rel="stylesheet" id="arrangementStyles" href="./arrangement.css?v=improved-20261004-1" />
-    <link id="stage2ReferenceStyles" rel="stylesheet" href="./stage2-reference.css?v=improved-20261004-1" disabled>
-    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./styles.css?v=recovery-20261004-1" />
+    <link rel="stylesheet" href="./stage2.css?v=recovery-20261004-1" />
+      <link rel="stylesheet" href="./recovery-navigation.css?v=recovery-20261004-1">
+      <link rel="icon" href="data:,">
   </head>
   <body>
     <div class="rotate-guard" aria-hidden="true">
@@ -52,7 +64,7 @@
       </div>
     </div>
     <div class="ember-layer" aria-hidden="true"></div>
-    <aside id="journeyMenu" class="side-menu" aria-label="左メニュー">
+    <aside id="recoveryMenu" class="side-menu" aria-label="左メニュー">
       <div class="side-menu-tools">
         <button id="menuReset" class="side-menu-button side-menu-command" type="button">リセット</button>
         <button id="menuSound" class="side-menu-button sound-toggle" type="button" aria-label="サウンドを切り替える" aria-pressed="true" title="BGMと効果音を切り替える"><span>音</span><small>ON</small></button>
@@ -61,6 +73,7 @@
       <button id="menuSealBook" class="side-menu-button side-menu-command seal-book-button" type="button">封印の書</button>
       <button id="menuMagic" class="side-menu-button side-menu-command" type="button">呪文</button>
       <button id="menuHint" class="side-menu-button side-menu-command" type="button">ヒント</button>
+      <div class="recovery-menu-tools"><button id="menuScene" class="side-menu-button" type="button">背景に戻る</button><button id="menuVideos" class="side-menu-button" type="button">映像を見直す</button></div>
       <nav id="sideStageNav" class="side-stage-nav" aria-label="ステージショートカット"></nav>
     </aside>
 
@@ -103,6 +116,9 @@
       <p id="hintBody"></p>
     </dialog>
 
-    <script src="./app.js?v=improved-20261004-1"></script>
+    <script src="./recovery-save-backup.js?v=recovery-20261004-1"></script>
+    <script src="./app.js?v=recovery-20261004-1"></script>
+      <script src="./recovery-navigation.js?v=recovery-20261004-1"></script>
   </body>
 </html>
+

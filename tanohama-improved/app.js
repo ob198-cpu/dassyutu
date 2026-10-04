@@ -1,3 +1,9 @@
+const timeMachineSpellCopy = {
+  name: "タイムマシン",
+  effect: "一時的に異空間へ移動する！",
+  explanation: "異空間では、まだ習得していない呪文を1つ唱えられる。『カタカナ…効果！』の形式なら呪文とみなされ、未習得でも発動できる。効果は現在異空間で発動し、発動と同時に自分も現在異空間へ戻る。",
+};
+
 const stages = [
   {
     id: "intro",
@@ -154,6 +160,7 @@ const stages = [
       "ヒント④「④は球を投げた位置から放物線の頂点へ進み、そこから真下へ落ちる軌道をたどるのじゃ。球が通る文字を順につなげるんじゃぞ」",
       "ヒント⑤「①〜④の答えが出たら、各欄の色数字が示す文字を記入し、青→緑→黄の順に読むのじゃ」",
       "ヒント⑥「最後の答えは6文字。時差を無くすために、時を移動する装置の名前を入力するのじゃ」",
+      "ヒント⑦「呪文を呪文たらしめるものを思い出すのじゃ。」",
     ],
     textProblem: {
       title: "ステージ4",
@@ -162,7 +169,7 @@ const stages = [
       prompt: "山の壁を越えるために使う6文字の手段を見つける。",
       answerHint: "答えは6文字。時を移動する装置の名前。",
       answerBoxes: 6,
-      solvedNote: "タイムマシン: 一時的に未来空間へ移動し、まだ習得していない呪文を1つ唱えられる。効果は現在異空間で発動し、同時に自分も現在異空間へ戻る。",
+      solvedNote: `${timeMachineSpellCopy.name}…${timeMachineSpellCopy.effect} ${timeMachineSpellCopy.explanation}`,
     },
   },
   {
@@ -200,7 +207,10 @@ const bossBattle = [
 ];
 
 const bossNewSpells = [
-  { name: "バリ", effect: "瞬間的なバリアで、弱攻撃を無効化する！" },
+  {
+    name: "バリ",
+    effect: "瞬間的なバリアで、弱攻撃を無効化する！",
+  },
   { name: "フユウ", effect: "ちょっとだけ空中に浮くことが出来る！" },
   { name: "オバダンス", effect: "次の呪文効果時間を2倍にする！" },
   { name: "カタメ", effect: "身体を硬化させ、弱攻撃を無効化する！" },
@@ -212,16 +222,31 @@ const bossNewSpells = [
   { name: "イチゲキゼンリョクデ", effect: "仲間1人の命と引き換えに全力の一撃を放つ！" },
 ];
 
+const bossWizardSpellNames = bossNewSpells.map((spell) => spell.name);
+
 const bossLearnedSpells = [
-  { name: "ツケモノ", effect: "謎の四角を1個生成できる。" },
-  { name: "ゴクロウサマ", effect: "「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。" },
-  { name: "ドラブレス", effect: "炎でどんな氷も溶かす事ができる。" },
+  { name: "ツケモノ", effect: "謎の四角を1個生成できる！" },
+  { name: "ゴクロウサマ", effect: "『　』内の色を消す事が出来る。内容の意味が通れば、それは現実となる！" },
+  { name: "ドラブレス", effect: "炎でどんな氷も溶かす事ができる！" },
   {
-    name: "タイムマシン",
-    effect: "一時的に未来空間へ移動する。",
-    explanation: "未来空間では、まだ習得していない呪文を1つ唱えられる。「カタカナ」＋「効果！」の形式なら呪文とみなされ、未習得でも発動できる。効果は現在異空間で発動し、発動と同時に自分も現在異空間へ戻る。",
+    ...timeMachineSpellCopy,
   },
+  { name: "キミタチナラ", effect: "仲間を信じる言葉が力となり、どんな大きな壁も乗り越える！" },
 ];
+
+function normalizeSpellEffectCopy(effect) {
+  const copy = String(effect || "").trim().replace(/[。！!]+$/u, "");
+  return copy ? `${copy}！` : "効果は不明！";
+}
+
+function renderBossSpellEntry(spell) {
+  return `
+    <article class="boss-spell-entry">
+      <p class="boss-spell-summary"><strong>☆${spell.name}</strong><span class="boss-spell-separator" aria-hidden="true">…</span><span>${normalizeSpellEffectCopy(spell.effect)}</span></p>
+      ${spell.explanation ? `<p class="boss-spell-explanation"><b>解説</b> ${spell.explanation}</p>` : ""}
+    </article>
+  `;
+}
 
 const explorationSpellEffects = {
   コイシコロ: "手のひらに収まる小石を1個生成する。固さと重さは普通の小石と同じ。",
@@ -285,9 +310,34 @@ function getBossTiles(index) {
   return seededShuffle(selected, `${seedText}:layout`);
 }
 
-const spellRuleText =
-  "呪文のルール: 呪文は石板にカタカナで記入し、どこに、どの様に使うかを示す。石板の数に合った文字数の呪文しか唱える事が出来ない。習得した呪文には☆マークが付き、以後使用可能となる。";
+const spellRuleCopy = {
+  title: "呪文のルール：",
+  intro: "この世界では呪文はカタカナ…の姿をしているぞ。",
+  first: "呪文は石板にカタカナで記入し、どこにどのように使うかを示す。",
+  second: "石板の数に合った文字数の呪文しか唱えることができない。習得した呪文は☆マークがつき、以後使用可能になる。",
+};
 const spellActivationText = "問題を解くと呪文が現れるかも…<br>各ステージの呪文は空欄に文字を正しく打ち込むと発動";
+
+function formatSpellName(name) {
+  const cleanName = String(name || "").replace(/…+$/u, "");
+  return `${cleanName}…`;
+}
+
+function renderSpellRuleGuide(extraClass = "") {
+  return `
+    <section class="spell-rule-guide ${extraClass}" aria-label="呪文のルール">
+      <div class="spell-rule-guide-title">
+        <strong>${spellRuleCopy.title}</strong>
+        <span>☆ 習得済み</span>
+      </div>
+      <div class="spell-rule-guide-copy">
+        <p>${spellRuleCopy.intro}</p>
+        <p>${spellRuleCopy.first}</p>
+        <p>${spellRuleCopy.second}</p>
+      </div>
+    </section>
+  `;
+}
 
 const stage2Only = new URLSearchParams(window.location.search).get("stage") === "2";
 const stage2OnlyIndex = stages.findIndex((stage) => stage.id === "path");
@@ -474,7 +524,14 @@ const audioDirector = (() => {
     if (document.hidden) context.suspend();
   });
 
-  return { unlock, setStage, playEffect, toggle, isMuted: () => muted };
+  function setCinematicMode(active) {
+    if (!context || !musicGain) return;
+    musicGain.gain.cancelScheduledValues(context.currentTime);
+    musicGain.gain.setTargetAtTime(active ? 0.0001 : 0.62, context.currentTime, 0.08);
+    if (!active) nextNoteTime = context.currentTime + 0.08;
+  }
+
+  return { unlock, setStage, playEffect, toggle, setCinematicMode, isMuted: () => muted };
 })();
 
 // ステージ2 とちゅうメモ: ①〜④の各ステップで読み取った文字を書き留める空欄
@@ -524,26 +581,22 @@ function normalizeStage2Memo(value) {
   });
 }
 
-function normalizeStage2Sketch(value) {
-  const strokes = Array.isArray(value) ? value : [];
-  return strokes
-    .slice(-120)
-    .map((stroke) => {
-      if (!Array.isArray(stroke)) return [];
-      return stroke
-        .slice(-600)
-        .map((point) => {
-          const x = Number(point?.[0]);
-          const y = Number(point?.[1]);
-          if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
-          return [Math.min(Math.max(x, 0), 1), Math.min(Math.max(y, 0), 1)];
-        })
-        .filter(Boolean);
-    })
-    .filter((stroke) => stroke.length >= 2);
+const stage2KanjiRevealAnswer = "SIKISINI";
+// The last two circles are read lower-left, then upper-right on the printed board.
+const stage2KanjiRevealMemoOrder = [0, 1, 2, 3, 4, 5, 7, 6];
+const stage2KanjiRevealVersion = 4;
+let stage2BoardResizeObserver;
+let stage2BoardZoomed = false;
+
+function isStage2KanjiClueRevealed(value) {
+  const memo = normalizeStage2Memo(value);
+  return stage2KanjiRevealMemoOrder
+    .map((column) => memo[0][column] || "")
+    .join("")
+    .toUpperCase() === stage2KanjiRevealAnswer;
 }
 
-const stage4MemoShape = [[4, 2, 3], [3, 8, 8, 1], [1, 3, 3, 1, 1], [2, 3, 2, 2]];
+const stage4MemoShape = [[1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1]];
 
 const stage4ChoiceCandidates = [
   Array.from(new Set(Array.from("ろうかのどきじませ"))),
@@ -551,6 +604,18 @@ const stage4ChoiceCandidates = [
   Array.from(new Set(Array.from("こんじょうらいせげ"))),
   Array.from(new Set(Array.from("あせかきみせさきひめますつきみまうえ"))),
 ];
+
+function shuffleStage4Choices(values) {
+  const shuffled = [...values];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[target]] = [shuffled[target], shuffled[index]];
+  }
+  if (shuffled.length > 1 && shuffled.every((character, index) => character === values[index])) {
+    shuffled.push(shuffled.shift());
+  }
+  return shuffled;
+}
 
 function normalizeStage4Memo(value) {
   const source = value && typeof value === "object" ? value : {};
@@ -579,6 +644,38 @@ function escapeAttribute(value) {
 }
 
 const stage2BoardPalette = { black: "#1a1a1a", red: "#d61e1e", blue: "#1a46a0", navy: "#496fae", yellow: "#f0c828", white: "#ffffff" };
+
+// The three added lower strokes sit at a gentler tilt from vertical in 糸.
+// Extraction turns those same strokes into ミ without changing their shape.
+function renderStage2Kanji(unlocked, partsOnly) {
+  const pieces = [
+    { path: "M103 86 L65 133 M85 109 H173 L114 171", transform: "translate(-20 72)" },
+    { path: "M65 180 H137 V252 H65 Z", transform: "translate(105 -4)" },
+    { path: "M296 198 L354 218 M305 235 L349 250 M285 270 L360 296", sourceTransform: "rotate(45 318 240)", transform: "translate(0 -25)" },
+    { path: "M400 110 V297 L454 277", transform: "translate(26 65) scale(1, .72)" },
+  ];
+  return `<svg class="stage2-kanji-vector ${partsOnly ? "is-parts" : ""}" viewBox="0 0 540 380" role="img" aria-label="${unlocked ? (partsOnly ? "補った四つの形" : "線が補われた色紙の図") : "一部の線が欠けた図"}">
+    <rect width="540" height="380" fill="#f5dfce"/>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="13">
+      <g class="stage2-kanji-base" stroke="#24201e">
+        <path d="M137 180 H216 V252 H137 M65 252 V308 Q65 331 91 331 H196 Q223 331 223 301"/>
+        <path d="M322 83 L288 127 L316 149 M349 111 L287 184 L359 177 L349 154"/>
+        <path d="M400 110 L483 87 M400 205 H492 M450 103 Q449 227 474 292 Q486 322 499 287"/>
+      </g>
+      ${unlocked ? `<g class="stage2-kanji-added" stroke="#b52d36">${pieces.map((piece) => `<g class="stage2-kanji-piece" transform="${partsOnly ? (piece.extractedPath ? "translate(0 0)" : piece.transform) : (piece.sourceTransform || "translate(0 0)")}"><path d="${partsOnly && piece.extractedPath ? piece.extractedPath : piece.path}"/></g>`).join("")}</g>` : ""}
+    </g>
+  </svg>`;
+}
+
+function renderStage2KanjiDialog(unlocked, partsOnly, redVisible = true) {
+  const imageLabel = partsOnly || !redVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
+  return `<dialog id="stage2KanjiDialog" class="stage2-kanji-dialog" aria-labelledby="stage2KanjiTitle">
+    <div class="stage2-kanji-dialog-head"><h2 id="stage2KanjiTitle">右の図を見比べる</h2><button id="closeStage2Kanji" type="button">問題全体に戻る</button></div>
+    <div class="stage2-kanji-large">${unlocked ? `<button id="stage2KanjiDialogImage" class="stage2-kanji-dialog-image" type="button" aria-label="${imageLabel}">${renderStage2Kanji(redVisible, partsOnly)}</button>` : renderStage2Kanji(false, false)}</div>
+    ${unlocked ? `<button id="stage2KanjiDialogToggle" class="primary-button" type="button">赤い部分を並べる</button>` : ""}
+    <p class="stage2-kanji-caption">${unlocked ? (partsOnly ? "補った線だけを取り出し、向きをそろえています。何と読めるでしょう？" : "画像を押すたびに、赤い線のある図と最初の図を見比べられます。") : "まだ線が欠けています。問題を読み解き、白丸に文字を入れてみよう。"}</p>
+  </dialog>`;
+}
 
 // 原本PDFから機械抽出+目視確認した盤面をSVGで再構成する。
 // 返り値: { svg, spots } — spots は白丸メモ/文字タップ用のHTMLオーバーレイ。
@@ -705,63 +802,7 @@ const stage1KanaBoardRows = [
   ["\u30de", "\u30b1", "\u30aa", "\u30b7", "\u30df", "\u30a4", "\u30a4", "\u30e2", "\u30ce", "\u30a2", "\u30ac", "\u30de", "\u30c1", "\u30ac", "\u300c\u30c4\u300d", "\u30c6", "\u30a6", "\u30c4", "\u30af", "\u30b7", "\u30a4", "\u30d2", "\u30c8"],
 ];
 
-const stage2KanjiRevealAnswer = "SIKISINI";
-const stage2KanjiRevealMemoOrder = [0, 1, 2, 3, 4, 5, 7, 6];
-const stage2KanjiRevealVersion = 4;
-let stage2BoardResizeObserver;
-let stage2BoardZoomed = false;
-
-function isStage2KanjiClueRevealed(value) {
-  const memo = normalizeStage2Memo(value);
-  return stage2KanjiRevealMemoOrder
-    .map((column) => memo[0][column] || "")
-    .join("")
-    .toUpperCase() === stage2KanjiRevealAnswer;
-}
-
-function renderStage2Kanji(unlocked, partsOnly) {
-  const pieces = [
-    { path: "M103 86 L65 133 M85 109 H173 L114 171", transform: "translate(-20 72)" },
-    { path: "M65 180 H137 V252 H65 Z", transform: "translate(105 -4)" },
-    { path: "M296 198 L354 218 M305 235 L349 250 M285 270 L360 296", sourceTransform: "rotate(45 318 240)", transform: "translate(0 -25)" },
-    { path: "M400 110 V297 L454 277", transform: "translate(26 65) scale(1, .72)" },
-  ];
-  return `<svg class="stage2-kanji-vector ${partsOnly ? "is-parts" : ""}" viewBox="0 0 540 380" role="img" aria-label="${unlocked ? (partsOnly ? "補った四つの形" : "線が補われた色紙の図") : "一部の線が欠けた図"}">
-    <rect width="540" height="380" fill="#f5dfce"/>
-    <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="13">
-      <g class="stage2-kanji-base" stroke="#24201e">
-        <path d="M137 180 H216 V252 H137 M65 252 V308 Q65 331 91 331 H196 Q223 331 223 301"/>
-        <path d="M322 83 L288 127 L316 149 M349 111 L287 184 L359 177 L349 154"/>
-        <path d="M400 110 L483 87 M400 205 H492 M450 103 Q449 227 474 292 Q486 322 499 287"/>
-      </g>
-      ${unlocked ? `<g class="stage2-kanji-added" stroke="#b52d36">${pieces.map((piece) => `<g class="stage2-kanji-piece" transform="${partsOnly ? (piece.extractedPath ? "translate(0 0)" : piece.transform) : (piece.sourceTransform || "translate(0 0)")}"><path d="${partsOnly && piece.extractedPath ? piece.extractedPath : piece.path}"/></g>`).join("")}</g>` : ""}
-    </g>
-  </svg>`;
-}
-
-function renderStage2KanjiDialog(unlocked, partsOnly, redVisible = true) {
-  const imageLabel = partsOnly || !redVisible ? "赤い線のある画像に切り替える" : "最初の画像に切り替える";
-  return `<dialog id="stage2KanjiDialog" class="stage2-kanji-dialog" aria-labelledby="stage2KanjiTitle">
-    <div class="stage2-kanji-dialog-head"><h2 id="stage2KanjiTitle">右の図を見比べる</h2><button id="closeStage2Kanji" type="button">問題全体に戻る</button></div>
-    <div class="stage2-kanji-large">${unlocked ? `<button id="stage2KanjiDialogImage" class="stage2-kanji-dialog-image" type="button" aria-label="${imageLabel}">${renderStage2Kanji(redVisible, partsOnly)}</button>` : renderStage2Kanji(false, false)}</div>
-    ${unlocked ? `<button id="stage2KanjiDialogToggle" class="primary-button" type="button">赤い部分を並べる</button>` : ""}
-    <p class="stage2-kanji-caption">${unlocked ? (partsOnly ? "補った線だけを取り出し、向きをそろえています。何と読めるでしょう？" : "画像を押すたびに、赤い線のある図と最初の図を見比べられます。") : "まだ線が欠けています。問題を読み解き、白丸に文字を入れてみよう。"}</p>
-  </dialog>`;
-}
-
-function prepareStage2OnlyMode() {
-  if (!stage2Only) return;
-  state.stageIndex = stage2OnlyIndex;
-  state.isClear = false;
-  state.openingVideoSeen = true;
-  state.sealBooks = { ...(state.sealBooks || {}), path: true };
-  state.revealed = { ...(state.revealed || {}), path: true };
-  state.learnedSpellStage = "path";
-  state.pathPanelMode = isStageCleared("path") ? "clear" : "problem";
-}
-
 const state = loadState();
-prepareStage2OnlyMode();
 forceGateProblemClosedOnStartup();
 state.feedback = null;
 closeStagePanelsOnEntry(stages[state.stageIndex] || stages[0]);
@@ -793,9 +834,15 @@ function loadState() {
       }
       saved.cleared = Array.isArray(saved.cleared) ? saved.cleared : [];
       saved.spells = Array.isArray(saved.spells) ? saved.spells : [];
-      if (saved.cleared.includes("time") || saved.spells.includes("キミタチナラ")) {
-        saved.spells = saved.spells.filter((spell) => spell !== "キミタチナラ");
-        if (saved.cleared.includes("time") && !saved.spells.includes("タイムマシン")) saved.spells.push("タイムマシン");
+      const savedBossWizardSpellLearned = Boolean(saved.bossWizardSpellLearned) || saved.spells.includes("バリ");
+      if (savedBossWizardSpellLearned) {
+        bossWizardSpellNames.forEach((spell) => {
+          if (!saved.spells.includes(spell)) saved.spells.push(spell);
+        });
+      }
+      if (saved.cleared.includes("time")) {
+        if (!saved.spells.includes("タイムマシン")) saved.spells.push("タイムマシン");
+        if (!saved.spells.includes("キミタチナラ")) saved.spells.push("キミタチナラ");
       }
       const savedBossInput = Array.isArray(saved.bossInput) ? saved.bossInput : [];
       const usedTsukemonoInFourthBattle = normalizeAnswer(savedBossInput[3] || "") === normalizeAnswer("ツケモノ");
@@ -822,16 +869,16 @@ function loadState() {
         pathPanelMode: ["problem", "spell", "closed", "clear"].includes(saved.pathPanelMode) ? saved.pathPanelMode : "spell",
         pathAnswerOpen: Boolean(saved.pathAnswerOpen),
         stage2Memo: normalizeStage2Memo(saved.stage2Memo),
-      stage2KanjiShowingRevealed: saved.stage2KanjiRevealVersion === stage2KanjiRevealVersion && saved.stage2KanjiShowingRevealed === true,
-      stage2KanjiRedVisible: saved.stage2KanjiRedVisible !== false,
-      stage2KanjiRevealVersion,
         memoActive: saved.memoActive && typeof saved.memoActive === "object" ? saved.memoActive : { row: 0, col: 0 },
         memoPickerOpen: Boolean(saved.memoPickerOpen),
         stage2CellMarks: saved.stage2CellMarks && typeof saved.stage2CellMarks === "object" ? saved.stage2CellMarks : {},
         stage2Rotated: Boolean(saved.stage2Rotated),
-        stage2SketchLines: normalizeStage2Sketch(saved.stage2SketchLines),
-        stage2SketchIsolated: Boolean(saved.stage2SketchIsolated),
-        stage2SketchExpanded: Boolean(saved.stage2SketchExpanded),
+        stage2KanjiShowingRevealed:
+          isStage2KanjiClueRevealed(saved.stage2Memo)
+          && saved.stage2KanjiRevealVersion === stage2KanjiRevealVersion
+          && saved.stage2KanjiShowingRevealed === true,
+        stage2KanjiRedVisible: saved.stage2KanjiRedVisible !== false,
+        stage2KanjiRevealVersion,
         stage4Memo: normalizeStage4Memo(saved.stage4Memo),
         stage4ActiveGroup: saved.stage4ActiveGroup && Number.isInteger(saved.stage4ActiveGroup.question) && Number.isInteger(saved.stage4ActiveGroup.group)
           ? saved.stage4ActiveGroup
@@ -841,6 +888,7 @@ function loadState() {
         timeAnswerOpen: Boolean(saved.timeAnswerOpen),
         timeSequencePhase: ["learned", "explanation", "choose", "cast-fail", "casting-time"].includes(saved.timeSequencePhase) ? saved.timeSequencePhase : "",
         introReturnPhase: ["message", "ready"].includes(saved.introReturnPhase) ? saved.introReturnPhase : "",
+        openingVideoSeen: Boolean(saved.openingVideoSeen),
         shopPendingItem: typeof saved.shopPendingItem === "string" ? saved.shopPendingItem : "",
         shopLockOpen: Boolean(saved.shopLockOpen),
         shopLockPromptOpen: Boolean(saved.shopLockPromptOpen),
@@ -852,21 +900,32 @@ function loadState() {
         genericPanelMode: ["closed", "problem", "clear"].includes(saved.genericPanelMode) ? saved.genericPanelMode : saved.genericPanelMode === "play" ? "problem" : "closed",
         bossPanelMode: ["closed", "problem", "play", "spells"].includes(saved.bossPanelMode) ? saved.bossPanelMode : "closed",
         bossIntroOpen: Boolean(saved.bossIntroOpen),
+        bossIntroPhase: ["threat", "wizard"].includes(saved.bossIntroPhase) ? saved.bossIntroPhase : "threat",
+        bossWizardSpellLearned: savedBossWizardSpellLearned,
         bossAnswerOpen: Boolean(saved.bossAnswerOpen),
         bossSlotCreationPending: savedTsukemonoActivated && Boolean(saved.bossSlotCreationPending),
         bossTsukemonoActivated: savedTsukemonoActivated,
         bossSixthSlotCreated: savedTsukemonoActivated && Boolean(saved.bossSixthSlotCreated),
         bossColorRemoved: Boolean(saved.bossColorRemoved),
-        clearPhase: ["victory", "portal", "home"].includes(saved.clearPhase) ? saved.clearPhase : "victory",
+        clearPhase: ["cinematic", "finished"].includes(saved.clearPhase) ? saved.clearPhase : "cinematic",
+        endingPage: Number.isInteger(saved.endingPage) ? Math.max(0, Math.min(2, saved.endingPage)) : 0,
       };
     }
   } catch {
     localStorage.removeItem(storeKey);
   }
-  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "gate", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null),
-    stage2KanjiShowingRevealed: false,
-    stage2KanjiRedVisible: true,
-    stage2KanjiRevealVersion, memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2SketchLines: [], stage2SketchIsolated: false, stage2SketchExpanded: false, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "victory" };
+  return { stageIndex: 0, cleared: [], spells: [], bossInput: [], slotInput: [], activeSlot: 0, slotPickerOpen: false, hiddenProblems: {}, hiddenSpells: {}, gatePanelMode: "spell", gateAnswerOpen: false, hintLevels: {}, kanaBoardActive: [], learnedSpellViewerOpen: false, learnedSpellStage: "intro", feedback: null, isClear: false, problemFit: true, pathPanelMode: "spell", pathAnswerOpen: false, stage2Memo: normalizeStage2Memo(null), memoActive: { row: 0, col: 0 }, memoPickerOpen: false, stage2CellMarks: {}, stage2Rotated: false, stage2KanjiShowingRevealed: false, stage2KanjiRedVisible: true, stage2KanjiRevealVersion, stage4Memo: normalizeStage4Memo(null), stage4ActiveGroup: { question: 0, group: 0 }, stage4PickerOpen: false, stage4FinalActive: [], timeAnswerOpen: false, timeSequencePhase: "", introReturnPhase: "", openingVideoSeen: false, shopPendingItem: "", shopLockOpen: false, shopLockPromptOpen: false, shopLockCode: "", shopLockError: false, revealed: {}, sealBooks: {}, fakeSpells: {}, genericPanelMode: "closed", bossPanelMode: "closed", bossIntroOpen: false, bossIntroPhase: "threat", bossWizardSpellLearned: false, bossAnswerOpen: false, bossSlotCreationPending: false, bossTsukemonoActivated: false, bossSixthSlotCreated: false, bossColorRemoved: false, clearPhase: "cinematic", endingPage: 0 };
+}
+
+function prepareStage2OnlyMode() {
+  if (!stage2Only) return;
+  state.stageIndex = stage2OnlyIndex;
+  state.isClear = false;
+  state.openingVideoSeen = true;
+  state.sealBooks = { ...(state.sealBooks || {}), path: true };
+  state.revealed = { ...(state.revealed || {}), path: true };
+  state.learnedSpellStage = "path";
+  state.pathPanelMode = isStageCleared("path") ? "clear" : "problem";
 }
 
 function saveState() {
@@ -911,6 +970,7 @@ function closeStagePanelsOnEntry(stage) {
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
   state.bossIntroOpen = false;
+  state.bossIntroPhase = "threat";
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
   state.bossTsukemonoActivated = false;
@@ -996,6 +1056,7 @@ function openStage(index) {
   state.feedback = null;
   closeStagePanelsOnEntry(stage);
   resetStageInput();
+  prepareStage2OnlyMode();
   render();
   return true;
 }
@@ -1037,6 +1098,72 @@ function burstOnce(selector) {
   });
 }
 
+const scrollGuideSelector = [
+  ".gate-sheet-scroll",
+  ".path-problem-card",
+  ".immersive-panel-scroll",
+  ".stage4-answer-drawer",
+  ".boss-current-layout",
+  ".boss-wizard-copy",
+  ".boss-problem-copy",
+  ".boss-spell-book-scroll",
+  ".learned-spell-viewer",
+  ".spell-open-screen",
+  ".gate-success-sequence.is-prompt1 .gate-choice-card",
+  "#hintBody",
+].join(",");
+
+function setupScrollIndicators() {
+  document.querySelectorAll(".scroll-down-indicator").forEach((indicator) => indicator.remove());
+  document.querySelectorAll(".scroll-indicator-host").forEach((host) => host.classList.remove("scroll-indicator-host"));
+
+  document.querySelectorAll(scrollGuideSelector).forEach((container) => {
+    if (!(container instanceof HTMLElement) || container.clientHeight < 80) return;
+    if (container.scrollHeight <= container.clientHeight + 24) return;
+
+    const host = container.closest(".gate-sheet-panel, .spell-device, .path-device, .immersive-panel, .boss-problem-panel, .boss-intro-cinematic, .boss-spell-book-panel, .hint-dialog")
+      || container.parentElement;
+    if (!(host instanceof HTMLElement)) return;
+    if (Array.from(host.children).some((child) => child.classList?.contains("scroll-down-indicator"))) return;
+    if (window.getComputedStyle(host).position === "static") host.classList.add("scroll-indicator-host");
+
+    const indicator = document.createElement("button");
+    indicator.className = "scroll-down-indicator";
+    indicator.type = "button";
+    indicator.title = "下へスクロール";
+    indicator.setAttribute("aria-label", "下に続く内容へスクロール");
+    indicator.innerHTML = '<span aria-hidden="true">↓</span>';
+    host.appendChild(indicator);
+
+    const updateIndicator = () => {
+      const remaining = container.scrollHeight - container.clientHeight - container.scrollTop;
+      indicator.hidden = remaining <= 24;
+    };
+    container.addEventListener("scroll", updateIndicator, { passive: true });
+    indicator.addEventListener("click", () => {
+      const targetTop = Math.min(
+        container.scrollHeight - container.clientHeight,
+        container.scrollTop + Math.max(180, container.clientHeight * 0.72),
+      );
+      try {
+        container.scrollTo({ top: targetTop, behavior: "smooth" });
+      } catch {
+        container.scrollTop = targetTop;
+      }
+    });
+    updateIndicator();
+  });
+}
+
+let scrollIndicatorResizeFrame = 0;
+function refreshScrollIndicatorsForViewport() {
+  window.cancelAnimationFrame(scrollIndicatorResizeFrame);
+  scrollIndicatorResizeFrame = window.requestAnimationFrame(setupScrollIndicators);
+}
+
+window.addEventListener("resize", refreshScrollIndicatorsForViewport, { passive: true });
+window.visualViewport?.addEventListener("resize", refreshScrollIndicatorsForViewport, { passive: true });
+
 function render() {
   stage2BoardResizeObserver?.disconnect();
   if (!state.isClear) {
@@ -1047,8 +1174,6 @@ function render() {
     }
   }
   const stage = stages[state.stageIndex] || stages[0];
-  document.querySelector("#stage2ReferenceStyles").disabled = stage.id !== "path" || state.isClear;
-  for (const id of ["experienceStyles", "arrangementStyles"]) document.querySelector(`#${id}`).disabled = stage.id === "path" && !state.isClear;
   audioDirector.setStage(state.isClear ? "clear" : stage.id);
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
@@ -1058,7 +1183,7 @@ function render() {
   elements.topTitle.textContent = state.isClear
     ? "異空間からの脱出 CLEAR"
     : `異空間からの脱出 ${stage.number} / ${stage.title}`;
-  elements.stageCount.textContent = stage.isIntro ? `00 / ${String(puzzleTotal).padStart(2, "0")}` : `${stage.number} / ${String(puzzleTotal).padStart(2, "0")}`;
+  elements.stageCount.textContent = stage2Only ? stage.number : stage.isIntro ? `00 / ${String(puzzleTotal).padStart(2, "0")}` : `${stage.number} / ${String(puzzleTotal).padStart(2, "0")}`;
   elements.spellCount.textContent = String(state.spells.length);
   renderNav();
   if (state.isClear) {
@@ -1081,19 +1206,36 @@ function render() {
     lastStageKey = stageKey;
   }
   updateSoundControl();
-  updateScenePresentation(stage);
-  updateJourneyGuide(stage);
   saveState();
+  window.requestAnimationFrame(setupScrollIndicators);
 }
 
 function renderIntro(stage) {
   const returnedFromTimeMachine = state.introReturnPhase === "message";
+  const shouldPlayOpeningVideo = !returnedFromTimeMachine && !state.openingVideoSeen;
   elements.game.innerHTML = `
-    <section class="intro-stage intro-image-stage" aria-label="異世界へ！？">
-      <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
-      <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？崖を越えられない。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
+    <section class="intro-stage ${shouldPlayOpeningVideo ? "intro-video-stage" : "intro-image-stage"} ${returnedFromTimeMachine ? "intro-return-stage" : ""}" aria-label="異世界へ！？">
+      ${shouldPlayOpeningVideo ? `
+        <div class="opening-video-shell" aria-label="異世界へ飛ばされる映像">
+          <video class="opening-video" id="openingVideo" preload="auto" playsinline webkit-playsinline autoplay>
+            <source src="./assets/opening-yakiniku-rift-v1.mp4?v=20260721-2" type="video/mp4">
+            この端末では映像を再生できません。
+          </video>
+          <button class="primary-button opening-video-start" id="openingVideoStart" type="button" hidden>映像を再生</button>
+          <button class="opening-video-skip" id="openingVideoSkip" type="button">スキップ</button>
+        </div>
+      ` : `
+        <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
+        <button class="primary-button intro-start-button ${returnedFromTimeMachine ? "is-time-return-message" : ""}" id="introStartButton" type="button">${returnedFromTimeMachine ? "あれ？壁を越えられなかった。なぜ「ここ」に戻ったんだ？" : "つぎへ"}</button>
+      `}
     </section>
+    ${state.learnedSpellViewerOpen ? renderLearnedSpellViewer() : ""}
   `;
+  wireLearnedSpellViewerControls();
+  if (shouldPlayOpeningVideo) {
+    wireOpeningVideo();
+    return;
+  }
   document.querySelector("#introStartButton")?.addEventListener("click", () => {
     closeInfoDialogs();
     if (state.introReturnPhase === "message") {
@@ -1232,90 +1374,6 @@ function renderPathAnswerControls(stage) {
       ${feedback?.type === "fail" ? `<p class="result-message is-fail">${stage.failMessage}</p>` : ""}
     </section>
   `;
-}
-
-function paintStage2Sketch(canvas, strokes) {
-  const context = canvas?.getContext("2d");
-  if (!context) return;
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.strokeStyle = "#e01818";
-  context.lineWidth = 11;
-  context.lineCap = "round";
-  context.lineJoin = "round";
-  strokes.forEach((stroke) => {
-    if (!Array.isArray(stroke) || stroke.length < 2) return;
-    context.beginPath();
-    stroke.forEach(([x, y], index) => {
-      const px = x * canvas.width;
-      const py = y * canvas.height;
-      if (index === 0) context.moveTo(px, py);
-      else context.lineTo(px, py);
-    });
-    context.stroke();
-  });
-}
-
-function wireStage2Sketch() {
-  const pad = document.querySelector("#stage2SketchPad");
-  const canvas = document.querySelector("#stage2SketchCanvas");
-  if (!pad || !canvas) return;
-
-  let strokes = normalizeStage2Sketch(state.stage2SketchLines);
-  let activeStroke = null;
-  paintStage2Sketch(canvas, strokes);
-
-  const pointFromEvent = (event) => {
-    const bounds = canvas.getBoundingClientRect();
-    let x = bounds.width ? (event.clientX - bounds.left) / bounds.width : 0;
-    let y = bounds.height ? (event.clientY - bounds.top) / bounds.height : 0;
-    if (state.stage2Rotated && !pad.classList.contains("is-expanded")) {
-      x = 1 - x;
-      y = 1 - y;
-    }
-    return [Math.min(Math.max(x, 0), 1), Math.min(Math.max(y, 0), 1)];
-  };
-
-  const finishStroke = (event, cancelled = false) => {
-    if (!activeStroke || event.pointerId !== activeStroke.pointerId) return;
-    if (canvas.hasPointerCapture?.(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
-    if (activeStroke.moved) {
-      const point = pointFromEvent(event);
-      activeStroke.points.push(point);
-      strokes = normalizeStage2Sketch([...strokes, activeStroke.points]);
-      state.stage2SketchLines = strokes;
-      paintStage2Sketch(canvas, strokes);
-      saveState();
-    } else if (!cancelled) {
-      state.stage2SketchIsolated = !state.stage2SketchIsolated;
-      pad.classList.toggle("is-isolated", state.stage2SketchIsolated);
-      saveState();
-    }
-    activeStroke = null;
-  };
-
-  canvas.addEventListener("pointerdown", (event) => {
-    if (event.button !== 0) return;
-    event.preventDefault();
-    canvas.setPointerCapture?.(event.pointerId);
-    activeStroke = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      moved: false,
-      points: [pointFromEvent(event)],
-    };
-  });
-  canvas.addEventListener("pointermove", (event) => {
-    if (!activeStroke || event.pointerId !== activeStroke.pointerId) return;
-    const distance = Math.hypot(event.clientX - activeStroke.startX, event.clientY - activeStroke.startY);
-    if (!activeStroke.moved && distance < 4) return;
-    event.preventDefault();
-    activeStroke.moved = true;
-    activeStroke.points.push(pointFromEvent(event));
-    paintStage2Sketch(canvas, [...strokes, activeStroke.points]);
-  });
-  canvas.addEventListener("pointerup", (event) => finishStroke(event));
-  canvas.addEventListener("pointercancel", (event) => finishStroke(event, true));
 }
 
 function wirePathProblem(stage) {
@@ -1478,7 +1536,7 @@ function wirePathStage(stage, done) {
       render();
     });
   });
-  if (!done && state.slotPickerOpen) {
+  if (!done && state.slotPickerOpen && state.pathPanelMode !== "problem") {
     requestAnimationFrame(() => document.querySelector(".slot-choice-popover")?.scrollIntoView({ block: "nearest" }));
   }
   document.querySelector("#nextButton")?.addEventListener("click", () => {
@@ -1497,7 +1555,7 @@ function wirePathStage(stage, done) {
       render();
     });
   });
-  document.querySelectorAll(".slot-choice-button").forEach((button) => {
+  document.querySelectorAll(".slot-choice-button[data-tile]").forEach((button) => {
     button.addEventListener("click", () => {
       const slot = Math.min(Math.max(Number.isInteger(state.activeSlot) ? state.activeSlot : 0, 0), stage.slots - 1);
       state.slotInput = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "");
@@ -1518,7 +1576,6 @@ function wirePathStage(stage, done) {
     render();
   });
   document.querySelector("#activateStage")?.addEventListener("click", () => {
-    if (!requireCompleteSpell(stage)) return;
     const answer = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "").join("");
     state.slotPickerOpen = false;
     if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
@@ -1535,6 +1592,45 @@ function wirePathStage(stage, done) {
     render();
     burstOnce(".path-sequence-card");
   });
+}
+
+function wireOpeningVideo() {
+  const video = document.querySelector("#openingVideo");
+  if (!video) return;
+  const startButton = document.querySelector("#openingVideoStart");
+  const skipButton = document.querySelector("#openingVideoSkip");
+  let completed = false;
+
+  const completeOpening = () => {
+    if (completed) return;
+    completed = true;
+    video.pause();
+    audioDirector.setCinematicMode(false);
+    state.openingVideoSeen = true;
+    render();
+  };
+
+  const beginPlayback = () => {
+    video.muted = audioDirector.isMuted();
+    video.volume = 0.95;
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    if (attempt?.catch) {
+      attempt.catch(() => {
+        audioDirector.setCinematicMode(false);
+        startButton.hidden = false;
+      });
+    }
+  };
+
+  video.addEventListener("playing", () => {
+    startButton.hidden = true;
+  });
+  video.addEventListener("ended", completeOpening, { once: true });
+  video.addEventListener("error", completeOpening, { once: true });
+  startButton?.addEventListener("click", beginPlayback);
+  skipButton?.addEventListener("click", completeOpening);
+  beginPlayback();
 }
 
 function renderNav() {
@@ -1764,7 +1860,7 @@ function gateScene(done) {
           </div>
           <div class="spell-card">
             <span class="spell-status">${done ? "習得済み" : "未習得"}</span>
-            <strong>☆${spell}</strong>
+            <strong>☆${formatSpellName(spell)}</strong>
             <p>効果：謎の四角を1個生成できる。この土台の上にのみ生成可能。</p>
           </div>
         </section>
@@ -1781,7 +1877,7 @@ function gateScene(done) {
           </div>
           <p class="trial-copy">試練：扉があり通ることが出来ない</p>
           <div class="spell-card muted-spell">
-            <strong>☆□□□□□□</strong>
+      <strong>☆□□□□□□…</strong>
             <p>効果：「　」内の色を消す事が出来る。内容の意味が通れば、それは現実となる。</p>
           </div>
         </section>
@@ -1878,14 +1974,36 @@ function renderGateStage(stage) {
   wireGateStage(stage, done);
 }
 
+function isLearnedSpellStageUnlocked(stageId) {
+  if (stageId === "intro") return state.spells.includes("キミタチナラ");
+  if (stageId === "time") {
+    return isStageCleared("time") || state.spells.includes(timeMachineSpellCopy.name);
+  }
+  return isStageCleared(stageId);
+}
+
+function wireLearnedSpellViewerControls() {
+  document.querySelector("#closeLearnedSpellViewer")?.addEventListener("click", () => {
+    state.learnedSpellViewerOpen = false;
+    render();
+  });
+  document.querySelectorAll("[data-learned-stage]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.learnedSpellStage = button.dataset.learnedStage || "intro";
+      render();
+    });
+  });
+}
+
 function renderLearnedSpellViewer() {
   const stageTabs = [
+    { id: "intro", label: "ステージ0" },
     { id: "gate", label: "ステージ1" },
     { id: "path", label: "ステージ2" },
     { id: "shop", label: "ステージ3" },
     { id: "time", label: "ステージ4" },
   ];
-  const unlockedTabs = stageTabs.filter((tab) => isStageCleared(tab.id));
+  const unlockedTabs = stageTabs.filter((tab) => isLearnedSpellStageUnlocked(tab.id));
   const selectedStage = unlockedTabs.some((tab) => tab.id === state.learnedSpellStage)
     ? state.learnedSpellStage
     : unlockedTabs[0]?.id || "";
@@ -1895,11 +2013,12 @@ function renderLearnedSpellViewer() {
         <strong>覚えた呪文</strong>
         <button class="text-button learned-spell-close" id="closeLearnedSpellViewer" type="button">閉じる</button>
       </div>
+      ${renderSpellRuleGuide("is-stage-spell-guide")}
       <div class="learned-stage-tabs" aria-label="ステージ選択">
         ${stageTabs
           .map(
             (tab) => {
-              const unlocked = isStageCleared(tab.id);
+              const unlocked = isLearnedSpellStageUnlocked(tab.id);
               const activeClass = selectedStage === tab.id ? " is-active" : "";
               if (!unlocked) {
                 return `
@@ -1917,13 +2036,18 @@ function renderLearnedSpellViewer() {
           )
           .join("")}
       </div>
-      ${selectedStage && isStageCleared(selectedStage) ? renderLearnedSpellContent(selectedStage) : `<p class="learned-empty">クリア済みステージの呪文だけ確認できます。</p>`}
+      ${selectedStage && isLearnedSpellStageUnlocked(selectedStage) ? renderLearnedSpellContent(selectedStage) : `<p class="learned-empty">習得したステージの呪文だけ確認できます。</p>`}
     </section>
   `;
 }
 
 function renderLearnedStageOneSpells() {
   return `
+    <article class="learned-spell-detail learned-primary-spell">
+      <span>01 / 崩れた足場</span>
+      <strong>☆ ${formatSpellName("ツケモノ")}</strong>
+      <p>謎の四角を1個生成できる！ この土台の上にのみ生成可能。</p>
+    </article>
     <div class="learned-spell-images">
       <img src="./assets/stage01-spell.webp" alt="ステージ1 呪文">
       <img src="./assets/stage01-clear2.webp" alt="ステージ1 クリア資料">
@@ -1943,7 +2067,7 @@ function renderGateSuccessOverlay(phase) {
           <div class="reward-card" aria-label="習得した呪文">
             <div class="reward-head">
               <span class="reward-badge">呪文を習得！</span>
-              <strong class="reward-name">☆ ツケモノ</strong>
+              <strong class="reward-name">☆ ${formatSpellName("ツケモノ")}</strong>
             </div>
             <p class="reward-desc">遺物石だろうか？ <b>謎の四角を1個生成できる！</b></p>
             <p class="reward-note"><span class="reward-stone" aria-hidden="true"></span>← この土台の上にのみ生成可能</p>
@@ -2039,9 +2163,9 @@ function renderGateAnswerControls(stage, done, feedback) {
         <button class="gate-answer-close" id="gateAnswerClose" type="button">閉じる</button>
       </div>
       <div class="device-main-row">
-        <div class="premium-slot-row magic-slots">
+        <div class="premium-slot-row magic-slots stone-tablet-input">
           ${Array.from({ length: stage.slots })
-            .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-label="${i + 1}文字目：${selected[i] || "未入力"}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
+            .map((_, i) => `<button class="premium-slot ${!locked && i === activeSlot ? "is-selected" : ""}" type="button" data-slot="${i}" aria-pressed="${!locked && i === activeSlot}" ${locked ? "disabled" : ""}>${selected[i] || ""}</button>`)
             .join("")}
         </div>
         <button class="primary-button cast-button" id="activateStage" type="button" ${locked ? "disabled" : ""}>${locked && !done ? "発動中..." : done ? "習得済み" : "呪文を唱える"}</button>
@@ -2055,7 +2179,7 @@ function renderGateAnswerControls(stage, done, feedback) {
 // ステージ1 問題シート(原本をHTMLで再構成)
 function renderStage1Sheet() {
   return `
-    <div class="sheet stage1-sheet" role="group" aria-label="ステージ1 問題">
+    <div class="sheet stage1-sheet" role="img" aria-label="ステージ1 問題">
       <div class="sheet-head-row">
         <h3 class="sheet-title">ステージ1</h3>
       </div>
@@ -2205,13 +2329,14 @@ function renderStage4ChoicePicker() {
   const groupIndex = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[questionIndex].length - 1);
   const memo = normalizeStage4Memo(state.stage4Memo);
   const value = memo.cells[questionIndex][groupIndex].join("");
+  const choices = shuffleStage4Choices(stage4ChoiceCandidates[questionIndex]);
   return `
     <section class="s4-choice-picker" aria-label="${questionIndex + 1}番の文字候補">
       <div class="s4-choice-head">
         <div><span>途中回答 ${questionIndex + 1}-${groupIndex + 1}</span><strong>${value || "未入力"}</strong></div>
       </div>
       <div class="s4-choice-tiles" role="group" aria-label="選択候補">
-        ${stage4ChoiceCandidates[questionIndex].map((character) => `<button type="button" data-s4-choice="${character}">${character}</button>`).join("")}
+        ${choices.map((character) => `<button type="button" data-s4-choice="${character}">${character}</button>`).join("")}
       </div>
       <div class="s4-choice-actions">
         <button class="secondary-button" id="stage4PickerBackspace" type="button">決定</button>
@@ -2246,14 +2371,11 @@ function renderStage4Sheet() {
     </div>
   `;
   return `
-    <div class="sheet stage4-sheet stage4-static-sheet ${state.timeAnswerOpen ? "is-answer-open" : ""}" role="group" aria-label="ステージ4 問題">
-      <div class="s4-reading-column">
-      <button class="text-button s4-reading-zoom" type="button" data-problem="stage04-problem-questions.webp" data-title="ステージ4 問題を拡大">問題を拡大して読む</button>
+    <div class="sheet stage4-sheet stage4-static-sheet" role="group" aria-label="ステージ4 問題">
       <figure class="s4-static-problem-viewport">
         <img src="./assets/stage04-problem-questions.webp" alt="添付原稿から切り抜いたステージ4の①から④までの問題部分" />
+        <span class="s4-week-black-overlay" aria-hidden="true">WEEK</span>
       </figure>
-      </div>
-      <aside class="s4-tool-column" aria-label="途中回答と最終入力">
       <section class="s4-static-answer-area" aria-label="①から④の途中回答">
         <p>途中回答</p>
         <div class="s4-static-answer-grid">
@@ -2263,8 +2385,6 @@ function renderStage4Sheet() {
       ${renderStage4ChoicePicker()}
       <p class="s4-footer-note">※<b class="n-b">青</b>→<b class="n-g">緑</b>→<b class="n-y">黄</b>の順に読め。答えは、それが差ししめす先にある。</p>
       ${renderStage4FinalSection()}
-      ${state.timeAnswerOpen && !isStageCleared("time") ? renderStage4AnswerDrawer(stages.find(stage => stage.id === "time")) : ""}
-      </aside>
     </div>
   `;
 }
@@ -2337,7 +2457,7 @@ function renderPathSuccessStep(stage, phase) {
           <span class="clear-kicker">STAGE ${stage.number} CLEAR</span>
           <h2>${stage.reward}を覚えた</h2>
           <div class="path-learned-spell">
-            <strong>☆ ${stage.reward}</strong>
+            <strong>☆ ${formatSpellName(stage.reward)}</strong>
             <p>「　」内の色を消すことが出来る。</p>
             <p>「　」内の内容の意味が通れば、それは現実となる。</p>
           </div>
@@ -2399,13 +2519,24 @@ function renderPathCastEffect(stage) {
 }
 
 function renderLearnedSpellContent(stageId) {
+  if (stageId === "intro") {
+    const learned = state.spells.includes("キミタチナラ");
+    if (!learned) return `<p class="learned-empty">このステージの呪文はまだ習得していません。</p>`;
+    return `
+      <article class="learned-spell-detail learned-primary-spell">
+        <span>00 / 魔法使いのエール</span>
+        <strong>${learned ? "☆ " : ""}${formatSpellName("キミタチナラ")}</strong>
+        <p>どんな大きな壁も乗り越えられる！ 仲間を信じる言葉が力となる。</p>
+      </article>
+    `;
+  }
   const explorationSpells = getLearnedExplorationSpells(stageId);
   const explorationDetails = explorationSpells.length
     ? `
       <section class="learned-exploration-spells" aria-label="探索で覚えた呪文">
         <h3>探索で覚えた呪文</h3>
         <div class="learned-exploration-grid">
-          ${explorationSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+          ${explorationSpells.map((spell) => `<article><strong>☆ ${formatSpellName(spell.name)}</strong><p>${spell.effect}</p></article>`).join("")}
         </div>
       </section>
     `
@@ -2416,7 +2547,7 @@ function renderLearnedSpellContent(stageId) {
   return `
     <article class="learned-spell-detail">
       <span>${learnedStage.number} / ${learnedStage.title}</span>
-      <strong>☆ ${learnedStage.reward}</strong>
+      <strong>☆ ${formatSpellName(learnedStage.reward)}</strong>
       <p>${learnedStage.textProblem?.solvedNote || learnedStage.successMessage || "習得済みの呪文"}</p>
     </article>
     ${explorationDetails}
@@ -2575,7 +2706,6 @@ function wireGateStage(stage, done) {
 
   document.querySelector("#activateStage")?.addEventListener("click", () => {
     if (locked) return;
-    if (!requireCompleteSpell(stage)) return;
     const answer = Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "").join("");
     if (normalizeAnswer(answer) !== normalizeAnswer(stage.correct)) {
       state.feedback = { stageId: stage.id, type: "fail" };
@@ -2747,6 +2877,7 @@ function renderGenericProblemPanel(stage, done) {
         ${renderProblems(stage, done)}
         ${stage.type === "shop" ? `<div class="generic-problem-answer" aria-label="問題の回答">${shopPuzzle(stage, done)}</div>` : ""}
       </div>
+      ${stage.id === "time" && state.timeAnswerOpen && !done ? renderStage4AnswerDrawer(stage) : ""}
     </section>
   `;
 }
@@ -2797,7 +2928,7 @@ function renderTimeSpellChooser(phase) {
   const failed = phase === "cast-fail";
   return `
     <div class="time-spell-chooser" aria-label="唱える呪文を文字で選ぶ">
-      <div class="stage4-answer-slots" aria-label="選択した6文字">
+      <div class="stage4-answer-slots stone-tablet-input" aria-label="選択した6文字">
         ${selected.map((character, index) => `<button class="stage4-answer-slot ${index === activeSlot ? "is-active" : ""}" type="button" data-time-cast-slot="${index}" aria-pressed="${index === activeSlot}">${character || "―"}</button>`).join("")}
       </div>
       <div class="stage4-answer-tiles" aria-label="文字候補">
@@ -2818,18 +2949,19 @@ function renderTimeSuccessSequence(stage, phase) {
       <section class="stage-clear-overlay time-spell-sequence is-casting-time" aria-live="assertive">
         <div class="stage-clear-card time-spell-sequence-card">
           <span class="clear-kicker">TIME MACHINE</span>
-          <h2>タイムマシンを唱えた！</h2>
-          <p class="time-cast-effect-copy">空間が巻き戻り、「ここ」という言葉が残る過去へ移動する。</p>
+          <h2>${formatSpellName(timeMachineSpellCopy.name)}を唱えた。</h2>
+          <p class="time-cast-effect-copy">時空を通り越え、異世界脱出の為に必要な時間と空間に向かっていく。</p>
           <div class="time-warp-effect" aria-hidden="true"></div>
+          <button class="primary-button" id="timeCastContinue" type="button">つぎへ</button>
         </div>
       </section>
     `;
   }
 
   const content = phase === "learned"
-    ? `<span class="clear-kicker">NEW SPELL</span><h2>タイムマシンを覚えた</h2><button class="primary-button" id="timeLearnedNext" type="button">つぎへ</button>`
+    ? `<span class="clear-kicker">NEW SPELL</span><h2>${formatSpellName(timeMachineSpellCopy.name)}を覚えた</h2><button class="primary-button" id="timeLearnedNext" type="button">つぎへ</button>`
     : phase === "explanation"
-      ? `<span class="clear-kicker">SPELL GUIDE</span><h2>タイムマシン</h2><p class="time-spell-explanation">一時的に未来空間へ移動し、まだ習得していない呪文を1つ唱えられる。効果は現在異空間で発動し、同時に自分も現在異空間へ戻る。</p><button class="primary-button" id="timeExplanationNext" type="button">つぎへ</button>`
+      ? `<span class="clear-kicker">SPELL GUIDE</span><h2>${formatSpellName(timeMachineSpellCopy.name)}</h2><p class="time-spell-explanation"><strong>${timeMachineSpellCopy.effect}</strong> ${timeMachineSpellCopy.explanation}</p><button class="primary-button" id="timeExplanationNext" type="button">つぎへ</button>`
       : `<span class="clear-kicker">SELECT SPELL</span><h2>どの呪文を唱えますか</h2>${renderTimeSpellChooser(phase)}`;
 
   return `
@@ -2851,6 +2983,7 @@ function returnToIntroWithTimeMachine() {
 
 function completeTimeStage(stage) {
   addUnique(state.cleared, stage.id);
+  addUnique(state.spells, "キミタチナラ");
   state.timeSequencePhase = "";
   state.introReturnPhase = "";
   state.feedback = { stageId: stage.id, type: "success" };
@@ -2869,10 +3002,6 @@ function castSelectedTimeSpell(stage) {
     state.timeSequencePhase = "casting-time";
     state.feedback = null;
     render();
-    window.setTimeout(() => {
-      if (stages[state.stageIndex]?.id !== "time" || state.timeSequencePhase !== "casting-time") return;
-      returnToIntroWithTimeMachine();
-    }, 1600);
     return;
   }
   if (normalized === normalizeAnswer("キミタチナラ")) {
@@ -2888,6 +3017,7 @@ function castSelectedTimeSpell(stage) {
 }
 
 function wireTimeSuccessSequence(stage) {
+  document.querySelector("#timeCastContinue")?.addEventListener("click", returnToIntroWithTimeMachine);
   document.querySelector("#timeLearnedNext")?.addEventListener("click", () => {
     state.timeSequencePhase = "explanation";
     render();
@@ -2957,7 +3087,7 @@ function renderGenericStageClear(stage) {
   const nextLabel = state.stageIndex >= stages.length - 2 ? "ラスボスへ" : "次のステージへ";
   const clearTitle = stage.id === "time" ? "山の壁を乗り越えた" : stage.id === "shop" ? "氷が溶けた" : `${stage.title} クリア`;
   const clearMessage = stage.id === "time"
-    ? "<strong>「キミタチナラ」を唱えた！</strong><br>その言葉が仲間たちの背中を押し、諦めかけていた心にもう一度力が戻った。足場の少ない急斜面に手をかけ、互いに支え合いながら一歩ずつ登っていく。山の壁そのものが消えたわけではない。それでも進み続け、ついに全員で頂上を乗り越えた！"
+    ? "<strong>「キミタチナラ…」を唱えた！</strong><br>その言葉が仲間たちの背中を押し、諦めかけていた心にもう一度力が戻った。足場の少ない急斜面に手をかけ、互いに支え合いながら一歩ずつ登っていく。山の壁そのものが消えたわけではない。それでも進み続け、ついに全員で頂上を乗り越えた！"
     : stage.id === "shop"
       ? "「ドラブレス」を唱えた！炎で氷が溶け、先へ進めるようになった！"
     : stage.textProblem?.solvedNote || stage.successMessage || "新しい呪文を習得した。";
@@ -2968,7 +3098,7 @@ function renderGenericStageClear(stage) {
         <h2>${clearTitle}</h2>
         ${stage.id === "time"
           ? `<div class="clear-spell-reward time-clear-story"><p>${clearMessage}</p></div>`
-          : `<div class="clear-spell-reward"><span>呪文を習得</span><strong>☆ ${stage.reward}</strong><p>${clearMessage}</p></div>`}
+          : `<div class="clear-spell-reward"><span>呪文を習得</span><strong>☆ ${formatSpellName(stage.reward)}</strong><p>${clearMessage}</p></div>`}
         <div class="clear-actions">
           <button class="secondary-button" id="genericToProblem" type="button">問題を見直す</button>
           <button class="primary-button" id="nextButton" type="button">${nextLabel}</button>
@@ -2981,7 +3111,7 @@ function renderGenericStageClear(stage) {
 function tilePuzzle(stage, done) {
   return `
     <section class="play-box">
-      <div class="slot-row" aria-label="呪文スロット">
+      <div class="slot-row stone-tablet-input" aria-label="呪文スロット">
         ${Array.from({ length: stage.slots })
           .map((_, i) => `<button class="slot" type="button" data-slot="${i}">${state.slotInput[i] || ""}</button>`)
           .join("")}
@@ -3034,7 +3164,7 @@ function renderStage4AnswerDrawer(stage) {
         <div><span>石板 6文字</span><strong>文字を選んで呪文を作る</strong></div>
         <button class="text-button" id="timeAnswerClose" type="button">閉じる</button>
       </div>
-      <div class="stage4-answer-slots" aria-label="選択した6文字">
+      <div class="stage4-answer-slots stone-tablet-input" aria-label="選択した6文字">
         ${selected.map((character, index) => `<button class="stage4-answer-slot ${index === activeSlot ? "is-active" : ""}" type="button" data-time-slot="${index}" aria-pressed="${index === activeSlot}">${character || "―"}</button>`).join("")}
       </div>
       <div class="stage4-answer-tiles" aria-label="文字候補">
@@ -3064,13 +3194,9 @@ function wireStage4Memo() {
       const group = Math.min(Math.max(state.stage4ActiveGroup?.group || 0, 0), stage4MemoShape[question].length - 1);
       const memo = normalizeStage4Memo(state.stage4Memo);
       const target = memo.cells[question][group];
-      const emptyIndex = target.findIndex((character) => !character);
-      if (emptyIndex < 0) return;
-      target[emptyIndex] = button.dataset.s4Choice || "";
+      target[0] = button.dataset.s4Choice || "";
       state.stage4Memo = memo;
-      if (emptyIndex === target.length - 1 && group < stage4MemoShape[question].length - 1) {
-        state.stage4ActiveGroup = { question, group: group + 1 };
-      }
+      state.stage4PickerOpen = false;
       render();
     });
   });
@@ -3332,14 +3458,25 @@ function getBossAttackText(step, index) {
 }
 
 const bossActionDescriptions = [
-  "糸のように繊細で鋭い爪による弱攻撃「一犬糸争」を放とうとしている",
-  "両の前足で地面を叩き、「二脚地動」で周囲を揺らそうとしている",
-  "小幡の方へ向き、目が合うと石化する「三石化線」を放とうとしている",
+  "糸のように繊細で鋭い爪による弱攻撃を放とうとしている",
+  "両の前足で地面を叩き、周囲を揺らそうとしている",
+  "小幡の方へ向き、3秒間目が合うと石化する視線を放とうとしている",
   "大技を放つため、動かずに力を溜めようとしている",
-  "「百黙絶静」を放とうとしている。百発百中の即死攻撃で、放たれれば全空間が消滅し沈黙する",
-  "「一犬糸争」を放とうとしている",
-  "「零式空間」を放とうとしている。空間から出る事を不可能にする念で、現在異空間にいる者にのみ有効",
+  "百発百中の即死攻撃を放とうとしている。放たれれば全空間が消滅し沈黙する",
+  "弱体化した鋭い爪を放とうとしている",
+  "空間から出る事を不可能にする念を放とうとしている。現在異空間にいる者にのみ有効",
   "最後の抵抗をしようとしている。仲間を思い出し、とびきりの一撃を放つ時だ",
+];
+
+const bossTechniqueVisuals = [
+  { name: "一犬糸争" },
+  { name: "二脚地動" },
+  { name: "三石化線" },
+  null,
+  { name: "百黙絶静", colorRadicals: true },
+  { name: "一犬糸争" },
+  { name: "零式空間" },
+  null,
 ];
 
 const bossSuccessEffects = [
@@ -3347,11 +3484,46 @@ const bossSuccessEffects = [
   "フユウで地面から離れ、揺れをかわした！",
   "ヘンガオで白目をむき、視線を合わせず石化を防いだ！",
   "ラスボスは大技前の溜めを続け、こちらの呪文には反応しない。",
-  "ゴクロウサマが「百黙絶静」から色を消した！",
-  "カタメで「一犬糸争」を防いだ！",
-  "タイムマシンで一時的に未来空間へ移動し、零式空間の対象から外れた！",
+  "ゴクロウサマが『百黙絶静』の中の色を消した！",
+  "カタメで『一犬糸争』を防いだ！",
+  "タイムマシンで一時的に異空間へ移動し、零式空間の対象から外れた！",
   "バタフライエフェクトが未来を変え、とびきりの一撃を放った！",
 ];
+
+const bossClearVideos = [
+  { file: "boss-clear-01-bari-v1.mp4", poster: "boss-clear-01-bari-v1-poster.jpg", label: "バリで鋭い爪を弾く" },
+  { file: "boss-clear-02-fuyuu-v1.mp4", poster: "boss-clear-02-fuyuu-v1-poster.jpg", label: "フユウで地面の衝撃波を飛び越える" },
+  { file: "boss-clear-03-hengao-v1.mp4", poster: "boss-clear-03-hengao-v1-poster.jpg", label: "ヘンガオで石化の視線を外す" },
+  { file: "boss-clear-04-tsukemono-v1.mp4", poster: "boss-clear-04-tsukemono-v1-poster.jpg", label: "ツケモノで言葉の足場を作る" },
+  { file: "boss-clear-05-gokurosama-v1.mp4", poster: "boss-clear-05-gokurosama-v1-poster.jpg", label: "ゴクロウサマで百黙絶静から四つの色を消す" },
+  { file: "boss-clear-06-katame-v1.mp4", poster: "boss-clear-06-katame-v1-poster.jpg", label: "カタメで鋭い爪を防ぐ" },
+  { file: "boss-clear-07-timemachine-v1.mp4", poster: "boss-clear-07-timemachine-v1-poster.jpg", label: "タイムマシンで零式空間を回避する" },
+  { file: "boss-clear-08-butterfly-v1.mp4", poster: "boss-clear-08-butterfly-v1-poster.jpg", label: "バタフライエフェクトで最後の一撃を放つ" },
+];
+
+function renderBossClearVideo(index) {
+  const video = bossClearVideos[index] || bossClearVideos[bossClearVideos.length - 1];
+  return `
+    <div class="boss-clear-cinematic" id="bossClearCinematic" aria-label="${video.label}映像">
+      <video
+        class="boss-clear-video"
+        id="bossClearVideo"
+        poster="./assets/${video.poster}?v=20260721-5"
+        preload="auto"
+        playsinline
+        webkit-playsinline
+        autoplay
+      >
+        <source src="./assets/${video.file}?v=20260721-5" type="video/mp4">
+        この端末では正解演出の動画を再生できません。
+      </video>
+      <div class="boss-clear-video-label"><span>正解演出</span><strong>${index + 1} / ${bossBattle.length}</strong></div>
+      <button class="primary-button boss-clear-video-start" id="bossClearVideoStart" type="button" hidden>映像を再生</button>
+      <button class="boss-clear-video-skip" id="bossClearVideoSkip" type="button">演出をスキップ</button>
+      <p class="boss-clear-video-error" id="bossClearVideoError" hidden>映像を読み込めませんでした。「演出をスキップ」で解説へ進めます。</p>
+    </div>
+  `;
+}
 
 const bossSuccessScenes = [
   {
@@ -3387,7 +3559,7 @@ const bossSuccessScenes = [
   {
     label: "空間回避",
     title: "零式空間の外へ逃れた！",
-    story: "タイムマシンで一瞬だけ未来へ移動した。現在異空間を閉ざす零式空間は対象を失い、空しく消滅する。",
+    story: "タイムマシンで一瞬だけ異空間へ移動した。現在異空間を閉ざす零式空間は対象を失い、空しく消滅する。",
   },
   {
     label: "最終撃破",
@@ -3424,8 +3596,54 @@ function renderBossTsukemonoBranch() {
   `;
 }
 
+function renderBossTsukemonoBlock({ created = false, label = "ツケモノの石ブロック" } = {}) {
+  return `
+    <span class="boss-tsukemono-block-visual ${created ? "is-created" : ""}" role="img" aria-label="${label}">
+      <i aria-hidden="true"></i>
+    </span>
+  `;
+}
+
 function getBossActionDescription(index) {
   return bossActionDescriptions[index] || "最後の攻撃を放とうとしている";
+}
+
+function renderBossTechniqueTitle(index, modifier = "") {
+  const technique = bossTechniqueVisuals[index];
+  if (!technique) return "";
+  const artworkId = `boss-technique-${index}-${modifier.replace(/[^a-z0-9-]/gi, "") || "title"}`;
+  const metalId = `${artworkId}-metal`;
+  const impactId = `${artworkId}-impact`;
+  const commonDefs = `
+    <linearGradient id="${metalId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8d6"/><stop offset=".46" stop-color="#e6bf63"/><stop offset="1" stop-color="#8a5518"/></linearGradient>
+    <filter id="${impactId}" x="-20%" y="-40%" width="140%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/><feOffset dy="7" result="shadow"/><feFlood flood-color="#000" flood-opacity=".88"/><feComposite in2="shadow" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  `;
+  const titleMarkup = technique.colorRadicals
+    ? `
+      <defs>${commonDefs}
+        <clipPath id="${artworkId}-white"><rect x="157" y="56" width="126" height="99"/></clipPath>
+        <clipPath id="${artworkId}-black"><rect x="326" y="18" width="72" height="137"/></clipPath>
+        <clipPath id="${artworkId}-color"><rect x="566" y="18" width="72" height="137"/></clipPath>
+        <clipPath id="${artworkId}-blue"><rect x="674" y="18" width="56" height="137"/></clipPath>
+      </defs>
+      <g font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, serif" font-size="118" font-weight="900" text-anchor="middle" stroke="#180b03" stroke-width="8" paint-order="stroke fill" filter="url(#${impactId})">
+        <text x="220" y="135" fill="url(#${metalId})">百</text><text x="220" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-white)">百</text>
+        <text x="392" y="135" fill="url(#${metalId})">黙</text><text x="392" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-black)">黙</text>
+        <text x="564" y="135" fill="url(#${metalId})">絶</text><text x="564" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-color)">絶</text>
+        <text x="736" y="135" fill="url(#${metalId})">静</text><text x="736" y="135" fill="#ff3e36" clip-path="url(#${artworkId}-blue)">静</text>
+      </g>
+    `
+    : `
+      <defs>${commonDefs}</defs>
+      <text x="480" y="135" text-anchor="middle" font-family="Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, serif" font-size="118" font-weight="900" letter-spacing="18" fill="url(#${metalId})" stroke="#180b03" stroke-width="8" paint-order="stroke fill" filter="url(#${impactId})">${technique.name}</text>
+    `;
+  return `
+    <svg class="boss-technique-title-art ${modifier}" viewBox="0 0 960 180" role="img" aria-label="ラスボスの技 ${technique.name}" preserveAspectRatio="xMidYMid meet">
+      <path d="M76 141 C264 111 646 155 882 89" fill="none" stroke="#9e1717" stroke-width="23" stroke-linecap="round" opacity=".58"/>
+      <path d="M104 154 L856 154" stroke="#e2b74f" stroke-width="2" opacity=".65"/>
+      ${titleMarkup}
+    </svg>
+  `;
 }
 
 function renderBossActionImage(index) {
@@ -3439,7 +3657,7 @@ function renderBossForecast(index, label, className) {
   return `
     <article class="boss-forecast-card ${className}">
       <div class="boss-forecast-image">${renderBossActionImage(index)}</div>
-      <div><span>${label}</span><p>ラスボスは${getBossActionDescription(index)}</p></div>
+      <div><span>${label}</span>${renderBossTechniqueTitle(index, "is-forecast")}<p>ラスボスは${getBossActionDescription(index)}</p></div>
     </article>
   `;
 }
@@ -3452,27 +3670,56 @@ function renderBossColorRemovalEffect() {
     ["静", "青", "争"],
   ];
   return `
-    <div class="boss-color-removal" aria-label="百黙絶静から白黒色青が消えて一犬糸争になる">
-      <div class="boss-color-source">
-        ${changes.map(([source, removed], index) => `<span style="--remove-order:${index}"><b>${source}</b><i>−${removed}</i></span>`).join("")}
+    <div class="boss-color-removal" aria-label="百から白、黙から黒、絶から色、静から青が消え、一犬糸争になる">
+      <div class="boss-color-phrase" aria-hidden="true">
+        <span class="boss-color-bracket">『</span>
+        <span class="boss-color-equations">
+          ${changes.map(([source, removed, result], index) => `
+            <span class="boss-color-glyph" style="--remove-order:${index}">
+              <span class="boss-color-equation">
+                <b class="boss-color-original">${source}</b>
+                <span class="boss-color-minus">−</span>
+                <i class="boss-color-removed">${removed}</i>
+              </span>
+              <em class="boss-color-survivor">${result}</em>
+            </span>
+          `).join("")}
+        </span>
+        <span class="boss-color-bracket">』</span>
       </div>
-      <div class="boss-color-arrow" aria-hidden="true">↓</div>
-      <strong class="boss-color-result">${changes.map(([, , result]) => `<span>${result}</span>`).join("")}</strong>
-      <p>百から白、黙から黒、絶から色、静から青が消えた</p>
+      <p class="boss-color-status">括弧内の赤い「<strong class="boss-color-word">白・黒・色・青</strong>」を順に消去中…</p>
+      <div class="boss-color-breakdown" aria-label="消えた色と残った文字の対応">
+        ${changes.map(([source, removed, result]) => `
+          <span><b>${source}</b>から<i>${removed}</i>が消え、<em>${result}</em>が残る</span>
+        `).join("")}
+      </div>
+      <strong class="boss-color-result-copy">『一犬糸争』になった！</strong>
     </div>
   `;
 }
 
 function renderBossSixthSlotBuilder() {
   return `
-    <div class="boss-direct-slots boss-sixth-slot-builder" aria-label="6文字目が未完成の回答欄">
-      ${Array.from({ length: 5 }).map(() => "<span></span>").join("")}
-      <span class="boss-missing-slot" aria-label="6文字目の枠を置ける場所">
-        <i class="boss-tsukemono-block-icon" aria-hidden="true"></i>
-        <small>↑ ブロックを置ける</small>
-      </span>
+    <div class="boss-tsukemono-confirm-layer" role="dialog" aria-modal="true" aria-labelledby="bossTsukemonoConfirmTitle">
+      <section class="boss-tsukemono-confirm-card">
+        <div class="boss-tsukemono-confirm-art">
+          ${renderBossTsukemonoBlock({ label: "6文字目の足場になるツケモノの石ブロック" })}
+        </div>
+        <div class="boss-tsukemono-confirm-copy">
+          <span>6文字目の足場</span>
+          <h3 id="bossTsukemonoConfirmTitle">ツケモノを使いますか？</h3>
+          <p>石板の右端に石のブロックを置き、6文字目の枠を作る。</p>
+        </div>
+        <div class="boss-tsukemono-slot-preview" aria-label="5文字の石板と、これから作る6文字目の枠">
+          ${Array.from({ length: 5 }).map(() => "<span></span>").join("")}
+          <span class="is-block-slot">${renderBossTsukemonoBlock({ label: "6文字目に置く石ブロック" })}</span>
+        </div>
+        <div class="boss-tsukemono-confirm-actions">
+          <button class="secondary-button" id="cancelTsukemonoSlot" type="button">戻る</button>
+          <button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノを使う</button>
+        </div>
+      </section>
     </div>
-    <button class="primary-button" id="useTsukemonoSlot" type="button">ツケモノで6文字目の枠を作る</button>
   `;
 }
 
@@ -3485,19 +3732,50 @@ function canCreateBossSixthSlot() {
 }
 
 function renderBossIntro() {
+  if (state.bossIntroPhase === "wizard") {
+    return `
+      <section class="boss-intro-cinematic is-wizard-intervention" aria-label="魔法使いから新しい呪文を伝授される">
+        <button class="panel-close-button boss-intro-close" id="bossIntroClose" type="button" aria-label="魔法伝授を閉じる">×</button>
+        <img class="boss-wizard-art" src="./assets/boss-wizard-intervention-v1.webp?v=20260721-7" alt="青白い魔法陣から現れ、手を差し伸べる魔法使い" loading="eager">
+        <div class="boss-wizard-shade" aria-hidden="true"></div>
+        <div class="boss-wizard-copy">
+          <span class="boss-wizard-signal">ARCANE INTERVENTION / 魔法使い</span>
+          <h2>「待つんじゃ！」</h2>
+          <blockquote>「最後の戦いを前に、十種の戦闘呪文をまとめて授ける。敵の動きと石板の数を見て、必要な呪文を使い分けるんじゃ」</blockquote>
+          <article class="boss-wizard-spell-card" aria-label="新しく習得する10種類の呪文">
+            <span>新しい呪文を10種類同時に伝授</span>
+            <strong>☆ 戦闘呪文 ×10</strong>
+            <ul class="boss-wizard-spell-list" aria-label="伝授される呪文一覧">
+              ${bossNewSpells.map((spell) => `<li>☆ ${formatSpellName(spell.name)}</li>`).join("")}
+            </ul>
+            <small>詳しい効果は、戦闘画面の「呪文の確認」で確認できる。</small>
+          </article>
+          <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">10種類の呪文を習得して戦闘開始</button>
+        </div>
+      </section>
+    `;
+  }
   return `
     <section class="boss-intro-cinematic" aria-label="ラスボス戦 開幕">
       <button class="panel-close-button boss-intro-close" id="bossIntroClose" type="button" aria-label="戦闘導入を閉じる">×</button>
-      <div class="boss-intro-warning" aria-hidden="true"><span></span><b>FINAL BATTLE</b><span></span></div>
-      <div class="boss-intro-shockwave" aria-hidden="true"></div>
-      <div class="boss-intro-copy">
-        <span class="boss-intro-kicker">EXIT BLOCKED</span>
-        <h2>出口の前に、巨大な影が立ちはだかった</h2>
-        <p class="boss-intro-story">山を越え、ようやく見つけた異空間の出口。光へ手を伸ばしたその瞬間、地面が激しく揺れ、出口を守る獣が闇の中から姿を現した。</p>
-        <blockquote class="boss-intro-enemy">「ここまで辿り着いたか。だが、この出口は渡さない。覚えた呪文ごと、すべて喰らい尽くしてやろう」</blockquote>
-        <blockquote class="boss-intro-guide">「来るぞ！ 敵の次の行動を見極めるんじゃ。これまで覚えた呪文を一度ずつ使い、最後の試練を切り抜けろ！」</blockquote>
-        <button class="primary-button boss-intro-start" id="bossIntroStart" type="button">戦闘開始</button>
+      <div class="boss-intro-video-shell" aria-label="ラスボス登場の映像">
+        <video
+          class="boss-intro-video"
+          id="bossIntroVideo"
+          preload="auto"
+          playsinline
+          webkit-playsinline
+          autoplay
+        >
+          <source src="./assets/boss-entrance-v1.mp4?v=20260721-2" type="video/mp4">
+          この端末では映像を再生できません。
+        </video>
+        <div class="boss-intro-video-label" aria-hidden="true"><span>FINAL BATTLE</span><strong>BOSS ARRIVAL</strong></div>
+        <button class="primary-button boss-intro-video-start" id="bossIntroVideoStart" type="button" hidden>映像を再生</button>
+        <p class="boss-intro-video-error" id="bossIntroVideoError" hidden>映像を再生できません。次へ進んでください。</p>
+        <button class="boss-intro-video-skip" id="bossIntroVideoSkip" type="button">映像をスキップ</button>
       </div>
+      <button class="primary-button boss-intro-video-next" id="bossIntroNext" type="button" hidden>つぎへ</button>
     </section>
   `;
 }
@@ -3528,16 +3806,17 @@ function renderBossSpellBookPanel(stage) {
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="呪文一覧を閉じる">×</button>
       </div>
       <div class="boss-spell-book-scroll">
+        ${renderSpellRuleGuide("is-boss-spell-guide")}
         <section class="boss-spell-book-section">
           <h3>過去の呪文</h3>
           <div class="boss-spell-book-grid">
-            ${pastSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p>${spell.explanation ? `<p class="boss-spell-explanation"><b>解説</b> ${spell.explanation}</p>` : ""}</article>`).join("")}
+            ${pastSpells.map(renderBossSpellEntry).join("")}
           </div>
         </section>
         <section class="boss-spell-book-section">
           <h3>新しく覚えた呪文</h3>
           <div class="boss-spell-book-grid">
-            ${bossNewSpells.map((spell) => `<article><strong>☆ ${spell.name}</strong><p>${spell.effect}</p></article>`).join("")}
+            ${bossNewSpells.map(renderBossSpellEntry).join("")}
           </div>
         </section>
       </div>
@@ -3554,7 +3833,8 @@ function renderBossProblemPanel(stage) {
   const feedback = reviewingPast ? null : state.feedback?.stageId === "boss" ? state.feedback : null;
   const effectActive = feedback?.phase === "effect" || feedback?.phase === "hit";
   const tsukemonoBranch = feedback?.branch === "tsukemono";
-  const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
+  const isGokurosamaStep = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ");
+  const needsSixthSlot = isGokurosamaStep && !state.bossSixthSlotCreated;
   const canCreateSixthSlot = needsSixthSlot && canCreateBossSixthSlot();
   const missingTsukemonoSlot = needsSixthSlot && !canCreateSixthSlot;
   const slotCount = needsSixthSlot ? 5 : step.slots;
@@ -3564,8 +3844,9 @@ function renderBossProblemPanel(stage) {
       ? "呪文が外れた。ラスボスの攻撃を受けた！"
       : "";
   const successScene = feedback?.phase === "effect" ? getBossSuccessScene(index, feedback.castValue) : null;
+  const videoPending = feedback?.phase === "effect" && feedback?.videoFinished !== true;
   return `
-    <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""}" aria-label="ラスボス 第${index + 1}問">
+    <section class="immersive-panel boss-problem-panel boss-current-problem ${feedback?.phase === "hit" ? "is-hit" : ""} ${feedback?.phase === "effect" ? "is-success-effect" : ""} ${videoPending ? "is-playing-clear-video" : ""}" aria-label="ラスボス 第${index + 1}問">
       <div class="immersive-panel-head">
         <div><span>FINAL BATTLE ${index + 1} / ${bossBattle.length}</span><strong>ラスボスの行動を見て呪文を選べ</strong></div>
         <div class="boss-review-nav" aria-label="過去の問題を見る">
@@ -3574,7 +3855,7 @@ function renderBossProblemPanel(stage) {
         </div>
         <button class="panel-close-button" id="bossClosePanel" type="button" aria-label="問題を閉じる">×</button>
       </div>
-      <div class="boss-current-layout">
+      <div class="boss-current-layout ${videoPending ? "is-clear-cinematic" : ""} ${feedback?.phase === "effect" ? "is-effect-result" : ""}">
         <div class="boss-visual-stack">
           <div class="boss-current-visual">
             ${renderBossActionImage(index)}
@@ -3585,15 +3866,21 @@ function renderBossProblemPanel(stage) {
           </div>
         </div>
         <section class="boss-current-copy ${effectActive ? "is-effect-mode" : ""}">
-          <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
+          <div class="boss-intent-block">
+            ${renderBossTechniqueTitle(index, "is-main")}
+            <p class="boss-intent-text">ラスボスは${getBossActionDescription(index)}</p>
+          </div>
           <div class="boss-current-meta"><span>呪文は1種類につき1回</span></div>
           ${reviewingPast ? `
             <div class="boss-review-notice">回答済みの問題を表示しています。</div>
           ` : effectActive ? `
-            <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"} ${tsukemonoBranch ? "is-tsukemono-branch" : ""}" aria-live="assertive">
+            <div class="boss-step-effect ${feedback.phase === "hit" ? "is-damage" : "is-success"} ${tsukemonoBranch ? "is-tsukemono-branch" : ""} ${videoPending ? "has-video" : ""}" aria-live="assertive">
               ${feedback.phase === "hit" ? `
                 <strong>${feedback.message || effectCopy}</strong>
+              ` : videoPending ? `
+                ${renderBossClearVideo(index)}
               ` : `
+                ${renderBossTechniqueTitle(index, "is-effect")}
                 <div class="boss-clear-stamp"><span>FINAL BATTLE</span><b>${index + 1} / ${bossBattle.length} CLEARED</b></div>
                 <div class="boss-spell-impact" aria-hidden="true"><i></i><i></i><i></i></div>
                 <small class="boss-effect-spell">${successScene.spell}</small>
@@ -3602,28 +3889,28 @@ function renderBossProblemPanel(stage) {
                 ${tsukemonoBranch ? renderBossTsukemonoBranch() : index === 4 ? renderBossColorRemovalEffect() : `<p class="boss-effect-result">${effectCopy}</p>`}
               `}
               ${feedback.phase === "hit" ? `<span>「最初からやり直す」を押すと第1問へ戻る。</span>` : ""}
-              <button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : index === bossBattle.length - 1 ? "勝利を見届ける" : "次の攻撃へ"}</button>
+              ${videoPending ? "" : `<button class="primary-button boss-effect-next" id="bossEffectNext" type="button">${feedback.phase === "hit" ? "最初からやり直す" : index === bossBattle.length - 1 ? "勝利を見届ける" : "次の攻撃へ"}</button>`}
             </div>
           ` : `
             <div class="boss-current-actions">
               <button class="primary-button" id="bossOpenAnswer" type="button">${state.bossAnswerOpen ? "呪文入力を閉じる" : "呪文を入力"}</button>
-              <button class="secondary-button" id="bossOpenSpellBook" type="button">呪文の書</button>
+              <button class="secondary-button" id="bossOpenSpellBook" type="button">呪文の確認</button>
             </div>
             ${state.bossAnswerOpen ? `
               <section class="boss-current-answer" aria-label="第${index + 1}問の呪文入力">
                 ${canCreateSixthSlot ? `
                   ${renderBossSixthSlotBuilder()}
                 ` : `
-                  <div class="boss-slate boss-current-slate ${slotCount >= 8 ? "is-long-spell" : ""} ${missingTsukemonoSlot ? "has-transparent-sixth-slot" : ""}" style="--boss-slot-count:${missingTsukemonoSlot ? 6 : slotCount}" aria-label="${missingTsukemonoSlot ? "6文字の回答欄。6文字目の枠は未生成" : `${slotCount}文字の回答欄`}">
+                  <div class="boss-slate boss-current-slate stone-tablet-input ${slotCount >= 8 ? "is-long-spell" : ""} ${missingTsukemonoSlot ? "has-transparent-sixth-slot" : ""}" style="--boss-slot-count:${missingTsukemonoSlot ? 6 : slotCount}" aria-label="${missingTsukemonoSlot ? "6文字の回答欄。6文字目の枠は未生成" : `${slotCount}文字の回答欄`}">
                     ${Array.from({ length: slotCount }, (_, slot) => `<button class="premium-slot ${slot === state.activeSlot ? "is-selected" : ""}" type="button" data-slot="${slot}" aria-label="${slot + 1}文字目">${state.slotInput[slot] || ""}</button>`).join("")}
                     ${missingTsukemonoSlot ? `<span class="boss-transparent-sixth-slot" aria-label="透明な6文字目の枠"></span>` : ""}
                   </div>
                   ${state.slotPickerOpen ? renderSlotPicker({ tiles: getBossTiles(index) }, state.activeSlot) : ""}
-                  ${missingTsukemonoSlot ? `
-                    <div class="boss-incomplete-cast-row">
+                  ${isGokurosamaStep ? `
+                    <div class="boss-incomplete-cast-row ${state.bossSixthSlotCreated ? "is-created" : "is-missing"}">
                       <button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>
-                      <div class="boss-tsukemono-base-image" aria-label="ツケモノを生成できる土台">
-                        <img src="./assets/stage01-clear2.webp" alt="ツケモノの土台">
+                      <div class="boss-tsukemono-block-cell" aria-label="${state.bossSixthSlotCreated ? "ツケモノで作った6文字目の石ブロック" : "6文字目に置くツケモノの石ブロック"}">
+                        ${renderBossTsukemonoBlock({ created: state.bossSixthSlotCreated, label: state.bossSixthSlotCreated ? "設置済みのツケモノの石ブロック" : "ツケモノの石ブロック" })}
                       </div>
                     </div>
                   ` : `<button class="primary-button cast-button" id="castBossSpell" type="button">呪文を唱える</button>`}
@@ -3648,7 +3935,7 @@ function renderBossDirectAnswer(stage) {
   const hasTsukemono = state.bossTsukemonoActivated === true;
   const feedback = state.feedback?.stageId === "boss" && state.feedback.type === "fail" ? state.feedback.message : "";
   const colorRemovalNotice = state.bossColorRemoved && normalizeAnswer(step.answer) === normalizeAnswer("カタメ")
-    ? `<p class="result-message is-success boss-gokurosama-effect">ゴクロウサマを唱えた！「百黙絶静」から白・黒・色・青が消え、「一犬糸争」になった！「カタメ」で防ぐ。</p>`
+    ? `<p class="result-message is-success boss-gokurosama-effect">ゴクロウサマを唱えた！『百黙絶静』の中の色を消したことで『一犬糸争』になった！『カタメ』で防ぐ。</p>`
     : "";
   if (isGokurosama && !state.bossSixthSlotCreated) {
     return `
@@ -3690,7 +3977,7 @@ function renderBossSlate(step, index, solved, active) {
         <span class="boss-step-label">石板 ${step.slots}文字</span>
         ${solved ? `<span class="boss-step-done">☆発動済み</span>` : active ? `<span class="boss-step-now">いま唱える</span>` : ""}
       </div>
-      <div class="boss-slate">
+      <div class="boss-slate stone-tablet-input">
         ${chars
           .map((char, i) =>
             active
@@ -3710,10 +3997,104 @@ function renderBossSlate(step, index, solved, active) {
   `;
 }
 
+function wireBossClearVideo() {
+  const video = document.querySelector("#bossClearVideo");
+  if (!video) return;
+  const startButton = document.querySelector("#bossClearVideoStart");
+  const skipButton = document.querySelector("#bossClearVideoSkip");
+  const errorMessage = document.querySelector("#bossClearVideoError");
+  let finished = false;
+
+  const finishVideo = () => {
+    if (finished) return;
+    finished = true;
+    video.pause();
+    audioDirector.setCinematicMode(false);
+    const feedback = state.feedback?.stageId === "boss" ? state.feedback : null;
+    if (!feedback || feedback.phase !== "effect") return;
+    feedback.videoFinished = true;
+    render();
+  };
+
+  const beginPlayback = () => {
+    video.muted = audioDirector.isMuted();
+    video.volume = 0.95;
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    if (attempt?.catch) {
+      attempt.catch(() => {
+        startButton.hidden = false;
+        errorMessage.hidden = true;
+      });
+    }
+  };
+
+  video.addEventListener("playing", () => {
+    startButton.hidden = true;
+    errorMessage.hidden = true;
+  });
+  video.addEventListener("ended", finishVideo, { once: true });
+  video.addEventListener("error", () => {
+    startButton.hidden = true;
+    errorMessage.hidden = false;
+  });
+  startButton?.addEventListener("click", beginPlayback);
+  skipButton?.addEventListener("click", finishVideo);
+  beginPlayback();
+}
+
+function wireBossIntroVideo() {
+  const video = document.querySelector("#bossIntroVideo");
+  if (!video) return;
+  const startButton = document.querySelector("#bossIntroVideoStart");
+  const skipButton = document.querySelector("#bossIntroVideoSkip");
+  const nextButton = document.querySelector("#bossIntroNext");
+  const errorMessage = document.querySelector("#bossIntroVideoError");
+  let finished = false;
+
+  const finishVideo = () => {
+    if (finished) return;
+    finished = true;
+    video.pause();
+    audioDirector.setCinematicMode(false);
+    startButton.hidden = true;
+    nextButton.hidden = false;
+    nextButton.focus({ preventScroll: true });
+  };
+
+  const beginPlayback = () => {
+    video.muted = audioDirector.isMuted();
+    video.volume = 0.95;
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    if (attempt?.catch) {
+      attempt.catch(() => {
+        startButton.hidden = false;
+      });
+    }
+  };
+
+  video.addEventListener("playing", () => {
+    startButton.hidden = true;
+    errorMessage.hidden = true;
+  });
+  video.addEventListener("ended", finishVideo, { once: true });
+  video.addEventListener("error", () => {
+    audioDirector.setCinematicMode(false);
+    startButton.hidden = true;
+    errorMessage.hidden = false;
+    nextButton.hidden = false;
+  });
+  startButton?.addEventListener("click", beginPlayback);
+  skipButton?.addEventListener("click", finishVideo);
+  beginPlayback();
+}
+
 function wireBoss() {
   wireProblems();
   document.querySelector("#bossFightStart")?.addEventListener("click", () => {
-    state.bossIntroOpen = state.bossInput.length === 0;
+    state.bossIntroOpen = state.bossInput.length === 0 && !state.bossWizardSpellLearned;
+    if (state.bossIntroOpen) state.bossIntroPhase = "threat";
     state.bossPanelMode = state.bossIntroOpen ? "closed" : "problem";
     state.feedback = null;
     if (state.bossIntroOpen) audioDirector.playEffect("boss-intro");
@@ -3733,11 +4114,20 @@ function wireBoss() {
     state.feedback = null;
     render();
   });
+  document.querySelector("#bossIntroNext")?.addEventListener("click", () => {
+    state.bossIntroPhase = "wizard";
+    state.feedback = null;
+    audioDirector.playEffect("spell");
+    render();
+    burstOnce(".boss-wizard-spell-card");
+  });
   document.querySelector("#bossIntroStart")?.addEventListener("click", () => {
+    bossWizardSpellNames.forEach((spell) => addUnique(state.spells, spell));
+    state.bossWizardSpellLearned = true;
     state.bossIntroOpen = false;
     state.bossPanelMode = "problem";
     state.feedback = null;
-    audioDirector.playEffect("boss-guard");
+    audioDirector.playEffect("success");
     render();
   });
   document.querySelector("#bossIntroClose")?.addEventListener("click", () => {
@@ -3747,6 +4137,7 @@ function wireBoss() {
     render();
   });
   document.querySelector("#bossClosePanel")?.addEventListener("click", () => {
+    audioDirector.setCinematicMode(false);
     state.bossPanelMode = state.bossPanelMode === "spells" ? "problem" : "closed";
     state.bossAnswerOpen = false;
     state.slotPickerOpen = false;
@@ -3785,6 +4176,12 @@ function wireBoss() {
     state.slotInput = [];
     render();
   });
+  document.querySelector("#cancelTsukemonoSlot")?.addEventListener("click", () => {
+    state.bossAnswerOpen = false;
+    state.slotPickerOpen = false;
+    state.feedback = null;
+    render();
+  });
   document.querySelector("#castTsukemonoForSlot")?.addEventListener("click", () => {
     if (!state.bossInput.some((spell) => normalizeAnswer(spell) === normalizeAnswer("ツケモノ"))) return;
     state.bossTsukemonoActivated = true;
@@ -3794,6 +4191,8 @@ function wireBoss() {
     render();
   });
   const step = bossBattle[state.bossInput.length];
+  wireBossIntroVideo();
+  wireBossClearVideo();
   if (!step) return;
   const needsSixthSlot = normalizeAnswer(step.answer) === normalizeAnswer("ゴクロウサマ") && !state.bossSixthSlotCreated;
   const inputSlotCount = needsSixthSlot && !canCreateBossSixthSlot() ? 5 : step.slots;
@@ -3881,8 +4280,7 @@ function startBossSuccessEffect(step, castValue = step.answer) {
     ? "tsukemono"
     : "default";
   state.bossAnswerOpen = false;
-  state.feedback = { stageId: "boss", type: "success", phase: "effect", branch, stepIndex, castValue };
-  audioDirector.playEffect(stepIndex === 4 ? "color-remove" : "boss-guard");
+  state.feedback = { stageId: "boss", type: "success", phase: "effect", branch, stepIndex, castValue, videoFinished: false };
   render();
 }
 
@@ -3909,6 +4307,7 @@ function resetBossAfterHit() {
 }
 
 function completeBossStep(step) {
+  audioDirector.setCinematicMode(false);
   const castValue = state.feedback?.castValue || step.answer;
   state.bossInput.push(castValue);
   state.feedback = null;
@@ -3930,7 +4329,8 @@ function completeBossStep(step) {
   if (state.bossInput.length >= bossBattle.length) {
     addUnique(state.cleared, "boss");
     state.isClear = true;
-    state.clearPhase = "victory";
+    state.clearPhase = "cinematic";
+    state.endingPage = 0;
   }
   render();
   requestAnimationFrame(() => {
@@ -3939,82 +4339,183 @@ function completeBossStep(step) {
   });
 }
 
+const endingEpilogue = [
+  {
+    label: "帰還 1 / 3",
+    title: "出口の向こうから、焼き肉の匂いがした",
+    body: "ラスボスが崩れると、異空間を覆っていた闇もほどけていった。開いた扉の向こうから聞こえたのは、仲間の声と肉の焼ける音だった。",
+  },
+  {
+    label: "帰還 2 / 3",
+    title: "戻ったのは、飛ばされた直後のマッシュ室",
+    body: "扉をくぐった一行が着いたのは、焼き肉をしていた元の部屋。こちらではほとんど時間が進んでおらず、鉄板の肉はまだ焼け続けていた。",
+  },
+  {
+    label: "ESCAPE COMPLETE",
+    title: "ただいま。異空間からの脱出成功",
+    body: "異空間の扉は光の粒になって閉じた。それでも、覚えた呪文と力を合わせた記憶は残っている。焦げる寸前の肉を救い、一行は無事の帰還を祝って焼き肉を再開した。",
+  },
+];
+
+function endingEpilogueMarkup() {
+  const page = Math.max(0, Math.min(endingEpilogue.length - 1, state.endingPage || 0));
+  const scene = endingEpilogue[page];
+  const finalPage = page === endingEpilogue.length - 1;
+  return `
+    <article class="ending-epilogue" aria-live="polite">
+      <div class="ending-epilogue-progress" aria-label="エンディング ${page + 1} / ${endingEpilogue.length}">
+        ${endingEpilogue.map((_, index) => `<i class="${index <= page ? "is-active" : ""}"></i>`).join("")}
+      </div>
+      <small>${scene.label}</small>
+      <h2>${scene.title}</h2>
+      <p>${scene.body}</p>
+      ${finalPage ? `
+        <div class="ending-cinematic-buttons">
+          <button class="secondary-button" id="endingReplay" type="button">映像をもう一度見る</button>
+          <button class="primary-button" id="replayButton" type="button">最初から遊ぶ</button>
+        </div>
+      ` : `
+        <button class="primary-button ending-epilogue-next" id="endingEpilogueNext" type="button">つぎへ</button>
+      `}
+    </article>
+  `;
+}
+
 function renderClear() {
-  const phase = ["victory", "portal", "home"].includes(state.clearPhase) ? state.clearPhase : "victory";
-  const scenes = {
-    victory: {
-      kicker: "FINAL BATTLE COMPLETE",
-      title: "ラスボス撃破",
-      caption: "バタフライエフェクトの光が闇を貫き、出口を封じていた力が崩れ落ちる。",
-      button: "開いた出口へ向かう",
-      nextId: "clearToPortal",
-      image: "./assets/stage05-bg-premium.webp",
-      alt: "光の中で崩れ落ちるラスボス",
-    },
-    portal: {
-      kicker: "THE EXIT IS OPEN",
-      title: "帰還の扉",
-      caption: "砕けた封印の先に、元の世界へ続く光の扉が現れた。",
-      button: "光の向こうへ進む",
-      nextId: "clearReturnHome",
-      image: "./assets/stage05-bg-premium.webp",
-      alt: "異空間に開いた帰還の扉",
-    },
-    home: {
-      kicker: "ESCAPE COMPLETE",
-      title: "元の世界へ帰還",
-      caption: "光の向こうに待っていたのは、焼ける肉の音と仲間たちの笑い声だった。",
-      button: "最初から遊ぶ",
-      nextId: "replayButton",
-      image: "./assets/final-yakiniku-home.jpg",
-      alt: "元の世界で再び始まった焼肉",
-    },
-  };
-  const scene = scenes[phase];
+  const finished = state.clearPhase === "finished";
   elements.game.innerHTML = `
-    <section class="stage-panel clear-screen premium-final-clear is-${phase}" aria-label="${scene.title}">
-      <div class="stage-world final-clear-world">
-        <img class="stage-bg-art" src="${scene.image}" alt="${scene.alt}" loading="eager">
-        <div class="final-clear-light"></div>
-        <div class="final-clear-shards" aria-hidden="true">${Array.from({ length: 12 }).map((_, index) => `<i style="--shard:${index}"></i>`).join("")}</div>
-        <div class="final-return-portal" aria-hidden="true"><i></i><b></b><span></span></div>
-        <div class="final-home-steam" aria-hidden="true"><i></i><i></i><i></i></div>
-      </div>
-      <div class="final-scene-hud">
-        <div class="final-scene-title">
-          <span>${scene.kicker}</span>
-          <strong>${scene.title}</strong>
-        </div>
-        <div class="final-scene-progress" aria-label="帰還の進行">
-          <i class="${phase === "victory" ? "is-current" : "is-done"}"></i>
-          <i class="${phase === "portal" ? "is-current" : phase === "home" ? "is-done" : ""}"></i>
-          <i class="${phase === "home" ? "is-current" : ""}"></i>
-        </div>
-      </div>
-      <div class="final-cinematic-caption">
-        <p>${scene.caption}</p>
-        <div class="final-caption-action">
-          <button class="primary-button final-clear-next" id="${scene.nextId}" type="button">${scene.button}</button>
-        </div>
+    <section class="ending-cinematic-screen ${finished ? "is-finished" : "is-playing"}" aria-label="クリア後エンディング">
+      <video
+        class="ending-cinematic-video"
+        id="endingVideo"
+        preload="auto"
+        playsinline
+        webkit-playsinline
+        ${finished ? "" : "autoplay"}
+      >
+        <source src="./assets/finale-ending-v2.mp4?v=20260721-2" type="video/mp4">
+        この端末ではエンディング動画を再生できません。
+      </video>
+      <div class="ending-cinematic-vignette" aria-hidden="true"></div>
+      <button class="ending-video-skip" id="endingVideoSkip" type="button" ${finished ? "hidden" : ""}>スキップ</button>
+      <button class="primary-button ending-video-start" id="endingVideoStart" type="button" hidden>音付きエンディングを再生</button>
+      <p class="ending-video-error" id="endingVideoError" hidden>動画を読み込めませんでした。通信状態を確認して再読み込みしてください。</p>
+      <div class="ending-cinematic-actions ${finished ? "is-visible" : ""}" id="endingCinematicActions" ${finished ? "" : "hidden"}>
+        <div id="endingEpilogueContent">${endingEpilogueMarkup()}</div>
       </div>
     </section>
   `;
-  document.querySelector("#clearToPortal")?.addEventListener("click", () => {
-    state.clearPhase = "portal";
-    audioDirector.playEffect("spell");
-    render();
+
+  const screen = document.querySelector(".ending-cinematic-screen");
+  const video = document.querySelector("#endingVideo");
+  const skipButton = document.querySelector("#endingVideoSkip");
+  const startButton = document.querySelector("#endingVideoStart");
+  const errorMessage = document.querySelector("#endingVideoError");
+  const actions = document.querySelector("#endingCinematicActions");
+  const epilogueContent = document.querySelector("#endingEpilogueContent");
+  if (!video || !screen || !actions) return;
+
+  video.muted = audioDirector.isMuted();
+  const finishEnding = () => {
+    audioDirector.setCinematicMode(false);
+    state.clearPhase = "finished";
+    state.endingPage = 0;
+    saveState();
+    screen.classList.remove("is-playing");
+    screen.classList.add("is-finished");
+    skipButton?.setAttribute("hidden", "");
+    startButton?.setAttribute("hidden", "");
+    if (epilogueContent) epilogueContent.innerHTML = endingEpilogueMarkup();
+    wireEpilogue();
+    actions.hidden = false;
+    requestAnimationFrame(() => actions.classList.add("is-visible"));
+  };
+  const playEnding = () => {
+    actions.classList.remove("is-visible");
+    actions.hidden = true;
+    errorMessage?.setAttribute("hidden", "");
+    screen.classList.remove("is-finished");
+    screen.classList.add("is-playing");
+    state.clearPhase = "cinematic";
+    state.endingPage = 0;
+    saveState();
+    video.currentTime = 0;
+    video.muted = audioDirector.isMuted();
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    attempt?.then(() => startButton?.setAttribute("hidden", "")).catch(() => {
+      audioDirector.setCinematicMode(false);
+      if (startButton) startButton.hidden = false;
+    });
+    if (skipButton) skipButton.hidden = false;
+  };
+  const wireEpilogue = () => {
+    document.querySelector("#endingEpilogueNext")?.addEventListener("click", () => {
+      state.endingPage = Math.min(endingEpilogue.length - 1, (state.endingPage || 0) + 1);
+      saveState();
+      if (epilogueContent) epilogueContent.innerHTML = endingEpilogueMarkup();
+      wireEpilogue();
+      audioDirector.playEffect("select");
+    });
+    document.querySelector("#endingReplay")?.addEventListener("click", playEnding);
+    document.querySelector("#replayButton")?.addEventListener("click", resetGame);
+  };
+
+  video.addEventListener("playing", () => {
+    audioDirector.setCinematicMode(true);
+    startButton?.setAttribute("hidden", "");
   });
-  document.querySelector("#clearReturnHome")?.addEventListener("click", () => {
-    state.clearPhase = "home";
-    audioDirector.playEffect("clear");
-    render();
+  video.addEventListener("ended", finishEnding);
+  video.addEventListener("error", () => {
+    audioDirector.setCinematicMode(false);
+    startButton?.setAttribute("hidden", "");
+    if (errorMessage) errorMessage.hidden = false;
+    if (skipButton) skipButton.hidden = false;
   });
-  document.querySelector("#replayButton")?.addEventListener("click", resetGame);
+  startButton?.addEventListener("click", playEnding);
+  skipButton?.addEventListener("click", () => {
+    video.pause();
+    if (Number.isFinite(video.duration) && video.duration > 0) video.currentTime = Math.max(0, video.duration - 0.05);
+    finishEnding();
+  });
+  wireEpilogue();
+
+  if (!finished) {
+    audioDirector.setCinematicMode(true);
+    const attempt = video.play();
+    attempt?.catch(() => {
+      audioDirector.setCinematicMode(false);
+      if (startButton) startButton.hidden = false;
+    });
+    window.setTimeout(() => {
+      if (video.paused && video.currentTime < 0.1 && state.clearPhase !== "finished" && startButton) startButton.hidden = false;
+    }, 700);
+  }
+}
+
+function confirmResetGame() {
+  showMenuMessage("最初からやり直しますか？", "進行・習得した呪文・封印の書・入力内容が消去されます。");
+  const actions = document.createElement("div");
+  actions.className = "reset-actions";
+  const cancel = document.createElement("button");
+  cancel.className = "primary-button";
+  cancel.id = "cancelReset";
+  cancel.textContent = "続ける";
+  cancel.addEventListener("click", () => elements.hintDialog.close());
+  const reset = document.createElement("button");
+  reset.className = "secondary-button";
+  reset.id = "confirmReset";
+  reset.textContent = "進行を消去してやり直す";
+  reset.addEventListener("click", () => { elements.hintDialog.close(); resetGame(); });
+  actions.append(cancel, reset);
+  elements.hintBody.append(actions);
+  cancel.focus();
 }
 
 function resetGame() {
   closeInfoDialogs();
   clearGateSuccessTimers();
+  audioDirector.setCinematicMode(false);
   state.stageIndex = 0;
   state.cleared = [];
   state.spells = [];
@@ -4043,9 +4544,6 @@ function resetGame() {
   state.stage2KanjiShowingRevealed = false;
   state.stage2KanjiRedVisible = true;
   state.stage2KanjiRevealVersion = stage2KanjiRevealVersion;
-  state.stage2SketchLines = [];
-  state.stage2SketchIsolated = false;
-  state.stage2SketchExpanded = false;
   state.stage4Memo = normalizeStage4Memo(null);
   state.stage4ActiveGroup = { question: 0, group: 0 };
   state.stage4PickerOpen = false;
@@ -4053,6 +4551,7 @@ function resetGame() {
   state.timeAnswerOpen = false;
   state.timeSequencePhase = "";
   state.introReturnPhase = "";
+  state.openingVideoSeen = false;
   state.shopPendingItem = "";
   state.shopLockOpen = false;
   state.shopLockPromptOpen = false;
@@ -4064,12 +4563,15 @@ function resetGame() {
   state.genericPanelMode = "closed";
   state.bossPanelMode = "closed";
   state.bossIntroOpen = false;
+  state.bossIntroPhase = "threat";
+  state.bossWizardSpellLearned = false;
   state.bossAnswerOpen = false;
   state.bossSlotCreationPending = false;
   state.bossTsukemonoActivated = false;
   state.bossSixthSlotCreated = false;
   state.bossColorRemoved = false;
-  state.clearPhase = "victory";
+  state.clearPhase = "cinematic";
+  state.endingPage = 0;
   prepareStage2OnlyMode();
   saveState();
   render();
@@ -4095,6 +4597,7 @@ function showMenuMessage(title, message) {
   elements.hintTitle.textContent = title;
   elements.hintBody.textContent = message;
   if (!elements.hintDialog.open) elements.hintDialog.showModal();
+  window.requestAnimationFrame(setupScrollIndicators);
 }
 
 const explorationEvents = {
@@ -4117,6 +4620,7 @@ function openExploration() {
   elements.hintBody.innerHTML = `<span class="exploration-lead">魔法使いの気配がする。調べる場所を選べ。</span><span class="exploration-choices">${event.choices.map((choice, index) => `<button class="exploration-choice" type="button" data-explore-choice="${index}">${choice}</button>`).join("")}</span>`;
   elements.hintBody.querySelectorAll("[data-explore-choice]").forEach((button) => button.addEventListener("click", () => resolveExploration(stage, Number(button.dataset.exploreChoice))));
   if (!elements.hintDialog.open) elements.hintDialog.showModal();
+  window.requestAnimationFrame(setupScrollIndicators);
 }
 
 function resolveExploration(stage, choiceIndex) {
@@ -4126,9 +4630,9 @@ function resolveExploration(stage, choiceIndex) {
     state.sealBooks = { ...(state.sealBooks || {}), [stage.id]: true };
     saveState();
     elements.hintTitle.textContent = "魔法使いを見つけた！";
-    elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、呪文を得られる」</span><span class="exploration-book-guide">問題を解いて、この場所で使える呪文を見つけよう。</span><button class="primary-button" id="exploreOpenBook" type="button">封印の書を開く</button><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
-    elements.hintBody.querySelector("#exploreOpenBook")?.addEventListener("click", openCurrentSealBook);
+    elements.hintBody.innerHTML = `<span class="exploration-result is-correct">「よく見つけた。この封印の書を授けよう。書に刻まれた問題を解けば、呪文を得られる」</span><span class="exploration-book-guide">左の「封印の書」から確認できます。</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
     elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
+    window.requestAnimationFrame(setupScrollIndicators);
     audioDirector.playEffect("success");
     return;
   }
@@ -4140,6 +4644,7 @@ function resolveExploration(stage, choiceIndex) {
   elements.hintTitle.textContent = "何かを見つけた";
   elements.hintBody.innerHTML = `<span class="exploration-result is-fake">呪文「${fakeSpell}」を覚えた。</span><span class="exploration-spell-effect">${getExplorationSpellEffect(fakeSpell)}</span><button class="secondary-button" id="exploreAgain" type="button">探索を続ける</button>`;
   elements.hintBody.querySelector("#exploreAgain")?.addEventListener("click", openExploration);
+  window.requestAnimationFrame(setupScrollIndicators);
   audioDirector.playEffect("fail");
 }
 
@@ -4188,7 +4693,8 @@ function focusCurrentProblem() {
   }
 
   if (stage.id === "boss") {
-    state.bossIntroOpen = state.bossInput.length === 0;
+    state.bossIntroOpen = state.bossInput.length === 0 && !state.bossWizardSpellLearned;
+    if (state.bossIntroOpen) state.bossIntroPhase = "threat";
     state.bossPanelMode = state.bossIntroOpen ? "closed" : "problem";
     state.feedback = null;
     if (state.bossIntroOpen) audioDirector.playEffect("boss-intro");
@@ -4226,6 +4732,15 @@ function focusCurrentMagic() {
   if (!isStageRevealed(stage)) {
     state.revealed = { ...(state.revealed || {}), [stage.id]: true };
     render();
+  }
+  if (stage.id === "intro") {
+    if (isLearnedSpellStageUnlocked("intro")) {
+      state.learnedSpellStage = "intro";
+    }
+    state.learnedSpellViewerOpen = true;
+    state.feedback = null;
+    render();
+    return;
   }
   if (stage.id === "gate") {
     state.hiddenSpells = { ...(state.hiddenSpells || {}), [stage.id]: true };
@@ -4310,109 +4825,6 @@ function showCurrentHint(revealNext = false) {
   saveState();
 }
 
-function confirmResetGame() {
-  showMenuMessage("最初からやり直しますか？", "進行・習得した呪文・封印の書・入力内容が消去されます。");
-  const actions = document.createElement("div");
-  actions.className = "reset-actions";
-  const cancel = document.createElement("button");
-  cancel.className = "primary-button";
-  cancel.id = "cancelReset";
-  cancel.textContent = "続ける";
-  cancel.addEventListener("click", () => elements.hintDialog.close());
-  const reset = document.createElement("button");
-  reset.className = "secondary-button";
-  reset.id = "confirmReset";
-  reset.textContent = "進行を消去してやり直す";
-  reset.addEventListener("click", () => { elements.hintDialog.close(); resetGame(); });
-  actions.append(cancel, reset);
-  elements.hintBody.append(actions);
-  cancel.focus();
-}
-
-function updateScenePresentation(stage) {
-  if (stage.id === "path") return;
-  if (!isExplorationStage(stage) || state.isClear) return;
-  const world = elements.game.querySelector(".stage-world");
-  if (!world) return;
-  const foreground = document.createElement("img");
-  foreground.className = `scene-foreground scene-foreground-${stage.id}`;
-  foreground.src = "./assets/foreground-arch.svg";
-  foreground.alt = "";
-  foreground.setAttribute("aria-hidden", "true");
-  world.append(foreground);
-  const panelOpen = stage.id === "gate" ? state.gatePanelMode === "problem" : stage.id === "path" ? state.pathPanelMode !== "closed" : state.genericPanelMode !== "closed";
-  if (panelOpen || state.feedback || isStageCleared(stage.id) || state.learnedSpellViewerOpen || (stage.id === "time" && state.timeSequencePhase)) return;
-  const positions = {
-    gate: [[17,45],[53,27],[82,69]],
-    path: [[55,38],[23,68],[77,20]],
-    shop: [[22,42],[52,73],[77,38]],
-    time: [[46,43],[24,73],[80,68]],
-  };
-  const points = document.createElement("div");
-  points.className = "scene-exploration-points";
-  points.setAttribute("aria-label", "探索できる場所");
-  explorationEvents[stage.id].choices.forEach((choice, index) => {
-    const button = document.createElement("button");
-    button.className = "scene-exploration-point";
-    button.dataset.sceneChoice = String(index);
-    button.type = "button";
-    button.style.left = `${positions[stage.id][index][0]}%`;
-    button.style.top = `${Math.min(positions[stage.id][index][1], window.innerHeight <= 600 ? 55 : 100)}%`;
-    button.setAttribute("aria-label", choice);
-    button.title = choice;
-    const dot = document.createElement("span");
-    dot.textContent = String(index + 1);
-    const label = document.createElement("small");
-    label.textContent = choice;
-    button.append(dot, label);
-    button.addEventListener("click", () => {
-      openExploration();
-      elements.hintBody.querySelector(`[data-explore-choice="${index}"]`)?.focus();
-    });
-    points.append(button);
-  });
-  elements.game.append(points);
-  if (window.matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)").matches) {
-    world.parentElement.addEventListener("pointermove", event => {
-      const box = world.getBoundingClientRect();
-      foreground.style.setProperty("--depth-x", `${((event.clientX - box.left) / box.width - .5) * 7}px`);
-      foreground.style.setProperty("--depth-y", `${((event.clientY - box.top) / box.height - .5) * 4}px`);
-    }, { passive: true });
-    world.parentElement.addEventListener("pointerleave", () => {
-      foreground.style.setProperty("--depth-x", "0px");
-      foreground.style.setProperty("--depth-y", "0px");
-    }, { passive: true });
-  }
-}
-
-function updateJourneyGuide(stage) {
-  if (stage.id === "path") return;
-  const available = isExplorationStage(stage) && !isStageCleared(stage.id) && !state.feedback;
-  const panelOpen = stage.id === "gate" ? state.gatePanelMode === "problem" : stage.id === "path" ? state.pathPanelMode === "problem" : state.genericPanelMode !== "closed";
-  if (!available || panelOpen) return;
-  const acquired = Boolean(state.sealBooks?.[stage.id]);
-  const guide = document.createElement("section");
-  guide.className = "journey-guide";
-  guide.setAttribute("aria-label", "次の行動");
-  const eyebrow = document.createElement("small");
-  eyebrow.textContent = `CHAPTER ${stage.number} / 次の行動`;
-  const text = document.createElement("strong");
-  text.textContent = acquired ? "封印の書に、道を開く手がかりがある。" : "この場所を探索して、魔法使いを見つけよう。";
-  const action = document.createElement("button");
-  action.className = "primary-button";
-  action.id = "journeyAction";
-  action.textContent = acquired ? "封印の書を開く" : "周囲を探索する";
-  action.addEventListener("click", acquired ? openCurrentSealBook : openExploration);
-  guide.append(eyebrow, text, action);
-  elements.game.append(guide);
-}
-
-function requireCompleteSpell(stage) {
-  if (Array.from({ length: stage.slots }, (_, i) => state.slotInput[i] || "").every(Boolean)) return true;
-  showMenuMessage("まだ呪文が完成していません", `石板の${stage.slots}文字をすべて選んでから、呪文を唱えてください。`);
-  return false;
-}
-
 if (elements.reset) elements.reset.addEventListener("click", confirmResetGame);
 if (elements.menuProblem) elements.menuProblem.addEventListener("click", openExploration);
 if (elements.menuSealBook) elements.menuSealBook.addEventListener("click", openCurrentSealBook);
@@ -4447,6 +4859,7 @@ document.addEventListener("pointerdown", (event) => {
 
 render();
 
+// Request fullscreen only from an explicit tap; unsupported webviews keep normal play.
 document.addEventListener("click", async (event) => {
   if (!event.target.closest?.("#stage2Fullscreen")) return;
   const root = document.documentElement;
@@ -4472,3 +4885,4 @@ const syncFullscreenControl = () => {
 };
 document.addEventListener("fullscreenchange", syncFullscreenControl);
 document.addEventListener("webkitfullscreenchange", syncFullscreenControl);
+
