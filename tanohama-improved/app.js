@@ -1174,6 +1174,7 @@ function render() {
     }
   }
   const stage = stages[state.stageIndex] || stages[0];
+  document.body.classList.toggle("opening-video-active", !state.isClear && stage.id === "intro" && !state.openingVideoSeen && state.introReturnPhase !== "message");
   audioDirector.setStage(state.isClear ? "clear" : stage.id);
   document.body.classList.toggle("stage-one-mode", !state.isClear && stage.id === "gate");
   document.body.classList.toggle("stage-intro-mode", !state.isClear && stage.id === "intro");
@@ -1217,12 +1218,16 @@ function renderIntro(stage) {
     <section class="intro-stage ${shouldPlayOpeningVideo ? "intro-video-stage" : "intro-image-stage"} ${returnedFromTimeMachine ? "intro-return-stage" : ""}" aria-label="異世界へ！？">
       ${shouldPlayOpeningVideo ? `
         <div class="opening-video-shell" aria-label="異世界へ飛ばされる映像">
-          <video class="opening-video" id="openingVideo" preload="auto" playsinline webkit-playsinline autoplay>
-            <source src="./assets/opening-yakiniku-rift-v1.mp4?v=20260721-2" type="video/mp4">
+          <video class="opening-video" id="openingVideo" preload="metadata" controls playsinline webkit-playsinline>
+            <source src="./assets/opening-yakiniku-rift-v1.mp4?v=opening-20261006-1" type="video/mp4">
             この端末では映像を再生できません。
           </video>
-          <button class="primary-button opening-video-start" id="openingVideoStart" type="button" hidden>映像を再生</button>
-          <button class="opening-video-skip" id="openingVideoSkip" type="button">スキップ</button>
+          <div class="opening-video-controls" aria-label="冒頭映像の操作">
+            <button class="primary-button opening-video-start" id="openingVideoStart" type="button">映像を再生</button>
+            <button id="openingVideoRetry" type="button">再試行</button>
+            <button class="opening-video-skip" id="openingVideoSkip" type="button">スキップして進む</button>
+          </div>
+          <p id="openingVideoStatus" class="opening-video-status" role="status">再生ボタンを押してください。映像を見ずに先へ進むこともできます。</p>
         </div>
       ` : `
         <img class="intro-opening-image" src="./assets/intro-current-isekai.webp" alt="現在異空間からの脱出">
@@ -1598,40 +1603,135 @@ function wireOpeningVideo() {
   const video = document.querySelector("#openingVideo");
   if (!video) return;
   const startButton = document.querySelector("#openingVideoStart");
+  const retryButton = document.querySelector("#openingVideoRetry");
   const skipButton = document.querySelector("#openingVideoSkip");
+  const status = document.querySelector("#openingVideoStatus");
   let completed = false;
-
+  let generation = 0;
+  let requested = false;
+  let awaitingStart = false;
+  let lastProgress = performance.now();
+  let lastTime = 0;
+  let frames = 0;
+  const message = (text) => { if (!completed && video.isConnected) status.textContent = text; };
   const completeOpening = () => {
-    if (completed) return;
+    if (completed || !video.isConnected) return;
     completed = true;
+    generation += 1;
+    window.clearInterval(watchdog);
+    document.removeEventListener("visibilitychange", onVisibility);
     video.pause();
     audioDirector.setCinematicMode(false);
     state.openingVideoSeen = true;
     render();
-  };
-
-  const beginPlayback = () => {
-    video.muted = audioDirector.isMuted();
-    video.volume = 0.95;
-    audioDirector.setCinematicMode(true);
-    const attempt = video.play();
-    if (attempt?.catch) {
-      attempt.catch(() => {
-        audioDirector.setCinematicMode(false);
-        startButton.hidden = false;
-      });
+    const nextButton = document.querySelector("#introStartButton");
+    if (nextButton) {
+      nextButton.disabled = true;
+      window.setTimeout(() => { if (nextButton.isConnected) nextButton.disabled = false; }, 350);
     }
   };
-
-  video.addEventListener("playing", () => {
-    startButton.hidden = true;
+  const beginPlayback = () => {
+    const attemptGeneration = ++generation;
+    requested = true;
+    awaitingStart = true;
+    lastProgress = performance.now();
+    video.muted = audioDirector.isMuted();
+    video.volume = 0.95;
+    message("映像を読み込み中です。動かない場合は再試行、またはスキップして進めます。");
+    startButton.textContent = "再生を再試行";
+    try {
+      const attempt = video.play();
+      attempt?.catch(() => {
+        if (completed || attemptGeneration !== generation || !video.isConnected) return;
+        requested = false;
+        awaitingStart = false;
+        audioDirector.setCinematicMode(false);
+        startButton.textContent = "映像を再生";
+        message("再生を開始できませんでした。再生ボタンを押すか、再試行・スキップを選んでください。");
+      });
+    } catch (_) {
+      requested = false;
+      awaitingStart = false;
+      audioDirector.setCinematicMode(false);
+      message("再生を開始できませんでした。再試行、またはスキップして進めます。");
+    }
+  };
+  startButton.addEventListener("click", () => {
+    if (!video.paused && !video.ended && video.currentTime > 0) {
+      generation += 1;
+      video.pause();
+    } else beginPlayback();
   });
+  retryButton.addEventListener("click", () => {
+    generation += 1;
+    video.pause();
+    video.load();
+    beginPlayback();
+  });
+  skipButton.addEventListener("click", completeOpening);
+  video.addEventListener("playing", () => {
+    if (completed || !video.isConnected) return;
+    requested = true;
+    awaitingStart = false;
+    lastProgress = performance.now();
+    audioDirector.setCinematicMode(true);
+    startButton.textContent = "一時停止";
+    message("再生中です。いつでもスキップして進めます。");
+  });
+  video.addEventListener("pause", () => {
+    if (completed || !video.isConnected || !video.paused) return;
+    requested = false;
+    awaitingStart = false;
+    audioDirector.setCinematicMode(false);
+    startButton.textContent = "続きから再生";
+    message("映像を一時停止しました。再生・再試行・スキップを選べます。");
+  });
+  for (const event of ["waiting", "stalled"]) video.addEventListener(event, () => {
+    message("読み込みを待っています。再試行、またはスキップして進めます。");
+  });
+  const mediaFailure = () => {
+    if (completed || !video.isConnected) return;
+    awaitingStart = false;
+    requested = false;
+    audioDirector.setCinematicMode(false);
+    startButton.textContent = "映像を再生";
+    message("映像を読み込めませんでした。再試行、またはスキップして進めます。");
+  };
+  video.addEventListener("error", mediaFailure);
+  video.querySelector("source")?.addEventListener("error", mediaFailure);
   video.addEventListener("ended", completeOpening, { once: true });
-  video.addEventListener("error", completeOpening, { once: true });
-  startButton?.addEventListener("click", beginPlayback);
-  skipButton?.addEventListener("click", completeOpening);
-  beginPlayback();
+  const watchFrame = () => {
+    if (completed || !video.isConnected) return;
+    frames += 1;
+    video.dataset.presentedFrames = String(frames);
+    lastProgress = performance.now();
+    video.requestVideoFrameCallback(watchFrame);
+  };
+  if (typeof video.requestVideoFrameCallback === "function") video.requestVideoFrameCallback(watchFrame);
+  const watchdog = window.setInterval(() => {
+    if (!video.isConnected || completed) {
+      window.clearInterval(watchdog);
+      document.removeEventListener("visibilitychange", onVisibility);
+      if (!video.paused) video.pause();
+      return;
+    }
+    if (typeof video.requestVideoFrameCallback !== "function" && video.currentTime > lastTime + 0.01) lastProgress = performance.now();
+    lastTime = video.currentTime;
+    if ((requested || awaitingStart) && performance.now() - lastProgress > 4500) {
+      startButton.textContent = "再生を再試行";
+      message("映像の再生が進んでいません。再試行、またはスキップして進めます。");
+    }
+  }, 1000);
+  function onVisibility() {
+    if (document.hidden) {
+      awaitingStart = false;
+      requested = false;
+      video.pause();
+    }
+  }
+  document.addEventListener("visibilitychange", onVisibility);
 }
+
 
 function renderNav() {
   elements.nav.innerHTML = "";
@@ -4885,4 +4985,3 @@ const syncFullscreenControl = () => {
 };
 document.addEventListener("fullscreenchange", syncFullscreenControl);
 document.addEventListener("webkitfullscreenchange", syncFullscreenControl);
-

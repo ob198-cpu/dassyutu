@@ -1,0 +1,31 @@
+/* Keep the opening's escape controls inside the visible LINE/Android viewport. */
+body.opening-video-active { --side-menu-w:0px !important; --mobile-nav-h:0px !important; }
+body.opening-video-active .rotate-guard,body.opening-video-active #recoveryMenu { display:none !important; }
+html body.opening-video-active.stage-intro-mode .phone-shell,
+html body.opening-video-active.stage-intro-mode .game-card,
+body.opening-video-active #game {
+ left:0 !important; top:0 !important; width:var(--app-width,100vw) !important; max-width:100vw !important;
+ height:var(--app-height,100dvh) !important; min-height:0 !important; max-height:var(--app-height,100dvh) !important;
+ margin:0 !important; padding:0 !important; overflow:hidden !important;
+}
+html body.opening-video-active.stage-intro-mode .intro-video-stage {
+ display:flex !important; justify-content:center !important; align-items:center !important;
+ width:100% !important; height:100% !important; min-height:0 !important; max-height:100% !important; padding:10px !important;
+}
+body.opening-video-active .opening-video-shell {
+ display:flex !important; flex-direction:column !important; width:min(100%,1280px) !important;
+ height:auto !important; max-height:calc(var(--app-height,100dvh) - 20px) !important; aspect-ratio:auto !important; overflow:auto !important;
+}
+body.opening-video-active #openingVideo {
+ width:100% !important; height:min(70dvh,calc(var(--app-height,100dvh) - 150px)) !important;
+ max-height:calc(var(--app-height,100dvh) - 150px) !important; min-height:80px !important;
+ object-fit:contain !important; flex:none !important;
+}
+.opening-video-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:8px; flex:none; background:#06121c; }
+.opening-video-controls #openingVideoStart,.opening-video-controls #openingVideoRetry,.opening-video-controls #openingVideoSkip {
+ position:static !important; inset:auto !important; transform:none !important; width:auto !important;
+ min-height:44px !important; min-width:90px !important; padding:8px 12px !important; font-size:14px !important;
+ display:inline-flex !important; align-items:center; justify-content:center; flex:none;
+}
+#openingVideoStatus { position:static !important; margin:0 !important; padding:0 12px 10px !important;
+ color:#fff1d0; background:#06121c; font-size:13px; line-height:1.5; text-align:center; flex:none; }
